@@ -1,3 +1,13 @@
+Dev Quick Start:
+
+- Make Sure you have an IDE (we love Cursor)
+- Make Sure you have Node.js and [Bun.sh](https://bun.sh) installed
+- Clone the repo
+- Get .env from an admin (email dexter@dexterstorey.com with subject line: URGENT ACCESS: ...)
+- run `bun install`
+- run `bun dev`
+
+
 Under construction....
 
 Hi, welcome to MMXXV. This is a fun game to see who has the best prediction chops. Here's how it works:
