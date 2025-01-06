@@ -1,6 +1,6 @@
 'use server'
 
-import { getSession } from "~/auth/actions"
+import { getSession } from "~/actions/auth"
 import { db } from "~/db"
 
 export async function createMarket(data: {

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import '../styles.css'
 import { ClientAuthProvider } from '@rubriclab/auth'
-import { getSession } from '~/auth/actions'
+import { getSession } from '~/actions/auth'
+import '../globals.css'
 
 export default async function RootLayout({
 	children

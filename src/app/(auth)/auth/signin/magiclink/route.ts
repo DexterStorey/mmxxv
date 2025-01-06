@@ -5,15 +5,9 @@ import { db } from '~/db'
 
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url)
-	const { error, data } = z
+	const {key, redirectUrl} = z
 		.object({ key: z.string(), redirectUrl: z.string() })
-		.safeParse(Object.fromEntries(searchParams.entries()))
-
-	if (error) {
-		redirect('/darkmagic')
-	}
-
-	const { key, redirectUrl } = data
+		.parse(Object.fromEntries(searchParams.entries()))
 
 	const { user } = await db.session.findUniqueOrThrow({
 		where: {

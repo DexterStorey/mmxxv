@@ -3,7 +3,7 @@
 import { Market, Comment } from "@prisma/client";
 import { useSession } from "@rubriclab/auth";
 import { useState } from "react";
-import { upvoteMarket, downvoteMarket, addComment } from "../../app/(root)/markets/actions";
+import { upvoteMarket, downvoteMarket, addComment } from "~/actions/market";
 
 export type MarketWithVotesAndComments = Market & {
     upvoters: { userId: string }[];

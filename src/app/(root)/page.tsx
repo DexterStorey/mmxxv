@@ -12,18 +12,24 @@ export default async () => {
 	return (
 		<>
 			<Nav />
-			<h1>Welcome to MMXIV, a prediction game for 2025.</h1>
-			<p>Current stage: {stage}</p>
-			{
-				stage === Stage.ACCOUNT_CREATION && (
-					<>
-						<p>Sign up for an account, invite friends.</p>
-						<strong>Ends on January 20, 2025.</strong>
-						<br />
-						<Invite />
-					</>
-				)
-			}
+			<div className="container">
+				<div className="card">
+					<h1 className="title">Welcome to MMXIV</h1>
+					<p className="section-content">A prediction game for 2025.</p>
+					<div className="section">
+						<h2 className="section-title">Current Stage: {stage}</h2>
+						{stage === Stage.ACCOUNT_CREATION && (
+							<>
+								<p className="section-content">Sign up for an account, invite friends.</p>
+								<strong className="meta">Ends on January 20, 2025</strong>
+								<div className="section">
+									<Invite />
+								</div>
+							</>
+						)}
+					</div>
+				</div>
+			</div>
 		</>
 	)
 }

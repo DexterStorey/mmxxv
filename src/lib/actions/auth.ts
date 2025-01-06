@@ -1,11 +1,20 @@
 'use server'
 
+import { createAuthActions } from '@rubriclab/auth/lib/utils'
+import { db } from '~/db'
+import { env } from '~/env'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { db } from '~/db'
 import { resend } from '~/email'
-import { env } from '~/env'
-import { MagicLinkEmailTemplate } from './templates'
+import { MagicLinkEmailTemplate } from '~/components/onboard-email'
+
+
+export const { getSession } = createAuthActions({
+	authProviders: {},
+	db,
+	unauthorizedUrl: `${env.URL}/auth/signin`
+})
+
 
 export async function sendMagicLink({
 	redirectUrl,

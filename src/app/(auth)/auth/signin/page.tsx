@@ -2,7 +2,7 @@
 
 import { Button, Input } from 'rubricui'
 import { z } from 'zod'
-import { sendMagicLink } from './actions'
+import { sendMagicLink } from '~/actions/auth'
 
 async function handleSubmit(formData: FormData) {
 	try {
