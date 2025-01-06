@@ -1,8 +1,10 @@
 'use client'
 
 import type { Comment, Market, User } from '@prisma/client'
-import { useState } from 'react'
+import { useSession } from '@rubriclab/auth'
+import { useEffect, useRef, useState } from 'react'
 import { getMarketById } from '~/actions/market'
+import { getUserEmail } from '~/actions/user'
 import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
 
@@ -18,20 +20,68 @@ type MarketWithComments = Market & {
 	comments: CommentWithReplies[]
 }
 
+function formatCommentContent(content: string, currentUserEmail: string | undefined) {
+	return content.split(/(@[^\s]+)/).map((part, index) => {
+		if (part.startsWith('@')) {
+			const mentionedEmail = part.slice(1)
+			const isCurrentUser = currentUserEmail && mentionedEmail === currentUserEmail
+			return (
+				<span
+					key={index}
+					className={`mention-tag ${isCurrentUser ? 'mention-tag-self' : 'mention-tag-other'}`}
+				>
+					{part}
+				</span>
+			)
+		}
+		return part
+	})
+}
+
 function CommentThread({
 	comment,
-	onReply
+	onReply,
+	highlightedCommentId
 }: {
 	comment: CommentWithReplies
 	onReply: (parentId: string) => void
+	highlightedCommentId: string | undefined
 }) {
 	const [showReplyForm, setShowReplyForm] = useState(false)
 	const [showReplies, setShowReplies] = useState(false)
 	const hasReplies = comment.replies?.length > 0
+	const commentRef = useRef<HTMLDivElement>(null)
+	const isHighlighted = comment.id === highlightedCommentId
+	const hasHighlightedReply = comment.replies.some(reply => reply.id === highlightedCommentId)
+	const { user } = useSession()
+	const [userEmail, setUserEmail] = useState<string>()
+
+	useEffect(() => {
+		if (user?.id) {
+			getUserEmail(user.id).then(setUserEmail)
+		}
+	}, [user?.id])
+
+	// Auto-expand replies if a nested reply is highlighted
+	useEffect(() => {
+		if (hasHighlightedReply) {
+			setShowReplies(true)
+		}
+	}, [hasHighlightedReply])
+
+	useEffect(() => {
+		if (isHighlighted && commentRef.current) {
+			commentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+			commentRef.current.classList.add('highlighted')
+			setTimeout(() => {
+				commentRef.current?.classList.remove('highlighted')
+			}, 3000)
+		}
+	}, [isHighlighted])
 
 	return (
-		<div className="comment-thread">
-			<div className="comment">
+		<div className="comment-thread" ref={commentRef}>
+			<div className={`comment ${isHighlighted ? 'highlighted' : ''}`}>
 				<div className="comment-header">
 					<div className="comment-meta">
 						<span className="comment-author">{comment.author.email}</span>
@@ -56,7 +106,7 @@ function CommentThread({
 						</button>
 					</div>
 				</div>
-				<p className="comment-content">{comment.content}</p>
+				<p className="comment-content">{formatCommentContent(comment.content, userEmail)}</p>
 				{showReplyForm && (
 					<div className="comment-reply-form">
 						<AddCommentForm
@@ -73,7 +123,12 @@ function CommentThread({
 			{hasReplies && showReplies && (
 				<div className="comment-replies">
 					{comment.replies.map(reply => (
-						<CommentThread key={reply.id} comment={reply} onReply={onReply} />
+						<CommentThread
+							key={reply.id}
+							comment={reply}
+							onReply={onReply}
+							highlightedCommentId={highlightedCommentId}
+						/>
 					))}
 				</div>
 			)}
@@ -81,7 +136,13 @@ function CommentThread({
 	)
 }
 
-export function MarketComments({ market }: { market: MarketWithComments }) {
+export function MarketComments({
+	market,
+	highlightedCommentId
+}: {
+	market: MarketWithComments
+	highlightedCommentId: string | undefined
+}) {
 	const [comments, setComments] = useState<CommentWithReplies[]>(
 		market.comments
 			.filter(comment => !comment.parentId)
@@ -104,13 +165,29 @@ export function MarketComments({ market }: { market: MarketWithComments }) {
 		}
 	}
 
+	// Update comments when market data changes
+	useEffect(() => {
+		const topLevelComments = market.comments
+			.filter(comment => !comment.parentId)
+			.map(comment => ({
+				...comment,
+				replies: market.comments.filter(reply => reply.parentId === comment.id)
+			}))
+		setComments(topLevelComments)
+	}, [market])
+
 	return (
 		<div className="comments-section">
 			<h2 className="subtitle">Comments ({comments.length})</h2>
 			<AddCommentForm marketId={market.id} onCommentAdded={refreshComments} />
 			<div className="comments-list">
 				{comments.map(comment => (
-					<CommentThread key={comment.id} comment={comment} onReply={refreshComments} />
+					<CommentThread
+						key={comment.id}
+						comment={comment}
+						onReply={refreshComments}
+						highlightedCommentId={highlightedCommentId}
+					/>
 				))}
 			</div>
 		</div>

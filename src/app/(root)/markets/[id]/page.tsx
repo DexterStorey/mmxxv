@@ -6,10 +6,13 @@ import { db } from '~/db'
 
 type PageProps = {
 	params: Promise<{ id: string }>
+	searchParams: Promise<{ commentId?: string }>
 }
 
-export default async function MarketPage({ params }: PageProps) {
+export default async function MarketPage({ params, searchParams }: PageProps) {
 	const { id } = await params
+	const { commentId } = await searchParams
+
 	const market = await db.market.findUnique({
 		where: { id },
 		include: {
@@ -59,7 +62,7 @@ export default async function MarketPage({ params }: PageProps) {
 		<>
 			<Nav />
 			<div className="container">
-				<MarketDetail market={marketWithReplies} />
+				<MarketDetail market={marketWithReplies} highlightedCommentId={commentId || undefined} />
 			</div>
 		</>
 	)

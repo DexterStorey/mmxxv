@@ -10,11 +10,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  upvotedMarkets MarketUpvotes[] @relation("MarketUpvoters")
+  upvotedMarkets   MarketUpvotes[]   @relation("MarketUpvoters")
   downvotedMarkets MarketDownvotes[] @relation("MarketDownvoters")
-  comments Comment[]
-
-  markets Market[]
+  comments         Comment[]
+  markets          Market[]
+  notifications    Notification[]
+  mentions         Comment[]         @relation("CommentMentions")
 
   points Int @default(0)
 }

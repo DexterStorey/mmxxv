@@ -9,7 +9,13 @@ import { MarketComments } from './market-comments'
 import type { MarketWithVotesAndComments } from './market-item'
 import { MarketVotes } from './market-votes'
 
-export function MarketDetail({ market }: { market: MarketWithVotesAndComments }) {
+export function MarketDetail({
+	market,
+	highlightedCommentId
+}: {
+	market: MarketWithVotesAndComments
+	highlightedCommentId: string | undefined
+}) {
 	const router = useRouter()
 	const [isDeleting, setIsDeleting] = useState(false)
 	const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -68,7 +74,7 @@ export function MarketDetail({ market }: { market: MarketWithVotesAndComments })
 				</div>
 
 				<MarketVotes market={market} />
-				<MarketComments market={marketWithReplies} />
+				<MarketComments market={marketWithReplies} highlightedCommentId={highlightedCommentId} />
 			</div>
 
 			<DeleteMarketModal

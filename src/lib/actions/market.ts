@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { getSession } from '~/actions/auth'
 import { db } from '~/db'
+import { handleNewComment } from '~/services/notifications'
 
 const MAX_MARKETS_PER_USER = 10
 
@@ -180,13 +181,30 @@ export async function downvoteMarket(marketId: string) {
 }
 
 export async function addComment(marketId: string, content: string, parentId?: string | null) {
-	const { user } = await getSession()
+	const { user: sessionUser } = await getSession()
 
 	if (!content || typeof content !== 'string' || content.trim().length === 0) {
 		throw new Error('Comment content must be a non-empty string')
 	}
 
-	await db.comment.create({
+	const [market, user] = await Promise.all([
+		db.market.findUnique({
+			where: { id: marketId }
+		}),
+		db.user.findUnique({
+			where: { id: sessionUser.id }
+		})
+	])
+
+	if (!market) {
+		throw new Error('Market not found')
+	}
+
+	if (!user) {
+		throw new Error('User not found')
+	}
+
+	const comment = await db.comment.create({
 		data: {
 			content: content.trim(),
 			marketId,
@@ -195,47 +213,31 @@ export async function addComment(marketId: string, content: string, parentId?: s
 		}
 	})
 
+	await handleNewComment(comment, market, user)
+
 	revalidatePath('/markets')
 	revalidatePath(`/markets/${marketId}`)
+
+	return comment.id
 }
 
 export async function getMarketById(marketId: string) {
-	return await db.market.findUnique({
+	const market = await db.market.findUnique({
 		where: { id: marketId },
 		include: {
 			upvoters: true,
 			downvoters: true,
 			comments: {
+				orderBy: {
+					createdAt: 'desc'
+				},
 				include: {
 					author: {
 						select: {
 							id: true,
 							email: true
 						}
-					},
-					replies: {
-						include: {
-							author: {
-								select: {
-									id: true,
-									email: true
-								}
-							},
-							replies: {
-								include: {
-									author: {
-										select: {
-											id: true,
-											email: true
-										}
-									}
-								}
-							}
-						}
 					}
-				},
-				orderBy: {
-					createdAt: 'desc'
 				}
 			},
 			author: {
@@ -246,6 +248,38 @@ export async function getMarketById(marketId: string) {
 			}
 		}
 	})
+
+	if (!market) return null
+
+	type CommentWithReplies = (typeof market.comments)[number] & {
+		replies: CommentWithReplies[]
+	}
+
+	// Recursively build the comment tree
+	const commentMap = new Map<string, CommentWithReplies>(
+		market.comments.map(comment => [comment.id, { ...comment, replies: [] }])
+	)
+	const rootComments: CommentWithReplies[] = []
+
+	for (const comment of market.comments) {
+		if (comment.parentId) {
+			const parent = commentMap.get(comment.parentId)
+			const commentWithReplies = commentMap.get(comment.id)
+			if (parent && commentWithReplies) {
+				parent.replies.push(commentWithReplies)
+			}
+		} else {
+			const commentWithReplies = commentMap.get(comment.id)
+			if (commentWithReplies) {
+				rootComments.push(commentWithReplies)
+			}
+		}
+	}
+
+	return {
+		...market,
+		comments: rootComments
+	}
 }
 
 export async function deleteMarket(marketId: string) {
@@ -265,7 +299,6 @@ export async function deleteMarket(marketId: string) {
 		throw new Error('Unauthorized')
 	}
 
-	// Delete the market and all related records
 	await db.market.delete({
 		where: { id: marketId }
 	})

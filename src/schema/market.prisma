@@ -16,7 +16,8 @@ model Market {
     author   User   @relation(fields: [authorId], references: [id])
     authorId String
 
-    comments Comment[]
+    comments     Comment[]
+    Notification Notification[]
 }
 
 model Comment {
@@ -35,6 +36,9 @@ model Comment {
     parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
     parentId String?
     replies  Comment[] @relation("CommentReplies")
+
+    mentions     User[]         @relation("CommentMentions")
+    Notification Notification[]
 
     @@index([parentId])
 }
@@ -55,4 +59,31 @@ model MarketDownvotes {
     userId   String
 
     @@id([marketId, userId])
+}
+
+model Notification {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    read      Boolean  @default(false)
+
+    type NotificationType
+
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
+
+    market   Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+    marketId String
+
+    comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+    commentId String?
+
+    @@index([userId])
+    @@index([marketId])
+    @@index([commentId])
+}
+
+enum NotificationType {
+    MARKET_COMMENT
+    COMMENT_REPLY
+    MENTION
 }
