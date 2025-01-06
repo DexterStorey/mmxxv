@@ -23,5 +23,15 @@ Users gain point in three ways:
    The authors of these questions will each be awarded 20 points.
 
    CORRECTLY PREDICTING THE OUTCOME OF AN EVENT
-   The questions
+   The questions:
+
+   here is the formula for getting it right:
+   if you get the question right
+   points = max(100, 5/x) where x is the money line of the prediction.
+
+   if you get the question wrong:
+   penalty = max(50, 2/x)
+
+   The winner of the game is the user with the most points summed across all predictions.
+   
    
