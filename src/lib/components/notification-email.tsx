@@ -36,13 +36,22 @@ const styles = {
 	},
 	button: {
 		backgroundColor: '#111',
-		color: '#fff',
+		color: '#fff !important',
 		padding: '12px 24px',
 		borderRadius: '6px',
 		textDecoration: 'none',
 		display: 'inline-block',
 		fontSize: '16px',
-		fontWeight: '500'
+		fontWeight: '500',
+		textAlign: 'center' as const,
+		border: '1px solid #111',
+		margin: '16px 0'
+	},
+	fallbackLink: {
+		display: 'block',
+		marginTop: '16px',
+		color: '#111',
+		textDecoration: 'underline'
 	},
 	meta: {
 		fontSize: '14px',
@@ -101,8 +110,18 @@ export function NotificationEmail({
 
 				{commentContent && <div style={styles.quote}>"{commentContent}"</div>}
 
-				<a href={url.toString()} style={styles.button}>
-					View on MMXXV
+				<table role="presentation" style={{ borderCollapse: 'collapse', width: 'auto' }}>
+					<tr>
+						<td style={{ backgroundColor: '#111', borderRadius: '6px' }}>
+							<a href={url.toString()} style={styles.button}>
+								View on MMXXV
+							</a>
+						</td>
+					</tr>
+				</table>
+
+				<a href={url.toString()} style={styles.fallbackLink}>
+					Or click here to view on MMXXV
 				</a>
 
 				<div style={styles.meta}>

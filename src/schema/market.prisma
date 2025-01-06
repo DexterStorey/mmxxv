@@ -13,7 +13,7 @@ model Market {
     upvoters   MarketUpvotes[]   @relation("MarketUpvoters")
     downvoters MarketDownvotes[] @relation("MarketDownvoters")
 
-    author   User   @relation(fields: [authorId], references: [id])
+    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId String
 
     comments     Comment[]
@@ -30,7 +30,7 @@ model Comment {
 
     content String
 
-    author   User   @relation(fields: [authorId], references: [id])
+    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId String
 
     parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
@@ -46,7 +46,7 @@ model Comment {
 model MarketUpvotes {
     market   Market @relation("MarketUpvoters", fields: [marketId], references: [id], onDelete: Cascade)
     marketId String
-    user     User   @relation("MarketUpvoters", fields: [userId], references: [id])
+    user     User   @relation("MarketUpvoters", fields: [userId], references: [id], onDelete: Cascade)
     userId   String
 
     @@id([marketId, userId])
@@ -55,7 +55,7 @@ model MarketUpvotes {
 model MarketDownvotes {
     market   Market @relation("MarketDownvoters", fields: [marketId], references: [id], onDelete: Cascade)
     marketId String
-    user     User   @relation("MarketDownvoters", fields: [userId], references: [id])
+    user     User   @relation("MarketDownvoters", fields: [userId], references: [id], onDelete: Cascade)
     userId   String
 
     @@id([marketId, userId])

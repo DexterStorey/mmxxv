@@ -27,13 +27,22 @@ const styles = {
 	},
 	button: {
 		backgroundColor: '#111',
-		color: '#fff',
+		color: '#fff !important',
 		padding: '12px 24px',
 		borderRadius: '6px',
 		textDecoration: 'none',
 		display: 'inline-block',
 		fontSize: '16px',
-		fontWeight: '500'
+		fontWeight: '500',
+		textAlign: 'center' as const,
+		border: '1px solid #111',
+		margin: '16px 0'
+	},
+	fallbackLink: {
+		display: 'block',
+		marginTop: '16px',
+		color: '#111',
+		textDecoration: 'underline'
 	},
 	meta: {
 		fontSize: '14px',
@@ -51,8 +60,18 @@ export function MagicLinkEmailTemplate({ magicLink }: { magicLink: string }) {
 				<h1 style={styles.title}>Welcome to MMXXV</h1>
 				<p style={styles.text}>Click the button below to sign in and start predicting the future.</p>
 
-				<a href={magicLink} style={styles.button}>
-					Sign In to MMXXV
+				<table role="presentation" style={{ borderCollapse: 'collapse', width: 'auto' }}>
+					<tr>
+						<td style={{ backgroundColor: '#111', borderRadius: '6px' }}>
+							<a href={magicLink} style={styles.button}>
+								Sign In to MMXXV
+							</a>
+						</td>
+					</tr>
+				</table>
+
+				<a href={magicLink} style={styles.fallbackLink}>
+					Or click here to sign in to MMXXV
 				</a>
 
 				<div style={styles.meta}>If you didn't request this email, you can safely ignore it.</div>
