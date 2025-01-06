@@ -6,8 +6,13 @@ export type UserWithPoints = User & {
 	points: number
 }
 
-export function calculatePoints(user: User & { markets: Market[] }): number {
+export function calculatePoints(
+	user: User & { invitees: { id: string }[] } & { markets: Market[] }
+): number {
 	const marketPoints = user.markets.length * POINTS_PER_MARKET
+	const invitePoints = user.invitees.length * 10
 
-	return marketPoints
+	const totalPoints = marketPoints + invitePoints
+
+	return totalPoints
 }

@@ -1,15 +1,25 @@
-'use client'
+import { Suspense } from 'react'
+import { getSession } from '~/actions/auth'
+import { db } from '~/db'
+import InviteClient from './invite.client'
 
-export default function Invite() {
+export default async function Invite() {
+	const { user } = await getSession()
+
+	const { username } = await db.user.findUniqueOrThrow({
+		where: {
+			id: user.id
+		},
+		select: {
+			username: true
+		}
+	})
+
+	if (!username) return <></>
+
 	return (
-		<button
-			type="button"
-			onClick={() => {
-				navigator.clipboard.writeText(window.location.href)
-			}}
-			className="button"
-		>
-			Copy Invite Link
-		</button>
+		<Suspense fallback={<>...</>}>
+			<InviteClient id={username} />
+		</Suspense>
 	)
 }

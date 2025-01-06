@@ -60,6 +60,9 @@ export default async function UserProfilePage({ params }: PageProps) {
 				},
 				orderBy: { createdAt: 'desc' }
 			},
+			invitees: {
+				select: { id: true }
+			},
 			upvotedMarkets: {
 				include: {
 					market: {

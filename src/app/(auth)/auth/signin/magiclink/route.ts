@@ -9,6 +9,10 @@ export async function GET(request: Request) {
 		.object({ key: z.string(), redirectUrl: z.string() })
 		.parse(Object.fromEntries(searchParams.entries()))
 
+	const cookieStore = await cookies()
+
+	const invitedBy = cookieStore.get('invitedBy')?.value
+
 	const { user } = await db.session.findUniqueOrThrow({
 		where: {
 			key
@@ -27,7 +31,21 @@ export async function GET(request: Request) {
 			}
 		}
 	})
-	;(await cookies()).set('key', key)
-	;(await cookies()).set('user', JSON.stringify(user))
+
+	if (invitedBy) {
+		await db.user.update({
+			where: { id: user.id },
+			data: {
+				invitedBy: {
+					connect: { username: invitedBy }
+				}
+			}
+		})
+	}
+
+	cookieStore.set('key', key)
+	cookieStore.set('user', JSON.stringify(user))
+	cookieStore.delete('invitedBy')
+
 	redirect(redirectUrl)
 }
