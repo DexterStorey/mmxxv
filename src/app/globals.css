@@ -1564,10 +1564,6 @@ body {
 }
 
 @media (max-width: 768px) {
-	.nav-list-desktop-account {
-		display: none;
-	}
-
 	.nav {
 		padding: 0 0.75rem;
 		height: 3rem;

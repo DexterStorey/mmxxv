@@ -42,13 +42,13 @@ export default function Nav() {
 					</Link>
 					{user && (
 						<Link href={`/users/${user.id}`} className="nav-link nav-link-account" onClick={closeMenu}>
-							Account
+							Profile
 						</Link>
 					)}
 				</div>
 				<div className="nav-list-desktop-account">
 					{user && (
-						<Link href={`/users/${user.id}`} className="nav-link" onClick={closeMenu}>
+						<Link href="/account" className="nav-link" onClick={closeMenu}>
 							Account
 						</Link>
 					)}
