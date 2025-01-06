@@ -10,40 +10,29 @@ type Stage = {
 const stages: Stage[] = [
 	{
 		number: 0,
-		title: 'Account creation',
-		description: 'Sign up for an account, invite friends.',
-		endsAt: 'January 20, 2025'
-	},
-	{
-		number: 1,
-		title: 'Market submission',
-		description: 'Submit markets and resolution criteria.',
-		endsAt: 'January 22, 2025'
-	},
-	{
-		number: 2,
-		title: 'Market voting',
+		title: 'Market Creation & Community',
 		description:
-			'Upvote / Downvote on the markets you think are interesting, suggest changes to the resolution criteria.',
+			'Sign up, invite friends, create markets, and vote. The top 25 markets will be selected for the game. Earn points for referrals, creating markets, and getting your markets selected.',
 		endsAt: 'January 23, 2025'
 	},
 	{
-		number: 3,
+		number: 1,
 		title: 'Money Lines',
 		description:
-			'Make your best guess on the probability of each market outcome. Get points for getting close to the wisdom of the crowd.',
+			'Set your probability estimates for each market. Points awarded for aligning with the wisdom of the crowd.',
 		endsAt: 'January 24, 2025'
 	},
 	{
-		number: 4,
+		number: 2,
 		title: 'Prediction',
-		description: 'Select YES/NO for each market you are interested in.',
+		description: 'Submit your YES/NO predictions for each market you want to participate in.',
 		endsAt: 'January 25, 2025'
 	},
 	{
-		number: 5,
+		number: 3,
 		title: 'Resolution',
-		description: 'The markets are resolved and the results are announced.',
+		description:
+			'Markets are resolved and final results announced. Early resolutions may be submitted throughout the year.',
 		endsAt: 'December 31, 2025'
 	}
 ]

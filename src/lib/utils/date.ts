@@ -22,5 +22,5 @@ export function isNew(date: Date): boolean {
 	const now = new Date()
 	const diff = now.getTime() - date.getTime()
 	const hours = Math.floor(diff / (1000 * 60 * 60))
-	return hours < 24 // Consider items newer than 24 hours as "new"
+	return hours < 24
 }

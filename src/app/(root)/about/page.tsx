@@ -18,57 +18,90 @@ export default function About() {
 					<div className="section">
 						<h2 className="section-title">Points System</h2>
 
-						<h3 className="subtitle">Market Creation</h3>
+						<h3 className="subtitle">Initial Points</h3>
+						<p>You can earn points in two ways during the early stages:</p>
+						<ul>
+							<li>10 points for each person you refer (up to 10 people, maximum 100 points)</li>
+							<li>10 points for each market you create (up to 10 markets, maximum 100 points)</li>
+						</ul>
+
+						<h3 className="subtitle">Market Selection Bonus</h3>
 						<p>
-							Users earn 10 points for each market they create, up to a maximum of 10 markets per user.
-							This means you can earn up to 100 points from creating markets.
+							If your created market makes it into the top 25 selected markets, you'll earn an additional
+							100 points per selected market.
 						</p>
 
-						<h3 className="subtitle">Money line points</h3>
+						<h3 className="subtitle">Money Line Points</h3>
 						<p>
-							Points are deducted for being too far from the average prediction. Everyone starts with 100 *
-							number of markets.
+							Points are awarded for making probability estimates that align with the wisdom of the crowd.
+							Everyone starts with 100 points per market, and points are deducted based on how far your
+							estimate is from the average prediction.
 						</p>
 						<div className="example">
-							Example: You think the market "Aliens make contact" has a 10% chance of happening. The
-							average prediction is 8%. You lose 2 points and get 98 points.
+							Example: You estimate a 10% chance for "Aliens make contact" while the average prediction is
+							8%. You lose 2 points, resulting in 98 points for this market.
 						</div>
 
-						<h3 className="subtitle">Market points</h3>
+						<h3 className="subtitle">Market Resolution Points</h3>
 						<p>
-							Points are awarded based on how well you do in the markets you selected, and how surprising
-							the outcome is.
+							Points are awarded based on correct predictions, with more points given for correctly
+							predicting unlikely outcomes.
 						</p>
 						<div className="example">
-							Example 1: The market "Aliens make contact" has a 10% chance of happening. You vote YES. It
-							happens. you get 100 points * 100/10 = 1000 points.
+							Example 1: The market "Aliens make contact" has a 10% consensus probability. You predict YES,
+							and it happens. You earn 1000 points (100 points × 100/10).
 						</div>
 						<div className="example">
-							Example 2: The market "Aliens make contact" has a 10% chance of happening. You vote YES. It
-							doesn't happen. You get 0 points.
+							Example 2: Same market, but you predict YES and it doesn't happen. You receive 0 points.
+						</div>
+					</div>
+
+					<div className="section">
+						<h2 className="section-title">Early Resolution</h2>
+						<p>Some markets may resolve before the end of the year. When this happens:</p>
+						<ul>
+							<li>Any user can submit a resolution request</li>
+							<li>An admin will review and may approve the early resolution</li>
+							<li>Early resolutions are provisional and will be voted on at the end of the year</li>
+							<li>Provisional points will be displayed on the leaderboard for entertainment</li>
+						</ul>
+						<div className="example">
+							Example: A market about "Will X company release Y product?" might resolve early if the
+							company makes an official announcement. A user can submit this as evidence for early
+							resolution.
 						</div>
 					</div>
 
 					<div className="section">
 						<h2 className="section-title">Winning</h2>
-						<p>The player with the most points at the end of the game wins all the marbles.</p>
+						<p>The player with the most points at the end of the year wins all the marbles.</p>
 					</div>
 
 					<div className="section">
 						<h2 className="section-title">Conflict Resolution</h2>
+						<p>Markets should have clear, objective resolution criteria that everyone can agree on.</p>
 						<p>
-							Markets should have good resolution criteria, and everyone should be able to agree on the
-							outcome.
-						</p>
-						<p>If there is a dispute, we will do a vote at the end of the game.</p>
-						<p>
-							Since this is the first year we are doing this, and may have some issues, we will do a vote
-							at the end of the game as to whether the game was successful. If majority say yes, we will
-							issue the prize money to the winner. If majority say no, we will refund everyone.
+							If there is a dispute about a market's outcome, it will be put to a vote at the end of the
+							year.
 						</p>
 						<p>
-							Players are STRONGLY encouraged to resolve disputes in good faith, but no one will be banned
-							and admins will not do anything other than dev stuff.
+							Since this is our first year running this game, we will have a final vote to determine if the
+							game was successful. If the majority votes yes, the prize will be awarded to the winner. If
+							the majority votes no, all participants will be refunded.
+						</p>
+						<p>
+							Players are strongly encouraged to resolve disputes in good faith. The game is designed to be
+							self-governing, and admins will only handle technical matters.
+						</p>
+					</div>
+
+					<div className="section">
+						<h2 className="section-title">Code</h2>
+						<p>
+							This is an open source project. Contributions are welcome at{' '}
+							<a href="https://github.com/RubricLab/mmxxv" className="market-meta">
+								github.com/RubricLab/mmxxv
+							</a>
 						</p>
 					</div>
 				</div>
