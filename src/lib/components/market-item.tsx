@@ -1,81 +1,101 @@
 'use client'
 
-import { Market, Comment } from "@prisma/client";
-import { useSession } from "@rubriclab/auth";
-import { useState } from "react";
-import { upvoteMarket, downvoteMarket, addComment } from "~/actions/market";
+import type { Comment, Market } from '@prisma/client'
+import { useSession } from '@rubriclab/auth'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { downvoteMarket, upvoteMarket } from '~/actions/market'
+import { formatDate, isNew } from '~/utils/date'
+
+export type CommentWithAuthor = Comment & {
+	author: { email: string; id: string }
+}
+
+export type CommentWithReplies = CommentWithAuthor & {
+	replies: CommentWithReplies[]
+}
 
 export type MarketWithVotesAndComments = Market & {
-    upvoters: { userId: string }[];
-    downvoters: { userId: string }[];
-    comments: (Comment & { author: { email: string } })[];
-    author: { email: string };
-};
+	upvoters: { userId: string }[]
+	downvoters: { userId: string }[]
+	comments: CommentWithReplies[]
+	author: { email: string; id: string }
+}
 
 export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
-    const { user } = useSession();
-    const [comment, setComment] = useState("");
+	const { user } = useSession()
+	const router = useRouter()
+	const hasUpvoted = market.upvoters.some(u => u.userId === user?.id)
+	const hasDownvoted = market.downvoters.some(u => u.userId === user?.id)
 
-    const hasUpvoted = market.upvoters.some(u => u.userId === user?.id);
-    const hasDownvoted = market.downvoters.some(u => u.userId === user?.id);
+	const handleVote = async (
+		e: React.MouseEvent | React.KeyboardEvent,
+		action: () => Promise<void>
+	) => {
+		e.stopPropagation()
+		await action()
+	}
 
-    return (
-        <div className="border p-4 rounded-lg mb-4">
-            <h2 className="text-xl font-bold">{market.title}</h2>
-            <p className="text-sm text-gray-500 mb-2">Created by: {market.author.email}</p>
-            <p>{market.description}</p>
-            <p className="text-sm text-gray-500">Resolution Criteria: {market.resolutionCriteria}</p>
-            
-            <div className="flex gap-4 mt-4">
-                <button 
-                    onClick={() => upvoteMarket(market.id)}
-                    className={`px-3 py-1 rounded ${hasUpvoted ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                >
-                    ↑ {market.upvotes}
-                </button>
-                <button 
-                    onClick={() => downvoteMarket(market.id)}
-                    className={`px-3 py-1 rounded ${hasDownvoted ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
-                >
-                    ↓ {market.downvotes}
-                </button>
-            </div>
+	const handleRowClick = () => {
+		router.push(`/markets/${market.id}`)
+	}
 
-            <div className="mt-4">
-                <h3 className="font-bold">Comments</h3>
-                <div className="space-y-2">
-                    {market.comments.map(comment => (
-                        <div key={comment.id} className="bg-gray-50 p-2 rounded">
-                            <p className="text-sm text-gray-500">{comment.author.email}</p>
-                            <p>{comment.content}</p>
-                        </div>
-                    ))}
-                </div>
-                
-                {user && (
-                    <div className="mt-2 flex gap-2">
-                        <input
-                            type="text"
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            placeholder="Add a comment..."
-                            className="border rounded px-2 py-1 flex-1"
-                        />
-                        <button
-                            onClick={async () => {
-                                if (comment.trim()) {
-                                    await addComment(market.id, comment);
-                                    setComment("");
-                                    // In a real app, you'd want to refresh the comments here
-                                }
-                            }}
-                            className="bg-blue-500 text-white px-3 py-1 rounded"
-                        >
-                            Post
-                        </button>
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-} 
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault()
+			handleRowClick()
+		}
+	}
+
+	return (
+		<tr className="market-row">
+			<td>
+				<button
+					onClick={handleRowClick}
+					onKeyDown={handleKeyDown}
+					className="market-button"
+					type="button"
+				>
+					<div className="market-title-container">
+						<span className="market-title">{market.title}</span>
+						{isNew(market.createdAt) && <span className="badge-new">NEW</span>}
+					</div>
+					<div className="market-meta">{formatDate(market.createdAt)}</div>
+				</button>
+			</td>
+			<td>{market.description}</td>
+			<td>
+				<Link
+					href={`/users/${market.author.id}`}
+					className="market-meta"
+					onClick={e => e.stopPropagation()}
+				>
+					{market.author.email}
+				</Link>
+			</td>
+			<td onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
+				<div className="votes-cell">
+					<button
+						onClick={e => handleVote(e, () => upvoteMarket(market.id))}
+						onKeyDown={e => e.key === 'Enter' && handleVote(e, () => upvoteMarket(market.id))}
+						className="vote-button"
+						disabled={!user}
+						type="button"
+					>
+						<span className={`vote-up ${hasUpvoted ? 'active' : ''}`}>↑{market.upvotes}</span>
+					</button>
+					<button
+						onClick={e => handleVote(e, () => downvoteMarket(market.id))}
+						onKeyDown={e => e.key === 'Enter' && handleVote(e, () => downvoteMarket(market.id))}
+						className="vote-button"
+						disabled={!user}
+						type="button"
+					>
+						<span className={`vote-down ${hasDownvoted ? 'active' : ''}`}>↓{market.downvotes}</span>
+					</button>
+				</div>
+			</td>
+			<td>{market.comments.length}</td>
+		</tr>
+	)
+}

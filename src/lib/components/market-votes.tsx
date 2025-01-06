@@ -1,34 +1,38 @@
-'use client';
+'use client'
 
-import { useSession } from "@rubriclab/auth";
-import { upvoteMarket, downvoteMarket } from "~/actions/market";
-import type { MarketWithVotesAndComments } from "./market-item";
+import { useSession } from '@rubriclab/auth'
+import { downvoteMarket, upvoteMarket } from '~/actions/market'
+import type { MarketWithVotesAndComments } from './market-item'
 
 export function MarketVotes({ market }: { market: MarketWithVotesAndComments }) {
-    const { user } = useSession();
-    const hasUpvoted = market.upvoters.some(u => u.userId === user?.id);
-    const hasDownvoted = market.downvoters.some(u => u.userId === user?.id);
+	const { user } = useSession()
+	const hasUpvoted = market.upvoters.some(u => u.userId === user?.id)
+	const hasDownvoted = market.downvoters.some(u => u.userId === user?.id)
 
-    return (
-        <div className="votes-container">
-            <div 
-                className={`vote-box ${hasUpvoted ? 'active' : ''}`}
-                onClick={() => upvoteMarket(market.id)}
-            >
-                <div className="vote-count">
-                    <div>↑ {market.upvotes}</div>
-                    <div className="vote-label">Upvotes</div>
-                </div>
-            </div>
-            <div 
-                className={`vote-box ${hasDownvoted ? 'active' : ''}`}
-                onClick={() => downvoteMarket(market.id)}
-            >
-                <div className="vote-count">
-                    <div>↓ {market.downvotes}</div>
-                    <div className="vote-label">Downvotes</div>
-                </div>
-            </div>
-        </div>
-    );
-} 
+	return (
+		<div className="votes-container">
+			<button
+				type="button"
+				className="vote-button"
+				onClick={() => upvoteMarket(market.id)}
+				disabled={!user}
+			>
+				<div className={`vote-up ${hasUpvoted ? 'active' : ''}`}>
+					<span className="vote-count">↑ {market.upvotes}</span>
+					<span className="vote-label">Upvotes</span>
+				</div>
+			</button>
+			<button
+				type="button"
+				className="vote-button"
+				onClick={() => downvoteMarket(market.id)}
+				disabled={!user}
+			>
+				<div className={`vote-down ${hasDownvoted ? 'active' : ''}`}>
+					<span className="vote-count">↓ {market.downvotes}</span>
+					<span className="vote-label">Downvotes</span>
+				</div>
+			</button>
+		</div>
+	)
+}

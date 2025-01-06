@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react'
 import { ClientAuthProvider } from '@rubriclab/auth'
+import type { ReactNode } from 'react'
 import { getSession } from '~/actions/auth'
 import '../globals.css'
 
@@ -11,8 +11,8 @@ export default async function RootLayout({
 	const session = await getSession()
 
 	return (
-		<html className="dark:dark flex h-full w-full items-center justify-center" lang="en">
-			<body className="h-full w-full">
+		<html lang="en">
+			<body>
 				<ClientAuthProvider session={session}>{children}</ClientAuthProvider>
 			</body>
 		</html>

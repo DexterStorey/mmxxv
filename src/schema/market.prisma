@@ -9,6 +9,7 @@ model Market {
 
 	upvotes Int @default(0)
 	downvotes Int @default(0)
+	netVotes Int @default(0)
 
 	upvoters MarketUpvotes[] @relation("MarketUpvoters")
 	downvoters MarketDownvotes[] @relation("MarketDownvoters")
@@ -17,6 +18,8 @@ model Market {
 	authorId String
 
 	comments Comment[]
+
+	@@index([netVotes(sort: Desc)])
 }
 
 model Comment {
@@ -31,6 +34,12 @@ model Comment {
 
 	author User @relation(fields: [authorId], references: [id])
 	authorId String
+
+	parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+	parentId String?
+	replies  Comment[] @relation("CommentReplies")
+
+	@@index([parentId])
 }
 
 model MarketUpvotes {

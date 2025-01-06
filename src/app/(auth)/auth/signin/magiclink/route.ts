@@ -5,7 +5,7 @@ import { db } from '~/db'
 
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url)
-	const {key, redirectUrl} = z
+	const { key, redirectUrl } = z
 		.object({ key: z.string(), redirectUrl: z.string() })
 		.parse(Object.fromEntries(searchParams.entries()))
 
