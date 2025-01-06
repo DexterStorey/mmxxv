@@ -1,10 +1,19 @@
+import { getSession } from '~/actions/auth'
 import { CreateMarketForm } from '~/components/create-market-form'
-import { MarketItem } from '~/components/market-item'
 import type { MarketWithVotesAndComments } from '~/components/market-item'
+import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
 import { db } from '~/db'
 
 export default async function MarketsPage() {
+	const { user } = await getSession()
+
+	const marketCount = await db.market.count({
+		where: {
+			authorId: user.id
+		}
+	})
+
 	const markets = await db.market.findMany({
 		include: {
 			author: {
@@ -30,14 +39,19 @@ export default async function MarketsPage() {
 					}
 				}
 			}
-		},
-		orderBy: {
-			netVotes: 'desc'
 		}
 	})
 
-	// Transform the data to include empty replies arrays for comments
-	const marketsWithReplies: MarketWithVotesAndComments[] = markets.map(market => ({
+	const sortedMarkets = markets.sort((a, b) => {
+		const aNetVotes = a.upvotes - a.downvotes
+		const bNetVotes = b.upvotes - b.downvotes
+		if (aNetVotes !== bNetVotes) {
+			return bNetVotes - aNetVotes
+		}
+		return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime() // Then by date asc
+	})
+
+	const marketsWithReplies: MarketWithVotesAndComments[] = sortedMarkets.map(market => ({
 		...market,
 		comments: market.comments.map(comment => ({
 			...comment,
@@ -57,25 +71,11 @@ export default async function MarketsPage() {
 						<h1 className="title" style={{ margin: 0, borderBottom: 'none', fontFamily: 'inherit' }}>
 							Markets
 						</h1>
-						<CreateMarketForm />
+						<CreateMarketForm marketCount={marketCount} />
 					</div>
-
-					<table className="table">
-						<thead>
-							<tr>
-								<th>Title</th>
-								<th>Description</th>
-								<th>Author</th>
-								<th>Votes</th>
-								<th>Comments</th>
-							</tr>
-						</thead>
-						<tbody>
-							{marketsWithReplies.map(market => (
-								<MarketItem key={market.id} market={market} />
-							))}
-						</tbody>
-					</table>
+					<div className="overflow-x-auto">
+						<MarketsTable markets={marketsWithReplies} />
+					</div>
 				</div>
 			</div>
 		</>

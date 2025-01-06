@@ -4,12 +4,25 @@ import { revalidatePath } from 'next/cache'
 import { getSession } from '~/actions/auth'
 import { db } from '~/db'
 
+const MAX_MARKETS_PER_USER = 10
+
 export async function createMarket(data: {
 	title: string
 	description: string
 	resolutionCriteria: string
 }) {
 	const { user } = await getSession()
+
+	// Check if user has reached market limit
+	const marketCount = await db.market.count({
+		where: {
+			authorId: user.id
+		}
+	})
+
+	if (marketCount >= MAX_MARKETS_PER_USER) {
+		throw new Error(`You can only create up to ${MAX_MARKETS_PER_USER} markets`)
+	}
 
 	const market = await db.market.create({
 		data: {
@@ -46,8 +59,7 @@ export async function upvoteMarket(marketId: string) {
 		await db.market.update({
 			where: { id: marketId },
 			data: {
-				downvotes: { decrement: 1 },
-				netVotes: { increment: 1 }
+				downvotes: { decrement: 1 }
 			}
 		})
 	}
@@ -73,8 +85,7 @@ export async function upvoteMarket(marketId: string) {
 		await db.market.update({
 			where: { id: marketId },
 			data: {
-				upvotes: { decrement: 1 },
-				netVotes: { decrement: 1 }
+				upvotes: { decrement: 1 }
 			}
 		})
 	} else {
@@ -87,8 +98,7 @@ export async function upvoteMarket(marketId: string) {
 		await db.market.update({
 			where: { id: marketId },
 			data: {
-				upvotes: { increment: 1 },
-				netVotes: { increment: 1 }
+				upvotes: { increment: 1 }
 			}
 		})
 	}
@@ -121,8 +131,7 @@ export async function downvoteMarket(marketId: string) {
 		await db.market.update({
 			where: { id: marketId },
 			data: {
-				upvotes: { decrement: 1 },
-				netVotes: { decrement: 1 }
+				upvotes: { decrement: 1 }
 			}
 		})
 	}
@@ -148,8 +157,7 @@ export async function downvoteMarket(marketId: string) {
 		await db.market.update({
 			where: { id: marketId },
 			data: {
-				downvotes: { decrement: 1 },
-				netVotes: { increment: 1 }
+				downvotes: { decrement: 1 }
 			}
 		})
 	} else {
@@ -162,8 +170,7 @@ export async function downvoteMarket(marketId: string) {
 		await db.market.update({
 			where: { id: marketId },
 			data: {
-				downvotes: { increment: 1 },
-				netVotes: { decrement: 1 }
+				downvotes: { increment: 1 }
 			}
 		})
 	}
@@ -239,4 +246,30 @@ export async function getMarketById(marketId: string) {
 			}
 		}
 	})
+}
+
+export async function deleteMarket(marketId: string) {
+	const { user } = await getSession()
+
+	// Check if market exists and user is the author
+	const market = await db.market.findUnique({
+		where: { id: marketId },
+		select: { authorId: true }
+	})
+
+	if (!market) {
+		throw new Error('Market not found')
+	}
+
+	if (market.authorId !== user.id) {
+		throw new Error('Unauthorized')
+	}
+
+	// Delete the market and all related records
+	await db.market.delete({
+		where: { id: marketId }
+	})
+
+	revalidatePath('/markets')
+	revalidatePath(`/markets/${marketId}`)
 }

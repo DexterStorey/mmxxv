@@ -1,48 +1,23 @@
 'use client'
 
-import type { Comment, Market } from '@prisma/client'
 import { useSession } from '@rubriclab/auth'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { createPortal } from 'react-dom'
-import { deleteMarket, downvoteMarket, upvoteMarket } from '~/actions/market'
+import { downvoteMarket, upvoteMarket } from '~/actions/market'
 import { formatDate, isNew } from '~/utils/date'
+import type { MarketWithVotesAndComments } from './market-item'
 
-export type CommentWithAuthor = Comment & {
-	author: { email: string; id: string }
+interface MarketRowProps {
+	market: MarketWithVotesAndComments
+	onDeleteClick: () => void
 }
 
-export type CommentWithReplies = CommentWithAuthor & {
-	replies: CommentWithReplies[]
-}
-
-export type MarketWithVotesAndComments = Market & {
-	upvoters: { userId: string }[]
-	downvoters: { userId: string }[]
-	comments: CommentWithReplies[]
-	author: { email: string; id: string }
-}
-
-export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
+export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 	const { user } = useSession()
 	const router = useRouter()
-	const [isDeleting, setIsDeleting] = useState(false)
-	const [showDeleteModal, setShowDeleteModal] = useState(false)
 	const hasUpvoted = market.upvoters.some(u => u.userId === user?.id)
 	const hasDownvoted = market.downvoters.some(u => u.userId === user?.id)
 	const isOwner = user?.id === market.author.id
-
-	const handleDelete = async () => {
-		try {
-			setIsDeleting(true)
-			await deleteMarket(market.id)
-			router.refresh()
-		} catch (error) {
-			alert(error instanceof Error ? error.message : 'Failed to delete market')
-			setIsDeleting(false)
-		}
-	}
 
 	const handleVote = async (
 		e: React.MouseEvent | React.KeyboardEvent,
@@ -80,18 +55,30 @@ export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
 				</button>
 			</td>
 			<td style={{ width: '30%' }}>
-				<div className="market-meta" style={{ marginTop: 0 }}>
-					{market.description}
-				</div>
+				<button
+					onClick={handleRowClick}
+					onKeyDown={handleKeyDown}
+					className="market-button"
+					type="button"
+				>
+					<div className="market-meta">{market.description}</div>
+				</button>
 			</td>
 			<td style={{ width: '15%' }}>
-				<Link
-					href={`/users/${market.author.id}`}
-					className="market-meta"
-					onClick={e => e.stopPropagation()}
+				<button
+					onClick={handleRowClick}
+					onKeyDown={handleKeyDown}
+					className="market-button"
+					type="button"
 				>
-					{market.author.email}
-				</Link>
+					<Link
+						href={`/users/${market.author.id}`}
+						className="market-meta"
+						onClick={e => e.stopPropagation()}
+					>
+						{market.author.email}
+					</Link>
+				</button>
 			</td>
 			<td
 				style={{ width: '12%' }}
@@ -119,7 +106,16 @@ export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
 					</button>
 				</div>
 			</td>
-			<td style={{ width: '5%' }}>{market.comments.length}</td>
+			<td style={{ width: '5%' }}>
+				<button
+					onClick={handleRowClick}
+					onKeyDown={handleKeyDown}
+					className="market-button"
+					type="button"
+				>
+					<div className="market-meta">{market.comments.length}</div>
+				</button>
+			</td>
 			<td
 				style={{ width: '3%' }}
 				onClick={e => e.stopPropagation()}
@@ -130,7 +126,7 @@ export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
 						type="button"
 						onClick={e => {
 							e.stopPropagation()
-							setShowDeleteModal(true)
+							onDeleteClick()
 						}}
 						className="button button-danger-subtle"
 						title="Delete market"
@@ -139,36 +135,6 @@ export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
 					</button>
 				)}
 			</td>
-			{showDeleteModal &&
-				createPortal(
-					<div className="modal-overlay">
-						<div className="modal">
-							<div className="modal-header">
-								<h2 className="modal-title">Delete Market</h2>
-								<button type="button" className="modal-close" onClick={() => setShowDeleteModal(false)}>
-									×
-								</button>
-							</div>
-							<p className="description">
-								Are you sure you want to delete this market? This action cannot be undone.
-							</p>
-							<div className="modal-footer">
-								<button type="button" className="button" onClick={() => setShowDeleteModal(false)}>
-									Cancel
-								</button>
-								<button
-									type="button"
-									className="button button-danger"
-									onClick={handleDelete}
-									disabled={isDeleting}
-								>
-									{isDeleting ? 'Deleting...' : 'Delete Market'}
-								</button>
-							</div>
-						</div>
-					</div>,
-					document.body
-				)}
 		</tr>
 	)
 }

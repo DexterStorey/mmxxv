@@ -19,34 +19,36 @@ function LeaderboardRow({ user, rank }: { user: User; rank: number }) {
 
 	return (
 		<tr className="market-row">
-			<td>
+			<td style={{ width: '10%' }}>
 				<button
 					onClick={handleRowClick}
 					onKeyDown={handleKeyDown}
 					className="market-button"
 					type="button"
 				>
-					<span className="market-title">{rank}</span>
+					<span className="market-meta">{rank}</span>
 				</button>
 			</td>
-			<td>
+			<td style={{ width: '70%' }}>
 				<button
 					onClick={handleRowClick}
 					onKeyDown={handleKeyDown}
 					className="market-button"
 					type="button"
 				>
-					<span className="market-title">{user.email}</span>
+					<div className="market-title-container">
+						<span className="market-title">{user.email}</span>
+					</div>
 				</button>
 			</td>
-			<td>
+			<td style={{ width: '20%', textAlign: 'right' }}>
 				<button
 					onClick={handleRowClick}
 					onKeyDown={handleKeyDown}
 					className="market-button"
 					type="button"
 				>
-					<span className="market-title">{user.points}</span>
+					<span className="market-meta">{user.points}</span>
 				</button>
 			</td>
 		</tr>
@@ -56,17 +58,12 @@ function LeaderboardRow({ user, rank }: { user: User; rank: number }) {
 export function LeaderboardTable({ users }: { users: User[] }) {
 	return (
 		<div className="card">
-			<div className="card-header">
-				<h1 className="title" style={{ margin: 0, borderBottom: 'none', fontFamily: 'inherit' }}>
-					Leaderboard
-				</h1>
-			</div>
 			<table className="table">
 				<thead>
 					<tr>
-						<th>Rank</th>
-						<th>User</th>
-						<th>Points</th>
+						<th style={{ width: '10%' }}>RANK</th>
+						<th style={{ width: '70%' }}>USER</th>
+						<th style={{ width: '20%', textAlign: 'right' }}>POINTS</th>
 					</tr>
 				</thead>
 				<tbody>

@@ -11,12 +11,13 @@
 	},
 	"devDependencies": {
 		"@rubriclab/config": "*",
+		"@types/node": "latest",
+		"@types/react": "latest",
+		"@types/react-dom": "^19.0.2",
 		"biome": "latest",
 		"npm-check-updates": "latest",
-		"typescript": "latest",
-		"@types/react": "latest",
-		"@types/node": "latest",
-		"prisma": "latest"
+		"prisma": "latest",
+		"typescript": "latest"
 	},
 	"packageManager": "bun@1.1.42",
 	"scripts": {

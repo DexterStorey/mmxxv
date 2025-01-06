@@ -17,6 +17,13 @@ export default function About() {
 
 					<div className="section">
 						<h2 className="section-title">Points System</h2>
+
+						<h3 className="subtitle">Market Creation</h3>
+						<p>
+							Users earn 10 points for each market they create, up to a maximum of 10 markets per user.
+							This means you can earn up to 100 points from creating markets.
+						</p>
+
 						<h3 className="subtitle">Money line points</h3>
 						<p>
 							Points are deducted for being too far from the average prediction. Everyone starts with 100 *

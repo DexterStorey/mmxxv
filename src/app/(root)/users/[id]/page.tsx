@@ -5,6 +5,7 @@ import { MarketItem } from '~/components/market-item'
 import type { MarketWithVotesAndComments } from '~/components/market-item'
 import Nav from '~/components/nav'
 import { db } from '~/db'
+import { calculatePoints } from '~/utils/points'
 
 type PageProps = {
 	params: Promise<{ id: string }>
@@ -118,6 +119,9 @@ export default async function UserProfilePage({ params }: PageProps) {
 		notFound()
 	}
 
+	// Calculate user's points
+	const points = calculatePoints(user)
+
 	// Transform the markets to include proper reply structure
 	const transformedMarkets = user.markets.map(transformMarket)
 	const transformedUpvotedMarkets = user.upvotedMarkets.map(({ market }) => transformMarket(market))
@@ -142,12 +146,12 @@ export default async function UserProfilePage({ params }: PageProps) {
 								marginLeft: 'auto'
 							}}
 						>
-							{user.points} points
+							{points} points
 						</div>
 					</div>
 
 					<div className="section">
-						<h2 className="section-title">Created Markets</h2>
+						<h2 className="section-title">Created Markets ({user.markets.length}/10)</h2>
 						<table className="table">
 							<thead>
 								<tr>

@@ -4,7 +4,11 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { createMarket } from '~/actions/market'
 
-export function CreateMarketForm() {
+interface CreateMarketFormProps {
+	marketCount: number
+}
+
+export function CreateMarketForm({ marketCount }: CreateMarketFormProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [title, setTitle] = useState('')
 	const [description, setDescription] = useState('')
@@ -34,14 +38,20 @@ export function CreateMarketForm() {
 			router.refresh()
 		} catch (err) {
 			console.error('Error creating market:', err)
-			setError('Failed to create market. Please try again.')
+			setError(err instanceof Error ? err.message : 'Failed to create market. Please try again.')
 		}
 	}
 
 	if (!isOpen) {
 		return (
-			<button type="button" className="button" onClick={() => setIsOpen(true)}>
-				Create Market
+			<button
+				type="button"
+				className="button"
+				onClick={() => setIsOpen(true)}
+				disabled={marketCount >= 10}
+				title={marketCount >= 10 ? 'You have created the maximum number of markets' : undefined}
+			>
+				Create Market ({marketCount}/10)
 			</button>
 		)
 	}

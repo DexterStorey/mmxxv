@@ -210,6 +210,7 @@ body {
 	border: 1px solid var(--border);
 	color: var(--foreground);
 	font-family: inherit;
+	gap: 0.5rem;
 }
 
 .button:hover:not(:disabled) {
@@ -913,4 +914,28 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 1rem;
+}
+
+/* Dangerous button - for destructive actions */
+.button-danger {
+	background: transparent;
+	border: 1px solid var(--error);
+	color: var(--error);
+}
+
+.button-danger:hover:not(:disabled) {
+	background: var(--error);
+	color: white;
+	border-color: var(--error);
+}
+
+.button-danger-subtle {
+	background: transparent;
+	border: none;
+	color: var(--muted);
+	padding: 0.5rem;
+}
+
+.button-danger-subtle:hover:not(:disabled) {
+	color: var(--error);
 }
