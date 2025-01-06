@@ -29,7 +29,7 @@ export async function sendMagicLink({
 	const magicLink = `${env.URL}/auth/signin/magiclink?key=${key}&redirectUrl=${encodeURIComponent(redirectUrl || '/')}`
 
 	await resend.emails.send({
-		from: 'Project X <x@mail.rubric.sh>',
+		from: 'MMXXV <welcome@mmxxv.bet>',
 		to: [email],
 		subject: 'Your Magic Link',
 		react: MagicLinkEmailTemplate({ magicLink })
