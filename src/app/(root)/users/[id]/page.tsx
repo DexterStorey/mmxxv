@@ -134,20 +134,9 @@ export default async function UserProfilePage({ params }: PageProps) {
 			<Nav />
 			<div className="container">
 				<div className="card">
-					<div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-						<h1 className="title" style={{ margin: 0 }}>
-							{user.email}
-						</h1>
-						<div
-							style={{
-								fontSize: '2rem',
-								fontWeight: 600,
-								color: 'var(--success)',
-								marginLeft: 'auto'
-							}}
-						>
-							{points} points
-						</div>
+					<div className="user-profile-header">
+						<h1 className="user-profile-email">{user.email}</h1>
+						<div className="user-profile-points">{points} points</div>
 					</div>
 
 					<div className="section">

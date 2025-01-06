@@ -87,7 +87,19 @@ function CommentThread({
 						<span className="comment-author">{comment.author.email}</span>
 						<span className="comment-time">{formatDate(comment.createdAt)}</span>
 					</div>
-					<div className="comment-actions">
+				</div>
+				<p className="comment-content">{formatCommentContent(comment.content, userEmail)}</p>
+				<div className="comment-actions">
+					<div className="comment-actions-left">
+						<button
+							type="button"
+							className="comment-action-button"
+							onClick={() => setShowReplyForm(!showReplyForm)}
+						>
+							Reply
+						</button>
+					</div>
+					<div className="comment-actions-right">
 						{hasReplies && (
 							<button
 								type="button"
@@ -97,16 +109,8 @@ function CommentThread({
 								{showReplies ? 'Hide Replies' : `Show Replies (${comment.replies.length})`}
 							</button>
 						)}
-						<button
-							type="button"
-							className="comment-action-button"
-							onClick={() => setShowReplyForm(!showReplyForm)}
-						>
-							Reply
-						</button>
 					</div>
 				</div>
-				<p className="comment-content">{formatCommentContent(comment.content, userEmail)}</p>
 				{showReplyForm && (
 					<div className="comment-reply-form">
 						<AddCommentForm
