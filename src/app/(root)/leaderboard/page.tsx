@@ -6,7 +6,10 @@ import { type UserWithPoints, calculatePoints } from '~/utils/points'
 export default async function LeaderboardPage() {
 	const users = await db.user.findMany({
 		include: {
-			markets: true
+			markets: true,
+			invitees: {
+				select: { id: true }
+			}
 		}
 	})
 

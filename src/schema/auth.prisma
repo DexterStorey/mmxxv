@@ -1,6 +1,10 @@
 model User {
-  id    String @id @default(nanoid())
-  email String @unique
+  id String @id @default(nanoid())
+
+  index Int @default(autoincrement())
+
+  email    String  @unique
+  username String? @unique @default(nanoid())
 
   agentIsAlive Boolean @default(true)
 
@@ -16,6 +20,10 @@ model User {
   markets          Market[]
   notifications    Notification[]
   mentions         Comment[]         @relation("CommentMentions")
+
+  invitedById String?
+  invitedBy   User?   @relation("InvitedBy", fields: [invitedById], references: [id])
+  invitees    User[]  @relation("InvitedBy")
 
   points Int @default(0)
 }
