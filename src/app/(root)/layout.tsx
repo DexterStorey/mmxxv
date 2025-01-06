@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 import { getSession } from '~/actions/auth'
 import '../globals.css'
 
+export { metadata } from '~/constants'
+
 export default async function RootLayout({
 	children
 }: {
