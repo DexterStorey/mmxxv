@@ -9,6 +9,12 @@
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
+	margin-top: 2rem;
+}
+
+/* Add Comment Form */
+.form {
+	margin-top: 1rem;
 }
 
 /* Comment Thread */
