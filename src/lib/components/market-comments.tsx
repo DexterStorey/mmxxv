@@ -8,7 +8,7 @@ import { getCurrentUsername } from '~/actions/user'
 import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
 import { DeleteCommentModal } from './delete-comment-modal'
-import type { MarketWithVotesAndComments } from './market-item'
+import type { MarketWithVotesAndComments } from '~/types/market'
 import UserPill from './user-pill'
 
 type CommentWithAuthor = Comment & {

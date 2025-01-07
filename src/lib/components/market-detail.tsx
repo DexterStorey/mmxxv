@@ -9,7 +9,7 @@ import { DeleteMarketModal } from './delete-market-modal'
 import { EditMarketForm } from './edit-market-form'
 import { MarketComments } from './market-comments'
 import { MarketEditHistory } from './market-edit-history'
-import type { MarketWithVotesAndComments } from './market-item'
+import type { MarketWithVotesAndComments } from '~/types/market'
 import { MarketVotes } from './market-votes'
 import UserPill from './user-pill'
 

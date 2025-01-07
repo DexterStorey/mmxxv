@@ -1,9 +1,9 @@
 import { getSession } from '~/actions/auth'
 import { CreateMarketForm } from '~/components/create-market-form'
-import type { MarketWithVotesAndComments } from '~/components/market-item'
 import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
 import { db } from '~/db'
+import type { MarketWithVotesAndComments } from '~/types/market'
 
 export default async function MarketsPage() {
 	const { user } = await getSession()

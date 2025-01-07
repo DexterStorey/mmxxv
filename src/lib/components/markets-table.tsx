@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { deleteMarket } from '~/actions/market'
+import type { MarketWithVotesAndComments } from '~/types/market'
 import { DeleteMarketModal } from './delete-market-modal'
-import type { MarketWithVotesAndComments } from './market-item'
 import { MarketRow } from './market-row'
 
 type DeleteModalState = {

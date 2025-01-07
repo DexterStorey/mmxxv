@@ -1,0 +1,84 @@
+/* Buttons */
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.75rem 1.5rem;
+	font-size: 0.9rem;
+	font-weight: 500;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	background: var(--card);
+	border: 1px solid var(--border);
+	color: var(--foreground);
+	font-family: inherit;
+	gap: 0.5rem;
+}
+
+.button:hover:not(:disabled) {
+	background: var(--hover);
+	border-color: var(--foreground);
+}
+
+.button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.button-primary {
+	background: var(--foreground);
+	color: var(--background);
+	border: none;
+	font-weight: 600;
+	padding: 0.75rem 1.5rem;
+}
+
+.button-primary:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	background: var(--foreground);
+	opacity: 0.9;
+}
+
+.button-primary:active:not(:disabled) {
+	transform: translateY(0);
+	box-shadow: none;
+}
+
+/* Cancel button - for modals */
+.button-cancel {
+	background: transparent;
+	border: 1px solid var(--border);
+	color: var(--muted);
+}
+
+.button-cancel:hover:not(:disabled) {
+	color: var(--foreground);
+	background: var(--hover);
+	border-color: var(--border);
+}
+
+/* Dangerous button - for destructive actions */
+.button-danger {
+	background: transparent;
+	border: 1px solid var(--error);
+	color: var(--error);
+}
+
+.button-danger:hover:not(:disabled) {
+	background: var(--error);
+	color: white;
+	border-color: var(--error);
+}
+
+.button-danger-subtle {
+	background: transparent;
+	border: none;
+	color: var(--muted);
+	padding: 0.5rem;
+}
+
+.button-danger-subtle:hover:not(:disabled) {
+	color: var(--error);
+}

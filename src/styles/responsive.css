@@ -1,0 +1,187 @@
+/* Responsive Styles */
+@media (max-width: 768px) {
+	.container {
+		padding: 0.75rem;
+		margin-top: 4rem;
+	}
+
+	.card {
+		padding: 1rem;
+	}
+
+	/* Improve table responsiveness */
+	.table {
+		display: block;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.table th,
+	.table td {
+		padding: 0.75rem;
+		min-width: 120px;
+		white-space: normal;
+		word-break: break-word;
+	}
+
+	/* Adjust market row for mobile */
+	.market-row td {
+		font-size: 0.9rem;
+	}
+
+	.market-title-container {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.25rem;
+	}
+
+	.market-meta {
+		font-size: 0.75rem;
+	}
+
+	/* Improve vote buttons on mobile */
+	.votes-cell {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.votes-cell .vote-button {
+		width: 100%;
+	}
+
+	/* Better form controls on mobile */
+	.input,
+	.textarea {
+		padding: 0.5rem 0.75rem;
+		font-size: 16px; /* Prevent iOS zoom */
+	}
+
+	.form-group {
+		margin-bottom: 1rem;
+	}
+
+	/* Improve modal layout on mobile */
+	.modal {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		border-radius: 0;
+		max-height: 100vh;
+	}
+
+	.modal-header {
+		position: sticky;
+		top: 0;
+		background: var(--card);
+		z-index: 1;
+		padding: 1rem;
+		margin: -1rem -1rem 1rem -1rem;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.modal-footer {
+		position: sticky;
+		bottom: 0;
+		background: var(--card);
+		padding: 1rem;
+		margin: 1rem -1rem -1rem -1rem;
+		border-top: 1px solid var(--border);
+	}
+
+	/* Better comment threading on mobile */
+	.comment-replies {
+		margin-left: 1rem;
+		padding-left: 0.5rem;
+	}
+
+	.comment {
+		padding: 0.75rem;
+	}
+
+	.comment-header {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.comment-meta {
+		flex-wrap: wrap;
+	}
+
+	.comment-actions {
+		width: 100%;
+		display: flex;
+		justify-content: flex-start;
+		gap: 1rem;
+	}
+
+	/* Improve navigation on mobile */
+	.nav {
+		padding: 0.5rem;
+	}
+
+	.nav-list {
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.nav-list-main {
+		order: 2;
+		width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		padding-bottom: 0.25rem;
+	}
+
+	.nav-list-account {
+		order: 1;
+		margin-left: 0;
+		width: 100%;
+		justify-content: flex-end;
+	}
+
+	/* Adjust buttons for better touch targets */
+	.button,
+	.action-button,
+	.comment-action-button {
+		min-height: 44px;
+		padding: 0.5rem 1rem;
+	}
+
+	/* Market detail improvements */
+	.market-detail .section {
+		padding: 1rem;
+	}
+
+	.votes-container {
+		flex-direction: column;
+	}
+
+	.vote-button {
+		width: 100%;
+	}
+}
+
+/* Tablet improvements */
+@media (min-width: 769px) and (max-width: 1024px) {
+	.container {
+		padding: 1rem;
+	}
+
+	.table th,
+	.table td {
+		padding: 0.875rem;
+	}
+
+	.modal {
+		width: 90%;
+		margin: 2rem auto;
+	}
+}
+
+/* Dark mode adjustments for mobile */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+	.modal-header,
+	.modal-footer {
+		background: var(--card);
+	}
+}

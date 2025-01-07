@@ -1,0 +1,86 @@
+/* User Profile */
+.user-profile-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 2rem;
+	padding: 1rem;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+}
+
+.user-profile-name {
+	margin: 0;
+	word-break: break-all;
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: var(--foreground);
+	letter-spacing: -0.5px;
+}
+
+.user-profile-email {
+	margin: 0.25rem 0 0 0;
+	font-size: 0.9rem;
+	color: var(--muted);
+}
+
+.user-profile-points {
+	margin-left: auto;
+	font-size: 2rem;
+	font-weight: 600;
+	color: var(--success);
+	white-space: nowrap;
+}
+
+/* User Pill Component */
+.user-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.875rem;
+	color: var(--foreground);
+	text-decoration: none;
+	padding: 0.25rem;
+	border-radius: 4px;
+	transition: background 0.2s ease;
+}
+
+.user-pill:hover {
+	background: var(--hover);
+}
+
+.user-pill-link {
+	color: inherit;
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.user-pill-email {
+	color: var(--muted);
+	font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+	.user-profile-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+		padding: 0.75rem;
+	}
+
+	.user-profile-name {
+		font-size: 1.25rem;
+		line-height: 1.3;
+	}
+
+	.user-profile-email {
+		font-size: 0.85rem;
+	}
+
+	.user-profile-points {
+		margin-left: 0;
+		font-size: 1.5rem;
+	}
+}

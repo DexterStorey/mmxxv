@@ -2,7 +2,7 @@
 
 import { useSession } from '@rubriclab/auth'
 import { downvoteMarket, upvoteMarket } from '~/actions/market'
-import type { MarketWithVotesAndComments } from './market-item'
+import type { MarketWithVotesAndComments } from '~/types/market'
 
 export function MarketVotes({ market }: { market: MarketWithVotesAndComments }) {
 	const { user } = useSession()

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { editMarket } from '~/actions/market'
-import type { MarketWithVotesAndComments } from './market-item'
+import type { MarketWithVotesAndComments } from '~/types/market'
 
 interface EditMarketFormProps {
 	market: MarketWithVotesAndComments

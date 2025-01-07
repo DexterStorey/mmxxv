@@ -1,0 +1,53 @@
+/* Forms */
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.form-label {
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: var(--muted);
+}
+
+.input,
+.textarea {
+	font-family: inherit;
+	font-size: 0.9rem;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	background: var(--card);
+	color: var(--foreground);
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.textarea {
+	min-height: 120px;
+	resize: vertical;
+}
+
+.input:focus,
+.textarea:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+
+.form-error {
+	color: var(--error);
+	font-size: 0.8rem;
+	margin-top: 0.25rem;
+}
+
+.form-help {
+	font-size: 0.8rem;
+	color: var(--muted);
+}

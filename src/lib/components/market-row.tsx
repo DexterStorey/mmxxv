@@ -3,8 +3,8 @@
 import { useSession } from '@rubriclab/auth'
 import { useRouter } from 'next/navigation'
 import { downvoteMarket, upvoteMarket } from '~/actions/market'
+import type { MarketWithVotesAndComments } from '~/types/market'
 import { formatDate, isNew } from '~/utils/date'
-import type { MarketWithVotesAndComments } from './market-item'
 import UserPill from './user-pill'
 
 interface MarketRowProps {
@@ -15,8 +15,8 @@ interface MarketRowProps {
 export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 	const { user } = useSession()
 	const router = useRouter()
-	const hasUpvoted = market.upvoters.some(u => u.userId === user?.id)
-	const hasDownvoted = market.downvoters.some(u => u.userId === user?.id)
+	const hasUpvoted = market.upvoters.some((u: { userId: string }) => u.userId === user?.id)
+	const hasDownvoted = market.downvoters.some((u: { userId: string }) => u.userId === user?.id)
 	const isOwner = user?.id === market.author.id
 	const isNewMarket = isNew(market.createdAt)
 
