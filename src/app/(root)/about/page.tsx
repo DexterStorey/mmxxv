@@ -45,15 +45,35 @@ export default function About() {
 						<h3 className="subtitle">Market Resolution Points</h3>
 						<p>
 							Points are awarded based on correct predictions, with more points given for correctly
-							predicting unlikely outcomes.
+							predicting unlikely outcomes. The points are calculated using the following formula:
 						</p>
+						<ul>
+							<li>
+								For correct predictions: You earn max(100, 5/x) points, where x is the money line
+								probability
+							</li>
+							<li>
+								For incorrect predictions: You lose max(50, 2/x) points, where x is the money line
+								probability
+							</li>
+						</ul>
 						<div className="example">
-							Example 1: The market "Aliens make contact" has a 10% consensus probability. You predict YES,
-							and it happens. You earn 1000 points (100 points × 100/10).
+							Example 1: A market has a 10% consensus probability (x = 0.1). You predict YES, and it happens.
+							You earn 50 points (max(100, 5/0.1) = max(100, 50) = 100).
 						</div>
 						<div className="example">
-							Example 2: Same market, but you predict YES and it doesn't happen. You receive 0 points.
+							Example 2: A market has a 1% consensus probability (x = 0.01). You predict YES, and it happens.
+							You earn 500 points (max(100, 5/0.01) = max(100, 500) = 500).
 						</div>
+						<div className="example">
+							Example 3: A market has a 10% consensus probability (x = 0.1). You predict YES, and it doesn't
+							happen. You lose 50 points (max(50, 2/0.1) = max(50, 20) = 50).
+						</div>
+						<p>
+							Markets resolve either when their defined resolution criteria are met or at the end of 2025 if
+							the predicted event hasn't occurred. The winner of the game is the user with the highest total
+							points summed across all predictions.
+						</p>
 					</div>
 
 					<div className="section">
