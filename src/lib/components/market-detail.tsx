@@ -1,15 +1,19 @@
 'use client'
 
+import { XMarkIcon as DeleteIcon } from '@heroicons/react/20/solid'
+import { formatDistanceToNow } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { getSession } from '~/actions/auth'
 import { deleteMarket } from '~/actions/market'
+import { formatDate } from '~/utils/date'
 import { DeleteMarketModal } from './delete-market-modal'
 import { EditMarketForm } from './edit-market-form'
 import { MarketComments } from './market-comments'
 import { MarketEditHistory } from './market-edit-history'
 import type { MarketWithVotesAndComments } from './market-item'
 import { MarketVotes } from './market-votes'
+import UserPill from './user-pill'
 
 export function MarketDetail({
 	market,
@@ -66,26 +70,30 @@ export function MarketDetail({
 
 	return (
 		<>
-			<div className="card">
-				<div className="flex items-center justify-between">
-					<h1 className="font-bold text-2xl">{market.title}</h1>
+			<div className="card market-detail">
+				<div className="market-header">
+					<div className="market-header-content">
+						<h1 className="market-title">{market.title}</h1>
+						<div className="market-meta">
+							Posted by <UserPill {...market.author} /> {formatDistanceToNow(market.createdAt)} ago
+						</div>
+					</div>
 					{userId === market.author.id && (
-						<div className="ml-auto flex gap-2">
-							<button type="button" className="button" onClick={() => setShowEditModal(true)}>
+						<div className="market-actions">
+							<button type="button" className="button button-ghost" onClick={() => setShowEditModal(true)}>
 								Edit
 							</button>
 							<button
 								type="button"
-								className="button button-danger"
+								className="button button-ghost button-danger"
 								onClick={() => setShowDeleteModal(true)}
 								disabled={isDeleting}
 							>
-								{isDeleting ? 'Deleting...' : 'Delete'}
+								{isDeleting ? 'Deleting...' : '× Delete'}
 							</button>
 						</div>
 					)}
 				</div>
-				<div className="market-meta">Created by {market.author.username || market.author.email}</div>
 
 				<div className="section">
 					<h2 className="section-title">Description</h2>

@@ -1,9 +1,7 @@
 import { notFound } from 'next/navigation'
 import { MarketDetail } from '~/components/market-detail'
 import Nav from '~/components/nav'
-import UserPill from '~/components/user-pill'
 import { db } from '~/db'
-import { formatDate } from '~/utils/date'
 
 export default async function MarketPage({
 	params,
@@ -92,9 +90,6 @@ export default async function MarketPage({
 			<Nav />
 			<div className="container">
 				<MarketDetail market={marketWithReplies} highlightedCommentId={commentId} />
-				<div className="market-meta">
-					Posted by <UserPill {...market.author} /> on {formatDate(market.createdAt)}
-				</div>
 			</div>
 		</>
 	)

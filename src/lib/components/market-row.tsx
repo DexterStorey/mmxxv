@@ -18,6 +18,7 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 	const hasUpvoted = market.upvoters.some(u => u.userId === user?.id)
 	const hasDownvoted = market.downvoters.some(u => u.userId === user?.id)
 	const isOwner = user?.id === market.author.id
+	const isNewMarket = isNew(market.createdAt)
 
 	const handleVote = async (
 		e: React.MouseEvent | React.KeyboardEvent,
@@ -49,9 +50,12 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 				>
 					<div className="market-title-container">
 						<span className="market-title">{market.title}</span>
-						{isNew(market.createdAt) && <span className="badge-new">NEW</span>}
 					</div>
-					<div className="market-meta">{formatDate(market.createdAt)}</div>
+					<div className="market-meta">
+						<span className={`time-pill ${isNewMarket ? 'new' : ''}`}>
+							{formatDate(market.createdAt)}
+						</span>
+					</div>
 				</button>
 			</td>
 			<td style={{ width: '30%' }}>
@@ -80,20 +84,20 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 					<button
 						onClick={e => handleVote(e, () => upvoteMarket(market.id))}
 						onKeyDown={e => e.key === 'Enter' && handleVote(e, () => upvoteMarket(market.id))}
-						className="vote-button"
+						className={`vote-pill ${hasUpvoted ? 'active up' : ''}`}
 						disabled={!user}
 						type="button"
 					>
-						<span className={`vote-up ${hasUpvoted ? 'active' : ''}`}>↑{market.upvotes}</span>
+						↑{market.upvotes}
 					</button>
 					<button
 						onClick={e => handleVote(e, () => downvoteMarket(market.id))}
 						onKeyDown={e => e.key === 'Enter' && handleVote(e, () => downvoteMarket(market.id))}
-						className="vote-button"
+						className={`vote-pill ${hasDownvoted ? 'active down' : ''}`}
 						disabled={!user}
 						type="button"
 					>
-						<span className={`vote-down ${hasDownvoted ? 'active' : ''}`}>↓{market.downvotes}</span>
+						↓{market.downvotes}
 					</button>
 				</div>
 			</td>
@@ -104,7 +108,7 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 					className="market-button"
 					type="button"
 				>
-					<div className="market-meta">{market.comments.length}</div>
+					<div className="market-meta centered">{market.comments.length}</div>
 				</button>
 			</td>
 			<td style={{ width: '3%' }}>

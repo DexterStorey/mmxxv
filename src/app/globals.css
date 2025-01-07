@@ -354,30 +354,8 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 1rem;
-	padding: 0.75rem 1rem;
-}
-
-.votes-cell .vote-button {
-	min-width: unset;
-	padding: 0.5rem 0.75rem;
-	flex: 0;
-	font-size: 0.75rem;
-}
-
-.votes-cell .vote-count {
-	font-size: 0.95rem;
-	font-weight: 500;
-}
-
-.votes-cell .vote-up:hover:not(:disabled),
-.votes-cell .vote-up.active {
-	color: var(--success);
-}
-
-.votes-cell .vote-down:hover:not(:disabled),
-.votes-cell .vote-down.active {
-	color: var(--error);
+	gap: 0.5rem;
+	padding: 0.5rem;
 }
 
 /* Vote Pills in Table */
@@ -420,7 +398,15 @@ body {
 	cursor: not-allowed;
 }
 
-/* Market Meta */
+/* Votes Cell */
+.votes-cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.5rem;
+}
+
 .market-meta.centered {
 	display: flex;
 	align-items: center;
@@ -1884,9 +1870,7 @@ body {
 	text-decoration: none;
 	font-weight: 500;
 }
-.user-pill-link:hover {
-	text-decoration: underline;
-}
+
 .user-pill-email {
 	color: var(--muted);
 	font-size: 0.875rem;
