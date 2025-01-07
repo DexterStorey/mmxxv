@@ -18,11 +18,7 @@
 	font-size: 0.875rem;
 	font-weight: 500;
 	color: var(--foreground);
-	display: -webkit-box;
-	-webkit-line-clamp: 1;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	display: block;
 }
 
 .market-meta {

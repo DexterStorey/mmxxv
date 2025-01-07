@@ -5,7 +5,7 @@ import { getSession } from '~/actions/auth'
 import { db } from '~/db'
 import { handleNewComment } from '~/services/notifications'
 
-const MAX_MARKETS_PER_USER = 10
+const MAX_MARKETS_PER_USER = 3
 
 export async function createMarket(data: {
 	title: string
