@@ -5,24 +5,22 @@ A prediction market game for 2025. Players create markets, make predictions, and
 ## Tech Stack
 
 - **Frontend**
-  - Next.js 14 (App Router)
+  - Next.js 15 (App Router)
   - TypeScript
-  - Tailwind CSS
-  - Framer Motion for animations
-  - Radix UI primitives
-  - Lucide Icons
+  - Vanilla CSS with CSS Variables
+  - @rubriclab/ui components
+  - @rubriclab/auth for authentication
 
 - **Backend**
-  - Prisma ORM
-  - PostgreSQL
-  - tRPC for type-safe APIs
-  - Clerk for authentication
+  - Prisma ORM with PostgreSQL
+  - Next.js Server Actions
+  - Resend for email notifications
 
 - **Infrastructure**
-  - Vercel for deployment
-  - PlanetScale for database
-  - Upstash for Redis caching
-  - GitHub Actions for CI/CD
+  - [Vercel](https://vercel.com) for deployment
+  - [Neon](https://neon.tech) for PostgreSQL database
+  - [Resend](https://resend.com) for transactional emails
+  - Biome for code formatting
 
 ## Development Setup
 
@@ -30,9 +28,42 @@ A prediction market game for 2025. Players create markets, make predictions, and
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
 - [Bun](https://bun.sh) for package management
-- [Git](https://git-scm.com/)
-- [PostgreSQL](https://www.postgresql.org/) (local development)
+- [Git](https://github.com/)
 - A code editor (we recommend [Cursor](https://cursor.sh))
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and configure the following variables:
+
+```bash
+# App
+URL                 # Base URL of the application (e.g., http://localhost:3000 for development)
+
+# Database
+DATABASE_URL        # PostgreSQL connection string from Neon (https://neon.tech)
+
+# Email
+RESEND_API_KEY     # API key from Resend.com for sending emails
+```
+
+#### Service Setup
+
+1. **Database**: 
+   - Create a new project on [Neon](https://neon.tech)
+   - Copy the connection string from the dashboard
+   - Make sure to append `?sslmode=require` to the connection string
+
+2. **Email**:
+   - Create an account on [Resend](https://resend.com)
+   - Get your API key from the dashboard
+   - Verify your domain for production use
+
+3. **Deployment**:
+   - We recommend [Vercel](https://vercel.com) for deployment
+   - Connect your GitHub repository
+   - Add the environment variables in Vercel's dashboard
+
+You can also request access to a pre-configured `.env` file by emailing dexter@dexterstorey.com with subject: "URGENT ACCESS: MMXXV Dev Setup"
 
 ### Getting Started
 
@@ -48,21 +79,13 @@ A prediction market game for 2025. Players create markets, make predictions, and
    ```
 
 3. Set up environment variables:
-   - Request access to the `.env` file by emailing dexter@dexterstorey.com with subject: "URGENT ACCESS: MMXXV Dev Setup"
-   - Place the received `.env` file in the project root
-   - Required variables include:
-     ```plaintext
-     DATABASE_URL=
-     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-     CLERK_SECRET_KEY=
-     UPSTASH_REDIS_REST_URL=
-     UPSTASH_REDIS_REST_TOKEN=
-     ```
+   - Copy `.env.example` to `.env`
+   - Configure the variables as described above
 
 4. Initialize the database:
    ```bash
-   bun prisma generate
-   bun prisma db push
+   bun db:generate
+   bun db:push
    ```
 
 5. Start the development server:
@@ -77,38 +100,28 @@ A prediction market game for 2025. Players create markets, make predictions, and
 ```
 src/
 ├── app/                 # Next.js app router pages
-├── components/          # Reusable UI components
-├── lib/                 # Utility functions and shared logic
+├── lib/
 │   ├── actions/        # Server actions
-│   ├── api/            # API routes
-│   └── hooks/          # Custom React hooks
-├── prisma/             # Database schema and migrations
-├── public/             # Static assets
-└── styles/             # Global styles and Tailwind config
+│   ├── components/     # React components
+│   ├── services/      # Service layer
+│   └── utils/         # Utility functions
+└── schema/            # Prisma schema
 ```
 
 ## Development Guidelines
 
 ### Code Style
 
-- We use ESLint and Prettier for code formatting
-- Run `bun lint` before committing
-- Follow the TypeScript strict mode guidelines
-- Use meaningful commit messages following [Conventional Commits](https://www.conventionalcommits.org/)
+- We use Biome for code formatting and linting
+- Run `bun lint` to check for issues
+- Run `bun lint:fix` to automatically fix issues
+- Run `bun format` to format code
 
-### Component Guidelines
+### Database Management
 
-- Use TypeScript interfaces for prop definitions
-- Implement proper error boundaries
-- Follow atomic design principles
-- Write unit tests for critical components
-
-### Performance Considerations
-
-- Implement proper loading states
-- Use React Suspense boundaries
-- Optimize images and assets
-- Follow Next.js best practices for routing and data fetching
+- `bun db:push` - Push schema changes to database
+- `bun db:generate` - Generate Prisma client
+- `bun db:studio` - Open Prisma Studio
 
 ## Contributing
 
@@ -120,27 +133,19 @@ We welcome contributions! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-### Pull Request Guidelines
-
-- Ensure all tests pass
-- Update documentation as needed
-- Add tests for new features
-- Follow the existing code style
-- Keep changes focused and atomic
-
 ## Game Rules
 
 For detailed information about how the game works, please visit the [About page](https://mmxxv.com/about) after setting up the project.
-
-## License
-
-This project is open source and available under the MIT license.
 
 ## Support
 
 If you encounter any issues or need help with development:
 - Open a GitHub issue
-- Join our [Discord community](https://discord.gg/mmxxv)
-- Check our [Documentation](https://docs.mmxxv.com)
+- Join our [Discord community](https://discord.gg/ndC6qaQC)
+
+## License
+
+This project is licensed under "go nuts" - see the package.json file for details.
+
    
    
