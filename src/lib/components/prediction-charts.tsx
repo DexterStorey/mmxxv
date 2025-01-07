@@ -1,17 +1,17 @@
 'use client'
 
 import {
-	Chart as ChartJS,
 	CategoryScale,
+	Chart as ChartJS,
+	Legend,
+	LineElement,
 	LinearScale,
 	PointElement,
-	LineElement,
 	Title,
-	Tooltip,
-	Legend
+	Tooltip
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { calculateCorrectPoints, calculateIncorrectPoints } from '../lib/graphics/graphics'
+import { calculateCorrectPoints, calculateIncorrectPoints } from '../graphics/graphics'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -95,7 +95,7 @@ export default function PredictionCharts() {
 	}
 
 	return (
-		<div className='my-4 grid grid-cols-1 gap-4 md:grid-cols-2'>
+		<div className="my-4 grid grid-cols-1 gap-4 md:grid-cols-2">
 			<div>
 				<Line options={correctOptions} data={correctData} />
 			</div>

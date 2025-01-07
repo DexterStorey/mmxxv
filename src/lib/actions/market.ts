@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { getSession } from '~/actions/auth'
 import { db } from '~/db'
 import { handleNewComment } from '~/services/notifications'
+import { generateMarketCategories } from '~/utils/category-generation'
+import { generateMarketImage } from '~/utils/image-generation'
 
 const MAX_MARKETS_PER_USER = 3
 
@@ -14,7 +16,6 @@ export async function createMarket(data: {
 }) {
 	const { user } = await getSession()
 
-	// Check if user has reached market limit
 	const marketCount = await db.market.count({
 		where: {
 			authorId: user.id
@@ -25,15 +26,22 @@ export async function createMarket(data: {
 		throw new Error(`You can only create up to ${MAX_MARKETS_PER_USER} markets`)
 	}
 
+	const [imageUrl, categories] = await Promise.all([
+		generateMarketImage(data.title, data.description),
+		generateMarketCategories(data.title, data.description)
+	])
+
 	const market = await db.market.create({
 		data: {
 			...data,
+			imageUrl,
+			categories,
 			authorId: user.id
 		}
 	})
 
 	revalidatePath('/markets')
-	return market
+	return { id: market.id }
 }
 
 export async function editMarket(data: {

@@ -7,61 +7,56 @@ import type { MarketWithVotesAndComments } from '~/types/market'
 import { DeleteMarketModal } from './delete-market-modal'
 import { MarketRow } from './market-row'
 
-type DeleteModalState = {
-	isOpen: boolean
-	marketId: string | null
-}
-
 export function MarketsTable({ markets }: { markets: MarketWithVotesAndComments[] }) {
 	const router = useRouter()
-	const [deleteModal, setDeleteModal] = useState<DeleteModalState>({
-		isOpen: false,
-		marketId: null
-	})
+	const [marketToDelete, setMarketToDelete] = useState<string | null>(null)
 	const [isDeleting, setIsDeleting] = useState(false)
 
 	const handleDelete = async () => {
-		if (!deleteModal.marketId) return
+		if (!marketToDelete) return
 
 		try {
 			setIsDeleting(true)
-			await deleteMarket(deleteModal.marketId)
+			await deleteMarket(marketToDelete)
 			router.refresh()
 		} catch (error) {
 			alert(error instanceof Error ? error.message : 'Failed to delete market')
 		} finally {
 			setIsDeleting(false)
-			setDeleteModal({ isOpen: false, marketId: null })
+			setMarketToDelete(null)
 		}
 	}
 
 	return (
 		<>
-			<table className="table">
-				<thead>
-					<tr>
-						<th style={{ width: '35%' }}>TITLE</th>
-						<th style={{ width: '30%' }}>DESCRIPTION</th>
-						<th style={{ width: '15%' }}>AUTHOR</th>
-						<th style={{ width: '12%' }}>VOTES</th>
-						<th style={{ width: '5%' }}>COMMENTS</th>
-						<th style={{ width: '3%' }} />
-					</tr>
-				</thead>
-				<tbody>
-					{markets.map(market => (
-						<MarketRow
-							key={market.id}
-							market={market}
-							onDeleteClick={() => setDeleteModal({ isOpen: true, marketId: market.id })}
-						/>
-					))}
-				</tbody>
-			</table>
+			<div className="table-container">
+				<table className="table">
+					<thead>
+						<tr>
+							<th style={{ width: '22%' }}>TITLE</th>
+							<th style={{ width: '23%' }}>DESCRIPTION</th>
+							<th style={{ width: '15%' }}>TAGS</th>
+							<th style={{ width: '15%' }}>AUTHOR</th>
+							<th style={{ width: '12%' }}>VOTES</th>
+							<th style={{ width: '9%', textAlign: 'center' }}>COMMENTS</th>
+							<th style={{ width: '40px' }} />
+						</tr>
+					</thead>
+					<tbody>
+						{markets.map(market => (
+							<MarketRow
+								key={market.id}
+								market={market}
+								onDeleteClick={() => setMarketToDelete(market.id)}
+							/>
+						))}
+					</tbody>
+				</table>
+			</div>
 
 			<DeleteMarketModal
-				isOpen={deleteModal.isOpen}
-				onClose={() => setDeleteModal({ isOpen: false, marketId: null })}
+				isOpen={!!marketToDelete}
+				onClose={() => setMarketToDelete(null)}
 				onDelete={handleDelete}
 				isDeleting={isDeleting}
 			/>

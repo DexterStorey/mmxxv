@@ -5,17 +5,18 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { getSession } from '~/actions/auth'
 import { deleteMarket } from '~/actions/market'
+import type { MarketWithVotesAndComments } from '~/types/market'
 import { DeleteMarketModal } from './delete-market-modal'
 import { EditMarketForm } from './edit-market-form'
 import { MarketComments } from './market-comments'
 import { MarketEditHistory } from './market-edit-history'
-import type { MarketWithVotesAndComments } from '~/types/market'
 import { MarketVotes } from './market-votes'
 import UserPill from './user-pill'
 
 export function MarketDetail({
 	market,
-	highlightedCommentId
+	highlightedCommentId,
+	hideTitle = false
 }: {
 	market: MarketWithVotesAndComments & {
 		edits: Array<{
@@ -35,6 +36,7 @@ export function MarketDetail({
 		}>
 	}
 	highlightedCommentId: string | undefined
+	hideTitle?: boolean
 }) {
 	const router = useRouter()
 	const [isDeleting, setIsDeleting] = useState(false)
@@ -71,10 +73,14 @@ export function MarketDetail({
 			<div className="card market-detail">
 				<div className="market-header">
 					<div className="market-header-content">
-						<h1 className="market-title">{market.title}</h1>
-						<div className="market-meta">
-							Posted by <UserPill {...market.author} /> {formatDistanceToNow(market.createdAt)} ago
-						</div>
+						{!hideTitle && (
+							<>
+								<h1 className="market-title">{market.title}</h1>
+								<div className="market-meta">
+									Posted by <UserPill {...market.author} /> {formatDistanceToNow(market.createdAt)} ago
+								</div>
+							</>
+						)}
 					</div>
 					{userId === market.author.id && (
 						<div className="market-actions">

@@ -5,10 +5,10 @@ import { useSession } from '@rubriclab/auth'
 import { useEffect, useRef, useState } from 'react'
 import { deleteComment, getMarketById } from '~/actions/market'
 import { getCurrentUsername } from '~/actions/user'
+import type { MarketWithVotesAndComments } from '~/types/market'
 import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
 import { DeleteCommentModal } from './delete-comment-modal'
-import type { MarketWithVotesAndComments } from '~/types/market'
 import UserPill from './user-pill'
 
 type CommentWithAuthor = Comment & {

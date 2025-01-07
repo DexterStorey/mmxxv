@@ -1,12 +1,19 @@
+import type { MarketCategory } from '@prisma/client'
 import { getSession } from '~/actions/auth'
 import { CreateMarketForm } from '~/components/create-market-form'
+import { MarketFilters } from '~/components/market-filters'
 import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
 import { db } from '~/db'
 import type { MarketWithVotesAndComments } from '~/types/market'
 
-export default async function MarketsPage() {
+export default async function MarketsPage({
+	searchParams
+}: {
+	searchParams: Promise<{ search?: string; category?: MarketCategory }>
+}) {
 	const { user } = await getSession()
+	const { search, category } = await searchParams
 
 	const marketCount = await db.market.count({
 		where: {
@@ -15,6 +22,19 @@ export default async function MarketsPage() {
 	})
 
 	const markets = await db.market.findMany({
+		where: {
+			AND: [
+				search
+					? {
+							OR: [
+								{ title: { contains: search, mode: 'insensitive' } },
+								{ description: { contains: search, mode: 'insensitive' } }
+							]
+						}
+					: {},
+				category ? { categories: { has: category } } : {}
+			]
+		},
 		orderBy: [
 			{
 				upvotes: 'desc'
@@ -97,29 +117,19 @@ export default async function MarketsPage() {
 			<Nav />
 			<div className="container">
 				<div className="card">
-					<div
-						className="card-header"
-						style={{
-							display: 'flex',
-							justifyContent: 'space-between',
-							alignItems: 'center',
-							gap: '2rem',
-							padding: '1rem'
-						}}
-					>
+					<div className="card-header">
 						<div>
-							<h1 className="title" style={{ margin: 0, marginBottom: '0.5rem', fontFamily: 'inherit' }}>
-								Market Proposals
-							</h1>
-							<p className="description" style={{ margin: 0, color: 'var(--muted)', maxWidth: '35rem' }}>
+							<h1 className="title">Market Proposals</h1>
+							<p className="description">
 								Market Proposals are due on January 20. Submit markets and vote on which ones you want to
 								see in the game!
 							</p>
 						</div>
-						<div style={{ flexShrink: 0, alignSelf: 'flex-start', marginTop: '0.25rem' }}>
+						<div>
 							<CreateMarketForm marketCount={marketCount} buttonText="Propose Market" />
 						</div>
 					</div>
+					<MarketFilters />
 					<div className="overflow-x-auto">
 						<MarketsTable markets={marketsWithReplies} />
 					</div>

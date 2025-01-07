@@ -6,6 +6,8 @@ model Market {
     title              String
     description        String
     resolutionCriteria String
+    imageUrl           String?
+    categories         MarketCategory[]
 
     upvotes   Int @default(0)
     downvotes Int @default(0)
@@ -111,4 +113,13 @@ model MarketEdit {
 
     @@index([marketId])
     @@index([editorId])
+}
+
+enum MarketCategory {
+    TECH // Technology, AI, Software
+    POLITICS // Global politics, policy
+    ECONOMICS // Markets, finance, business
+    SOCIETY // Social trends, culture
+    SCIENCE // Research, discoveries, space
+    CLIMATE // Environment, natural events
 }

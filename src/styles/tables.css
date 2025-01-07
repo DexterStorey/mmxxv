@@ -3,7 +3,7 @@
 	width: 100%;
 	border-collapse: separate;
 	border-spacing: 0;
-	padding: 0 0.5rem;
+	table-layout: fixed;
 }
 
 .table th {
@@ -28,6 +28,12 @@
 	vertical-align: middle;
 }
 
+/* Only apply truncation to description cell */
+.table td:nth-child(2) {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 .table tr:last-child {
 	border-bottom: none;
 }
@@ -35,13 +41,11 @@
 /* Market Row */
 .market-row {
 	border-bottom: 1px solid var(--border);
-	cursor: pointer;
 	transition: all 0.2s ease;
 }
 
 .market-row:hover {
 	background: var(--hover);
-	border-radius: 8px;
 }
 
 .market-row td {
@@ -49,6 +53,12 @@
 	vertical-align: middle;
 	min-height: 4rem;
 	height: auto;
+}
+
+/* Delete button cell */
+.market-row td:last-child {
+	width: 40px;
+	padding-right: 0.5rem;
 }
 
 /* Center Columns - Market Table */
@@ -106,5 +116,10 @@
 
 	.market-row td {
 		padding: 0.75rem 0.5rem;
+	}
+
+	.table-container {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 }

@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import Nav from '~/components/nav'
 import { Timeline } from '~/components/timeline'
-import PredictionCharts from '../../components/prediction-charts'
+import PredictionCharts from '../../lib/components/prediction-charts'
 
 export default async function About() {
 	const userCookies = (await cookies()).get('user')
