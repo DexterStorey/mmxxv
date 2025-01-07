@@ -146,6 +146,3 @@ If you encounter any issues or need help with development:
 ## License
 
 This project is licensed under "go nuts" - see the package.json file for details.
-
-   
-   
