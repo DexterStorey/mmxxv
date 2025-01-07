@@ -1,10 +1,10 @@
-import Nav from '~/components/nav'
+import PublicNav from '~/components/public-nav'
 import { Timeline } from '~/components/timeline'
 
 export default function About() {
 	return (
 		<>
-			<Nav />
+			<PublicNav />
 			<div className="container">
 				<div className="card">
 					<h1 className="title">MMXIV</h1>
@@ -49,25 +49,25 @@ export default function About() {
 						</p>
 						<ul>
 							<li>
-								For correct predictions: You earn max(100, 5/x) points, where x is the money line
+								For correct predictions: You earn min(100, 5/x) points, where x is the money line
 								probability
 							</li>
 							<li>
-								For incorrect predictions: You lose max(50, 2/x) points, where x is the money line
+								For incorrect predictions: You lose min(50, 2/x) points, where x is the money line
 								probability
 							</li>
 						</ul>
 						<div className="example">
 							Example 1: A market has a 10% consensus probability (x = 0.1). You predict YES, and it happens.
-							You earn 50 points (max(100, 5/0.1) = max(100, 50) = 100).
+							You earn 50 points (min(100, 5/0.1) = min(100, 50) = 50).
 						</div>
 						<div className="example">
 							Example 2: A market has a 1% consensus probability (x = 0.01). You predict YES, and it happens.
-							You earn 500 points (max(100, 5/0.01) = max(100, 500) = 500).
+							You earn 100 points (min(100, 5/0.01) = min(100, 500) = 100).
 						</div>
 						<div className="example">
 							Example 3: A market has a 10% consensus probability (x = 0.1). You predict YES, and it doesn't
-							happen. You lose 50 points (max(50, 2/0.1) = max(50, 20) = 50).
+							happen. You lose 20 points (min(50, 2/0.1) = min(50, 20) = 20).
 						</div>
 						<p>
 							Markets resolve either when their defined resolution criteria are met or at the end of 2025 if
