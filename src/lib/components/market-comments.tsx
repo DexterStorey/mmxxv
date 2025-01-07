@@ -3,10 +3,11 @@
 import type { Comment, User } from '@prisma/client'
 import { useSession } from '@rubriclab/auth'
 import { useEffect, useRef, useState } from 'react'
-import { getMarketById } from '~/actions/market'
+import { deleteComment, getMarketById } from '~/actions/market'
 import { getCurrentUsername } from '~/actions/user'
 import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
+import { DeleteCommentModal } from './delete-comment-modal'
 import type { MarketWithVotesAndComments } from './market-item'
 import UserPill from './user-pill'
 
@@ -78,10 +79,13 @@ function CommentThread({
 	const { user } = useSession()
 	const [showReplyForm, setShowReplyForm] = useState(false)
 	const [showReplies, setShowReplies] = useState(false)
+	const [isDeleting, setIsDeleting] = useState(false)
+	const [showDeleteModal, setShowDeleteModal] = useState(false)
 	const hasReplies = comment.replies?.length > 0
 	const commentRef = useRef<HTMLDivElement>(null)
 	const isHighlighted = comment.id === highlightedCommentId
 	const hasHighlightedReply = comment.replies.some(reply => reply.id === highlightedCommentId)
+	const isAuthor = user?.id === comment.author.id
 
 	// Auto-expand replies if a nested reply is highlighted
 	useEffect(() => {
@@ -96,6 +100,20 @@ function CommentThread({
 		}
 	}, [isHighlighted])
 
+	const handleDelete = async () => {
+		try {
+			setIsDeleting(true)
+			await deleteComment(comment.id)
+			onReply(comment.id) // Reuse onReply to refresh comments
+		} catch (error) {
+			console.error('Error deleting comment:', error)
+			alert('Failed to delete comment')
+		} finally {
+			setIsDeleting(false)
+			setShowDeleteModal(false)
+		}
+	}
+
 	return (
 		<div className="comment-thread" ref={commentRef}>
 			<div className={`comment ${isHighlighted ? 'highlighted' : ''}`}>
@@ -104,6 +122,15 @@ function CommentThread({
 						<UserPill {...comment.author} />
 						<span className="comment-time">{formatDate(comment.createdAt)}</span>
 					</div>
+					{isAuthor && (
+						<button
+							type="button"
+							className="comment-action-button button-danger-subtle"
+							onClick={() => setShowDeleteModal(true)}
+						>
+							Delete
+						</button>
+					)}
 				</div>
 				<div className="comment-content">{formatCommentContent(comment.content, user?.id)}</div>
 				<div className="comment-actions">
@@ -154,6 +181,12 @@ function CommentThread({
 					))}
 				</div>
 			)}
+			<DeleteCommentModal
+				isOpen={showDeleteModal}
+				onClose={() => setShowDeleteModal(false)}
+				onDelete={handleDelete}
+				isDeleting={isDeleting}
+			/>
 		</div>
 	)
 }
@@ -165,32 +198,24 @@ export function MarketComments({
 	market: MarketWithVotesAndComments
 	highlightedCommentId?: string | undefined
 }) {
-	// First, sort all comments by date
-	const sortedComments = [...market.comments].sort(
-		(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-	)
-
-	// Then organize into threads while preserving chronological order
+	// Organize into threads - no need to sort since it's already sorted from the server
 	const [comments, setComments] = useState<CommentWithReplies[]>(
-		sortedComments
+		market.comments
 			.filter(comment => !comment.parentId)
 			.map(comment => ({
 				...comment,
-				replies: sortedComments.filter(reply => reply.parentId === comment.id)
+				replies: market.comments.filter(reply => reply.parentId === comment.id)
 			}))
 	)
 
 	const refreshComments = async () => {
 		const updatedMarket = await getMarketById(market.id)
 		if (updatedMarket) {
-			const allSortedComments = [...updatedMarket.comments].sort(
-				(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-			)
-			const topLevelComments = allSortedComments
+			const topLevelComments = updatedMarket.comments
 				.filter(comment => !comment.parentId)
 				.map(comment => ({
 					...comment,
-					replies: allSortedComments.filter(reply => reply.parentId === comment.id)
+					replies: updatedMarket.comments.filter(reply => reply.parentId === comment.id)
 				}))
 			setComments(topLevelComments)
 		}
@@ -198,14 +223,11 @@ export function MarketComments({
 
 	// Update comments when market data changes
 	useEffect(() => {
-		const allSortedComments = [...market.comments].sort(
-			(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-		)
-		const topLevelComments = allSortedComments
+		const topLevelComments = market.comments
 			.filter(comment => !comment.parentId)
 			.map(comment => ({
 				...comment,
-				replies: allSortedComments.filter(reply => reply.parentId === comment.id)
+				replies: market.comments.filter(reply => reply.parentId === comment.id)
 			}))
 		setComments(topLevelComments)
 	}, [market])

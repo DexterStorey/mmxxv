@@ -30,7 +30,7 @@ export default async function MarketPage({
 				select: { userId: true }
 			},
 			comments: {
-				orderBy: { createdAt: 'desc' },
+				orderBy: { createdAt: 'asc' },
 				include: {
 					author: {
 						select: {
@@ -40,7 +40,7 @@ export default async function MarketPage({
 						}
 					},
 					replies: {
-						orderBy: { createdAt: 'desc' },
+						orderBy: { createdAt: 'asc' },
 						include: {
 							author: {
 								select: {

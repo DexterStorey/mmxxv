@@ -1,12 +1,10 @@
 'use client'
 
-import { XMarkIcon as DeleteIcon } from '@heroicons/react/20/solid'
 import { formatDistanceToNow } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { getSession } from '~/actions/auth'
 import { deleteMarket } from '~/actions/market'
-import { formatDate } from '~/utils/date'
 import { DeleteMarketModal } from './delete-market-modal'
 import { EditMarketForm } from './edit-market-form'
 import { MarketComments } from './market-comments'

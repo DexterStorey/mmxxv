@@ -316,7 +316,7 @@ export async function getMarketById(marketId: string) {
 			downvoters: true,
 			comments: {
 				orderBy: {
-					createdAt: 'desc'
+					createdAt: 'asc'
 				},
 				include: {
 					author: {
@@ -327,6 +327,9 @@ export async function getMarketById(marketId: string) {
 						}
 					},
 					replies: {
+						orderBy: {
+							createdAt: 'asc'
+						},
 						include: {
 							author: {
 								select: {
@@ -375,6 +378,7 @@ export async function getMarketById(marketId: string) {
 	)
 	const rootComments: CommentWithReplies[] = []
 
+	// First, collect all comments with their replies
 	for (const comment of market.comments) {
 		if (comment.parentId) {
 			const parent = commentMap.get(comment.parentId)
@@ -389,6 +393,20 @@ export async function getMarketById(marketId: string) {
 			}
 		}
 	}
+
+	// Then sort all replies arrays by createdAt asc
+	for (const comment of Array.from(commentMap.values())) {
+		comment.replies.sort(
+			(a: CommentWithReplies, b: CommentWithReplies) => a.createdAt.getTime() - b.createdAt.getTime()
+		)
+	}
+
+	// Sort root comments by createdAt asc
+	rootComments.sort(
+		(a: CommentWithReplies, b: CommentWithReplies) => a.createdAt.getTime() - b.createdAt.getTime()
+	)
+
+	market.comments = rootComments
 
 	return {
 		...market,
@@ -419,4 +437,33 @@ export async function deleteMarket(marketId: string) {
 
 	revalidatePath('/markets')
 	revalidatePath(`/markets/${marketId}`)
+}
+
+export async function deleteComment(commentId: string) {
+	const session = await getSession()
+	if (!session.user) throw new Error('Not authenticated')
+
+	// Check if comment exists and user is the author
+	const comment = await db.comment.findUnique({
+		where: { id: commentId },
+		select: {
+			authorId: true,
+			marketId: true
+		}
+	})
+
+	if (!comment) {
+		throw new Error('Comment not found')
+	}
+
+	if (comment.authorId !== session.user.id) {
+		throw new Error('Unauthorized')
+	}
+
+	await db.comment.delete({
+		where: { id: commentId }
+	})
+
+	revalidatePath(`/markets/${comment.marketId}`)
+	return comment.marketId
 }
