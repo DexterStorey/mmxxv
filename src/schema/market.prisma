@@ -18,6 +18,7 @@ model Market {
 
     comments     Comment[]
     Notification Notification[]
+    edits        MarketEdit[]
 }
 
 model Comment {
@@ -88,4 +89,26 @@ enum NotificationType {
     MARKET_COMMENT
     COMMENT_REPLY
     MENTION
+}
+
+model MarketEdit {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    market   Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+    marketId String
+
+    editor   User   @relation(fields: [editorId], references: [id], onDelete: Cascade)
+    editorId String
+
+    previousTitle              String
+    previousDescription        String
+    previousResolutionCriteria String
+
+    newTitle              String
+    newDescription        String
+    newResolutionCriteria String
+
+    @@index([marketId])
+    @@index([editorId])
 }

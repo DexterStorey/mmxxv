@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react'
 import { getSession } from '~/actions/auth'
 import { deleteMarket } from '~/actions/market'
 import { DeleteMarketModal } from './delete-market-modal'
+import { EditMarketForm } from './edit-market-form'
 import { MarketComments } from './market-comments'
+import { MarketEditHistory } from './market-edit-history'
 import type { MarketWithVotesAndComments } from './market-item'
 import { MarketVotes } from './market-votes'
 
@@ -13,12 +15,29 @@ export function MarketDetail({
 	market,
 	highlightedCommentId
 }: {
-	market: MarketWithVotesAndComments
+	market: MarketWithVotesAndComments & {
+		edits: Array<{
+			id: string
+			createdAt: Date
+			editor: {
+				id: string
+				username: string | null
+				email: string
+			}
+			previousTitle: string
+			previousDescription: string
+			previousResolutionCriteria: string
+			newTitle: string
+			newDescription: string
+			newResolutionCriteria: string
+		}>
+	}
 	highlightedCommentId: string | undefined
 }) {
 	const router = useRouter()
 	const [isDeleting, setIsDeleting] = useState(false)
 	const [showDeleteModal, setShowDeleteModal] = useState(false)
+	const [showEditModal, setShowEditModal] = useState(false)
 	const [userId, setUserId] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -48,17 +67,22 @@ export function MarketDetail({
 	return (
 		<>
 			<div className="card">
-				<div className="card-header">
-					<h1 className="title">{market.title}</h1>
-					{userId === market.authorId && (
-						<button
-							type="button"
-							onClick={() => setShowDeleteModal(true)}
-							className="button button-danger"
-						>
-							<span>×</span>
-							Delete Market
-						</button>
+				<div className="flex items-center justify-between">
+					<h1 className="font-bold text-2xl">{market.title}</h1>
+					{userId === market.author.id && (
+						<div className="ml-auto flex gap-2">
+							<button type="button" className="button" onClick={() => setShowEditModal(true)}>
+								Edit
+							</button>
+							<button
+								type="button"
+								className="button button-danger"
+								onClick={() => setShowDeleteModal(true)}
+								disabled={isDeleting}
+							>
+								{isDeleting ? 'Deleting...' : 'Delete'}
+							</button>
+						</div>
 					)}
 				</div>
 				<div className="market-meta">Created by {market.author.username || market.author.email}</div>
@@ -74,15 +98,19 @@ export function MarketDetail({
 				</div>
 
 				<MarketVotes market={market} />
+				<MarketEditHistory edits={market.edits || []} />
 				<MarketComments market={marketWithReplies} highlightedCommentId={highlightedCommentId} />
 			</div>
 
-			<DeleteMarketModal
-				isOpen={showDeleteModal}
-				onClose={() => setShowDeleteModal(false)}
-				onDelete={handleDelete}
-				isDeleting={isDeleting}
-			/>
+			{showDeleteModal && (
+				<DeleteMarketModal
+					isOpen={showDeleteModal}
+					onClose={() => setShowDeleteModal(false)}
+					onDelete={handleDelete}
+					isDeleting={isDeleting}
+				/>
+			)}
+			{showEditModal && <EditMarketForm market={market} onClose={() => setShowEditModal(false)} />}
 		</>
 	)
 }

@@ -55,6 +55,20 @@ export default async function MarketPage({
 						}
 					}
 				}
+			},
+			edits: {
+				orderBy: {
+					createdAt: 'desc'
+				},
+				include: {
+					editor: {
+						select: {
+							id: true,
+							email: true,
+							username: true
+						}
+					}
+				}
 			}
 		}
 	})
@@ -63,7 +77,7 @@ export default async function MarketPage({
 		notFound()
 	}
 
-	const marketWithReplies: MarketWithVotesAndComments = {
+	const marketWithReplies = {
 		...market,
 		comments: market.comments.map(comment => ({
 			...comment,

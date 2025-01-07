@@ -2,21 +2,18 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { createMarket } from '~/actions/market'
+import { editMarket } from '~/actions/market'
+import type { MarketWithVotesAndComments } from './market-item'
 
-interface CreateMarketFormProps {
-	marketCount: number
-	buttonText?: string
+interface EditMarketFormProps {
+	market: MarketWithVotesAndComments
+	onClose: () => void
 }
 
-export function CreateMarketForm({
-	marketCount,
-	buttonText = 'Create Market'
-}: CreateMarketFormProps) {
-	const [isOpen, setIsOpen] = useState(false)
-	const [title, setTitle] = useState('')
-	const [description, setDescription] = useState('')
-	const [resolutionCriteria, setResolutionCriteria] = useState('')
+export function EditMarketForm({ market, onClose }: EditMarketFormProps) {
+	const [title, setTitle] = useState(market.title)
+	const [description, setDescription] = useState(market.description)
+	const [resolutionCriteria, setResolutionCriteria] = useState(market.resolutionCriteria)
 	const [error, setError] = useState('')
 	const router = useRouter()
 
@@ -30,42 +27,26 @@ export function CreateMarketForm({
 		}
 
 		try {
-			await createMarket({
+			await editMarket({
+				id: market.id,
 				title: title.trim(),
 				description: description.trim(),
 				resolutionCriteria: resolutionCriteria.trim()
 			})
-			setIsOpen(false)
-			setTitle('')
-			setDescription('')
-			setResolutionCriteria('')
+			onClose()
 			router.refresh()
 		} catch (err) {
-			console.error('Error creating market:', err)
-			setError(err instanceof Error ? err.message : 'Failed to create market. Please try again.')
+			console.error('Error editing market:', err)
+			setError(err instanceof Error ? err.message : 'Failed to edit market. Please try again.')
 		}
-	}
-
-	if (!isOpen) {
-		return (
-			<button
-				type="button"
-				className="button"
-				onClick={() => setIsOpen(true)}
-				disabled={marketCount >= 10}
-				title={marketCount >= 10 ? 'You have created the maximum number of markets' : undefined}
-			>
-				{buttonText} ({marketCount}/10)
-			</button>
-		)
 	}
 
 	return (
 		<div className="modal-overlay">
 			<div className="modal">
 				<div className="modal-header">
-					<h2 className="modal-title">{buttonText}</h2>
-					<button type="button" className="modal-close" onClick={() => setIsOpen(false)}>
+					<h2 className="modal-title">Edit Market</h2>
+					<button type="button" className="modal-close" onClick={onClose}>
 						×
 					</button>
 				</div>
@@ -106,19 +87,16 @@ export function CreateMarketForm({
 						<textarea
 							id="market-resolution"
 							className="textarea"
-							placeholder="How will we determine if this prediction came true?"
+							placeholder="How will this market be resolved?"
 							value={resolutionCriteria}
 							onChange={e => setResolutionCriteria(e.target.value)}
 							required
 							rows={4}
 						/>
 					</div>
-					<div className="modal-footer">
-						<button type="button" className="button" onClick={() => setIsOpen(false)}>
-							Cancel
-						</button>
-						<button type="submit" className="button-primary">
-							{buttonText}
+					<div className="form-actions">
+						<button type="submit" className="button">
+							Save Changes
 						</button>
 					</div>
 				</form>

@@ -36,6 +36,61 @@ export async function createMarket(data: {
 	return market
 }
 
+export async function editMarket(data: {
+	id: string
+	title: string
+	description: string
+	resolutionCriteria: string
+}) {
+	const { user } = await getSession()
+
+	// Check if user owns the market
+	const market = await db.market.findUnique({
+		where: { id: data.id },
+		select: {
+			authorId: true,
+			title: true,
+			description: true,
+			resolutionCriteria: true
+		}
+	})
+
+	if (!market) {
+		throw new Error('Market not found')
+	}
+
+	if (market.authorId !== user.id) {
+		throw new Error('You can only edit your own markets')
+	}
+
+	// Create edit history record
+	await db.marketEdit.create({
+		data: {
+			marketId: data.id,
+			editorId: user.id,
+			previousTitle: market.title,
+			previousDescription: market.description,
+			previousResolutionCriteria: market.resolutionCriteria,
+			newTitle: data.title,
+			newDescription: data.description,
+			newResolutionCriteria: data.resolutionCriteria
+		}
+	})
+
+	const updatedMarket = await db.market.update({
+		where: { id: data.id },
+		data: {
+			title: data.title,
+			description: data.description,
+			resolutionCriteria: data.resolutionCriteria
+		}
+	})
+
+	revalidatePath('/markets')
+	revalidatePath(`/markets/${data.id}`)
+	return updatedMarket
+}
+
 export async function upvoteMarket(marketId: string) {
 	const { user } = await getSession()
 
@@ -289,6 +344,20 @@ export async function getMarketById(marketId: string) {
 					id: true,
 					email: true,
 					username: true
+				}
+			},
+			edits: {
+				orderBy: {
+					createdAt: 'desc'
+				},
+				include: {
+					editor: {
+						select: {
+							id: true,
+							email: true,
+							username: true
+						}
+					}
 				}
 			}
 		}

@@ -22,6 +22,21 @@ export type MarketWithVotesAndComments = Market & {
 	downvoters: { userId: string }[]
 	comments: CommentWithReplies[]
 	author: { email: string; id: string; username: string | null }
+	edits: Array<{
+		id: string
+		createdAt: Date
+		editor: {
+			id: string
+			username: string | null
+			email: string
+		}
+		previousTitle: string
+		previousDescription: string
+		previousResolutionCriteria: string
+		newTitle: string
+		newDescription: string
+		newResolutionCriteria: string
+	}>
 }
 
 export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {

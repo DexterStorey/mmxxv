@@ -1,5 +1,6 @@
 {
 	"dependencies": {
+		"@heroicons/react": "^2.2.0",
 		"@prisma/client": "latest",
 		"@rubriclab/auth": "^0.0.15",
 		"@rubriclab/ui": "^5.0.46",
