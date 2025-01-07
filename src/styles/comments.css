@@ -24,9 +24,32 @@
 	border: 1px solid var(--border);
 	border-radius: 4px;
 	background: var(--card);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .comment.highlighted {
+	border-color: var(--primary);
+	background-color: var(--hover);
+	box-shadow: 0 0 0 2px var(--primary);
+}
+
+@keyframes highlight-flash {
+	0%,
+	80% {
+		border-color: var(--primary);
+		background-color: var(--hover);
+		box-shadow: 0 0 0 2px var(--primary);
+	}
+	100% {
+		border-color: var(--border);
+		background-color: var(--card);
+		box-shadow: none;
+	}
+}
+
+.comment.highlight-flash {
+	animation: highlight-flash 4s ease forwards;
+	animation-fill-mode: forwards;
 	border-color: var(--primary);
 	background-color: var(--hover);
 	box-shadow: 0 0 0 2px var(--primary);

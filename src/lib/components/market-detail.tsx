@@ -59,14 +59,6 @@ export function MarketDetail({
 		}
 	}
 
-	const marketWithReplies = {
-		...market,
-		comments: market.comments.map(comment => ({
-			...comment,
-			replies: comment.replies || []
-		}))
-	}
-
 	return (
 		<>
 			<div className="card market-detail">
@@ -110,7 +102,7 @@ export function MarketDetail({
 
 				<MarketVotes market={market} />
 				<MarketEditHistory edits={market.edits || []} />
-				<MarketComments market={marketWithReplies} highlightedCommentId={highlightedCommentId} />
+				<MarketComments market={market} highlightedCommentId={highlightedCommentId} />
 			</div>
 
 			{showDeleteModal && (
