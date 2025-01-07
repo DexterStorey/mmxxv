@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { editMarket } from '~/actions/market'
+// import { regenerateMarketImage } from '~/actions/market'
 import type { MarketWithVotesAndComments } from '~/types/market'
 
 interface EditMarketFormProps {
@@ -16,6 +17,7 @@ export function EditMarketForm({ market, onClose }: EditMarketFormProps) {
 	const [resolutionCriteria, setResolutionCriteria] = useState(market.resolutionCriteria)
 	const [error, setError] = useState('')
 	const router = useRouter()
+	// const [isRegenerating, setIsRegenerating] = useState(false)
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -40,6 +42,18 @@ export function EditMarketForm({ market, onClose }: EditMarketFormProps) {
 			setError(err instanceof Error ? err.message : 'Failed to edit market. Please try again.')
 		}
 	}
+
+	// const handleRegenerateImage = async () => {
+	// 	try {
+	// 		setIsRegenerating(true)
+	// 		await regenerateMarketImage(market.id)
+	// 		setIsRegenerating(false)
+	// 		router.refresh()
+	// 	} catch (error) {
+	// 		console.error('Failed to regenerate image:', error)
+	// 		setIsRegenerating(false)
+	// 	}
+	// }
 
 	return (
 		<div className="modal-overlay">
@@ -94,10 +108,18 @@ export function EditMarketForm({ market, onClose }: EditMarketFormProps) {
 							rows={4}
 						/>
 					</div>
-					<div className="form-actions">
+					<div className="form-actions" style={{ display: 'flex', justifyContent: 'space-between' }}>
 						<button type="submit" className="button">
 							Save Changes
 						</button>
+						{/* <button
+							type="button"
+							className="button button-ghost"
+							onClick={handleRegenerateImage}
+							disabled={isRegenerating}
+						>
+							{isRegenerating ? 'Regenerating...' : 'Re-roll Image'}
+						</button> */}
 					</div>
 				</form>
 			</div>

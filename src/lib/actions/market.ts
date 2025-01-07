@@ -475,3 +475,37 @@ export async function deleteComment(commentId: string) {
 	revalidatePath(`/markets/${comment.marketId}`)
 	return comment.marketId
 }
+
+export async function regenerateMarketImage(marketId: string) {
+	const { user } = await getSession()
+
+	const market = await db.market.findUnique({
+		where: { id: marketId },
+		select: {
+			authorId: true,
+			title: true,
+			description: true
+		}
+	})
+
+	if (!market) {
+		throw new Error('Market not found')
+	}
+
+	if (market.authorId !== user.id) {
+		throw new Error('You can only regenerate images for your own markets')
+	}
+
+	const imageUrl = await generateMarketImage(market.title, market.description)
+
+	if (!imageUrl) {
+		throw new Error('Failed to generate new image')
+	}
+
+	await db.market.update({
+		where: { id: marketId },
+		data: { imageUrl }
+	})
+
+	revalidatePath(`/markets/${marketId}`)
+}

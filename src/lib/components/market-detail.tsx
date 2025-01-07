@@ -59,7 +59,6 @@ export function MarketDetail({
 		}
 	}
 
-	// Transform the market data to include empty replies arrays if they don't exist
 	const marketWithReplies = {
 		...market,
 		comments: market.comments.map(comment => ({
