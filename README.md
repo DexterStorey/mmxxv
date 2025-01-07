@@ -95,6 +95,10 @@ You can also request access to a pre-configured `.env` file by emailing dexter@d
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+### NixOS
+
+Installing dependencies (`bun install`) fails because prisma [doesn't release precompiled engine files for NixOS](https://www.prisma.io/docs/orm/more/under-the-hood/engines#using-custom-engine-libraries-or-binaries). Instead you can use [a flake](https://github.com/prisma/prisma/issues/3026#issuecomment-927258138) to let nix install the prisma engines which are then accessed via environment variables.
+
 ## Project Structure
 
 ```
