@@ -1,66 +1,87 @@
 'use client'
 
-import type { Comment, Market, User } from '@prisma/client'
+import type { Comment, User } from '@prisma/client'
 import { useSession } from '@rubriclab/auth'
 import { useEffect, useRef, useState } from 'react'
 import { getMarketById } from '~/actions/market'
-import { getUserEmail } from '~/actions/user'
+import { getCurrentUsername } from '~/actions/user'
 import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
+import type { MarketWithVotesAndComments } from './market-item'
+import UserPill from './user-pill'
 
 type CommentWithAuthor = Comment & {
-	author: Pick<User, 'id' | 'email'>
+	author: Pick<User, 'id' | 'email' | 'username'>
 }
 
 type CommentWithReplies = CommentWithAuthor & {
 	replies: CommentWithReplies[]
 }
 
-type MarketWithComments = Market & {
-	comments: CommentWithReplies[]
-}
+function formatCommentContent(content: string, currentUserId: string | undefined) {
+	const [formattedContent, setFormattedContent] = useState<React.ReactNode[]>([])
 
-function formatCommentContent(content: string, currentUserEmail: string | undefined) {
-	return content.split(/(@[^\s]+)/).map((part, index) => {
-		if (part.startsWith('@')) {
-			const mentionedEmail = part.slice(1)
-			const isCurrentUser = currentUserEmail && mentionedEmail === currentUserEmail
-			return (
-				<span
-					key={index}
-					className={`mention-tag ${isCurrentUser ? 'mention-tag-self' : 'mention-tag-other'}`}
-				>
-					{part}
-				</span>
+	useEffect(() => {
+		async function fetchUsernames() {
+			const parts = content.split(/(@\[[^\]]+\])/)
+			const formattedParts = await Promise.all(
+				parts.map(async (part, index) => {
+					if (part.startsWith('@[')) {
+						const match = part.match(/@\[([^:]+):([^\]]+)\]/)
+						if (!match) return part
+
+						const [, userId] = match
+						if (!userId) return part
+
+						const isCurrentUser = currentUserId && userId === currentUserId
+
+						try {
+							const displayName = await getCurrentUsername(userId)
+							return (
+								<span
+									key={index}
+									className={`mention-tag ${isCurrentUser ? 'mention-tag-self' : 'mention-tag-other'}`}
+								>
+									@{displayName}
+								</span>
+							)
+						} catch (error) {
+							console.error('Error fetching user:', error)
+							return (
+								<span key={index} className="mention-tag mention-tag-other">
+									@DELETED_USER
+								</span>
+							)
+						}
+					}
+					return part
+				})
 			)
+			setFormattedContent(formattedParts)
 		}
-		return part
-	})
+
+		fetchUsernames()
+	}, [content, currentUserId])
+
+	return formattedContent
 }
 
 function CommentThread({
 	comment,
-	onReply,
-	highlightedCommentId
+	highlightedCommentId,
+	onReply
 }: {
 	comment: CommentWithReplies
-	onReply: (parentId: string) => void
 	highlightedCommentId: string | undefined
+	onReply: (parentId: string) => void
 }) {
+	const { user } = useSession()
 	const [showReplyForm, setShowReplyForm] = useState(false)
 	const [showReplies, setShowReplies] = useState(false)
 	const hasReplies = comment.replies?.length > 0
 	const commentRef = useRef<HTMLDivElement>(null)
 	const isHighlighted = comment.id === highlightedCommentId
 	const hasHighlightedReply = comment.replies.some(reply => reply.id === highlightedCommentId)
-	const { user } = useSession()
-	const [userEmail, setUserEmail] = useState<string>()
-
-	useEffect(() => {
-		if (user?.id) {
-			getUserEmail(user.id).then(setUserEmail)
-		}
-	}, [user?.id])
 
 	// Auto-expand replies if a nested reply is highlighted
 	useEffect(() => {
@@ -72,10 +93,6 @@ function CommentThread({
 	useEffect(() => {
 		if (isHighlighted && commentRef.current) {
 			commentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-			commentRef.current.classList.add('highlighted')
-			setTimeout(() => {
-				commentRef.current?.classList.remove('highlighted')
-			}, 3000)
 		}
 	}, [isHighlighted])
 
@@ -84,17 +101,18 @@ function CommentThread({
 			<div className={`comment ${isHighlighted ? 'highlighted' : ''}`}>
 				<div className="comment-header">
 					<div className="comment-meta">
-						<span className="comment-author">{comment.author.email}</span>
+						<UserPill {...comment.author} />
 						<span className="comment-time">{formatDate(comment.createdAt)}</span>
 					</div>
 				</div>
-				<p className="comment-content">{formatCommentContent(comment.content, userEmail)}</p>
+				<div className="comment-content">{formatCommentContent(comment.content, user?.id)}</div>
 				<div className="comment-actions">
 					<div className="comment-actions-left">
 						<button
 							type="button"
 							className="comment-action-button"
 							onClick={() => setShowReplyForm(!showReplyForm)}
+							disabled={!user}
 						>
 							Reply
 						</button>
@@ -144,26 +162,35 @@ export function MarketComments({
 	market,
 	highlightedCommentId
 }: {
-	market: MarketWithComments
-	highlightedCommentId: string | undefined
+	market: MarketWithVotesAndComments
+	highlightedCommentId?: string | undefined
 }) {
+	// First, sort all comments by date
+	const sortedComments = [...market.comments].sort(
+		(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+	)
+
+	// Then organize into threads while preserving chronological order
 	const [comments, setComments] = useState<CommentWithReplies[]>(
-		market.comments
+		sortedComments
 			.filter(comment => !comment.parentId)
 			.map(comment => ({
 				...comment,
-				replies: market.comments.filter(reply => reply.parentId === comment.id)
+				replies: sortedComments.filter(reply => reply.parentId === comment.id)
 			}))
 	)
 
 	const refreshComments = async () => {
 		const updatedMarket = await getMarketById(market.id)
 		if (updatedMarket) {
-			const topLevelComments = updatedMarket.comments
+			const allSortedComments = [...updatedMarket.comments].sort(
+				(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+			)
+			const topLevelComments = allSortedComments
 				.filter(comment => !comment.parentId)
 				.map(comment => ({
 					...comment,
-					replies: updatedMarket.comments.filter(reply => reply.parentId === comment.id)
+					replies: allSortedComments.filter(reply => reply.parentId === comment.id)
 				}))
 			setComments(topLevelComments)
 		}
@@ -171,11 +198,14 @@ export function MarketComments({
 
 	// Update comments when market data changes
 	useEffect(() => {
-		const topLevelComments = market.comments
+		const allSortedComments = [...market.comments].sort(
+			(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+		)
+		const topLevelComments = allSortedComments
 			.filter(comment => !comment.parentId)
 			.map(comment => ({
 				...comment,
-				replies: market.comments.filter(reply => reply.parentId === comment.id)
+				replies: allSortedComments.filter(reply => reply.parentId === comment.id)
 			}))
 		setComments(topLevelComments)
 	}, [market])

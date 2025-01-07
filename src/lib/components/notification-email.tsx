@@ -5,6 +5,7 @@ type NotificationEmailProps = {
 	commentId: string
 	commentContent?: string
 	authorEmail?: string
+	authorUsername?: string | null
 }
 
 const styles = {
@@ -75,7 +76,8 @@ export function NotificationEmail({
 	marketUrl,
 	commentId,
 	commentContent,
-	authorEmail
+	authorEmail,
+	authorUsername
 }: NotificationEmailProps) {
 	const getTitle = () => {
 		switch (type) {
@@ -89,13 +91,14 @@ export function NotificationEmail({
 	}
 
 	const getMessage = () => {
+		const authorDisplay = authorUsername || authorEmail
 		switch (type) {
 			case 'comment':
-				return `${authorEmail} commented on your market "${marketTitle}"`
+				return `${authorDisplay} commented on your market "${marketTitle}"`
 			case 'reply':
-				return `${authorEmail} replied to your comment on "${marketTitle}"`
+				return `${authorDisplay} replied to your comment on "${marketTitle}"`
 			case 'mention':
-				return `${authorEmail} mentioned you in a comment on "${marketTitle}"`
+				return `${authorDisplay} mentioned you in a comment on "${marketTitle}"`
 		}
 	}
 

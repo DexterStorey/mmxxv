@@ -10,7 +10,11 @@ export async function handleNewComment(comment: Comment, market: Market, author:
 	// Notify market author if they're not the commenter
 	if (market.authorId !== author.id) {
 		const marketAuthor = await db.user.findUnique({
-			where: { id: market.authorId }
+			where: { id: market.authorId },
+			select: {
+				email: true,
+				username: true
+			}
 		})
 
 		if (marketAuthor) {
@@ -21,6 +25,7 @@ export async function handleNewComment(comment: Comment, market: Market, author:
 				commentId: comment.id,
 				commentContent: comment.content,
 				authorEmail: author.email,
+				authorUsername: author.username,
 				recipientEmail: marketAuthor.email
 			})
 		}
@@ -30,7 +35,15 @@ export async function handleNewComment(comment: Comment, market: Market, author:
 	if (comment.parentId) {
 		const parentComment = await db.comment.findUnique({
 			where: { id: comment.parentId },
-			include: { author: true }
+			include: {
+				author: {
+					select: {
+						id: true,
+						email: true,
+						username: true
+					}
+				}
+			}
 		})
 
 		if (parentComment && parentComment.authorId !== author.id) {
@@ -41,19 +54,25 @@ export async function handleNewComment(comment: Comment, market: Market, author:
 				commentId: comment.id,
 				commentContent: comment.content,
 				authorEmail: author.email,
+				authorUsername: author.username,
 				recipientEmail: parentComment.author.email
 			})
 		}
 	}
 
 	// Extract and notify mentioned users
-	const mentionedEmails = extractMentions(comment.content)
-	if (mentionedEmails.length > 0) {
+	const mentionedUsernames = extractMentions(comment.content)
+	if (mentionedUsernames.length > 0) {
 		const mentionedUsers = await db.user.findMany({
 			where: {
-				email: {
-					in: mentionedEmails
+				username: {
+					in: mentionedUsernames
 				}
+			},
+			select: {
+				id: true,
+				email: true,
+				username: true
 			}
 		})
 
@@ -66,6 +85,7 @@ export async function handleNewComment(comment: Comment, market: Market, author:
 					commentId: comment.id,
 					commentContent: comment.content,
 					authorEmail: author.email,
+					authorUsername: author.username,
 					recipientEmail: mentionedUser.email
 				})
 			}
@@ -74,9 +94,16 @@ export async function handleNewComment(comment: Comment, market: Market, author:
 }
 
 function extractMentions(content: string): string[] {
-	const mentionRegex = /@([^\s]+)/g
+	const mentionRegex = /@\[([^:]+):([^\]]+)\]/g
 	const matches = content.match(mentionRegex)
-	return matches ? matches.map(match => match.slice(1)) : []
+	return matches
+		? matches
+				.map(match => {
+					const [, userId] = match.match(/@\[([^:]+):([^\]]+)\]/) || []
+					return userId || ''
+				})
+				.filter(id => id !== '')
+		: []
 }
 
 async function sendEmailNotification({
@@ -86,6 +113,7 @@ async function sendEmailNotification({
 	commentId,
 	commentContent,
 	authorEmail,
+	authorUsername,
 	recipientEmail
 }: {
 	type: 'comment' | 'reply' | 'mention'
@@ -94,6 +122,7 @@ async function sendEmailNotification({
 	commentId: string
 	commentContent: string
 	authorEmail: string
+	authorUsername: string | null
 	recipientEmail: string
 }) {
 	await resend.emails.send({
@@ -106,7 +135,8 @@ async function sendEmailNotification({
 			marketUrl,
 			commentId,
 			commentContent,
-			authorEmail
+			authorEmail,
+			authorUsername
 		})
 	})
 }

@@ -181,44 +181,76 @@ export async function downvoteMarket(marketId: string) {
 }
 
 export async function addComment(marketId: string, content: string, parentId?: string | null) {
-	const { user: sessionUser } = await getSession()
+	const session = await getSession()
+	if (!session.user) throw new Error('Not authenticated')
 
+	// Validate content
 	if (!content || typeof content !== 'string' || content.trim().length === 0) {
 		throw new Error('Comment content must be a non-empty string')
 	}
 
-	const [market, user] = await Promise.all([
-		db.market.findUnique({
-			where: { id: marketId }
-		}),
-		db.user.findUnique({
-			where: { id: sessionUser.id }
-		})
-	])
+	// Extract mentions from content
+	const mentionedUserIds = extractMentions(content)
+	const mentionedUsers =
+		mentionedUserIds.length > 0
+			? await db.user.findMany({
+					where: {
+						id: {
+							in: mentionedUserIds
+						}
+					},
+					select: {
+						id: true
+					}
+				})
+			: []
 
-	if (!market) {
-		throw new Error('Market not found')
+	// Create comment with mentions
+	const commentData = {
+		content: content.trim(),
+		marketId,
+		authorId: session.user.id,
+		parentId: parentId || null
 	}
 
-	if (!user) {
-		throw new Error('User not found')
+	if (mentionedUsers.length > 0) {
+		Object.assign(commentData, {
+			mentions: {
+				connect: mentionedUsers.map(user => ({ id: user.id }))
+			}
+		})
 	}
 
 	const comment = await db.comment.create({
-		data: {
-			content: content.trim(),
-			marketId,
-			authorId: user.id,
-			parentId: parentId || null
-		}
+		data: commentData
 	})
 
-	await handleNewComment(comment, market, user)
+	// Get the market and author for notification
+	const market = await db.market.findUniqueOrThrow({
+		where: { id: marketId }
+	})
 
-	revalidatePath('/markets')
-	revalidatePath(`/markets/${marketId}`)
+	const author = await db.user.findUniqueOrThrow({
+		where: { id: session.user.id }
+	})
+
+	// Handle notifications
+	await handleNewComment(comment, market, author)
 
 	return comment.id
+}
+
+function extractMentions(content: string): string[] {
+	const mentionRegex = /@\[([^:]+):([^\]]+)\]/g
+	const matches = content.match(mentionRegex)
+	return matches
+		? matches
+				.map(match => {
+					const [, userId] = match.match(/@\[([^:]+):([^\]]+)\]/) || []
+					return userId || ''
+				})
+				.filter(id => id !== '')
+		: []
 }
 
 export async function getMarketById(marketId: string) {
@@ -235,7 +267,19 @@ export async function getMarketById(marketId: string) {
 					author: {
 						select: {
 							id: true,
-							email: true
+							email: true,
+							username: true
+						}
+					},
+					replies: {
+						include: {
+							author: {
+								select: {
+									id: true,
+									email: true,
+									username: true
+								}
+							}
 						}
 					}
 				}
@@ -243,7 +287,8 @@ export async function getMarketById(marketId: string) {
 			author: {
 				select: {
 					id: true,
-					email: true
+					email: true,
+					username: true
 				}
 			}
 		}

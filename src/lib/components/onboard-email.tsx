@@ -53,12 +53,20 @@ const styles = {
 	}
 }
 
-export function MagicLinkEmailTemplate({ magicLink }: { magicLink: string }) {
+export function MagicLinkEmailTemplate({
+	magicLink,
+	username
+}: { magicLink: string; username: string }) {
 	return (
 		<div style={styles.container}>
 			<div style={styles.card}>
 				<h1 style={styles.title}>Welcome to MMXXV</h1>
 				<p style={styles.text}>Click the button below to sign in and start predicting the future.</p>
+
+				<p style={styles.text}>
+					Your username has been set to <strong>{username}</strong>. You can change this in your account
+					settings after signing in.
+				</p>
 
 				<table role="presentation" style={{ borderCollapse: 'collapse', width: 'auto' }}>
 					<tr>

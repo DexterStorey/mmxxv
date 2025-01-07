@@ -17,7 +17,11 @@ export default async function MarketsPage() {
 	const markets = await db.market.findMany({
 		include: {
 			author: {
-				select: { email: true, id: true }
+				select: {
+					id: true,
+					email: true,
+					username: true
+				}
 			},
 			upvoters: {
 				select: { userId: true }
@@ -28,12 +32,20 @@ export default async function MarketsPage() {
 			comments: {
 				include: {
 					author: {
-						select: { email: true, id: true }
+						select: {
+							id: true,
+							email: true,
+							username: true
+						}
 					},
 					replies: {
 						include: {
 							author: {
-								select: { email: true, id: true }
+								select: {
+									id: true,
+									email: true,
+									username: true
+								}
 							}
 						}
 					}

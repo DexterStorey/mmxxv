@@ -41,6 +41,8 @@ model Comment {
     Notification Notification[]
 
     @@index([parentId])
+    @@index([authorId])
+    @@index([marketId])
 }
 
 model MarketUpvotes {

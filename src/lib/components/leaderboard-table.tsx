@@ -2,6 +2,7 @@
 
 import type { User } from '@prisma/client'
 import { useRouter } from 'next/navigation'
+import UserPill from './user-pill'
 
 function LeaderboardRow({ user, rank }: { user: User; rank: number }) {
 	const router = useRouter()
@@ -29,17 +30,12 @@ function LeaderboardRow({ user, rank }: { user: User; rank: number }) {
 					<span className="market-meta">{rank}</span>
 				</button>
 			</td>
-			<td style={{ width: '70%' }}>
-				<button
-					onClick={handleRowClick}
-					onKeyDown={handleKeyDown}
-					className="market-button"
-					type="button"
-				>
-					<div className="market-title-container">
-						<span className="market-title">{user.email}</span>
-					</div>
-				</button>
+			<td
+				style={{ width: '70%' }}
+				onClick={e => e.stopPropagation()}
+				onKeyDown={e => e.stopPropagation()}
+			>
+				<UserPill {...user} />
 			</td>
 			<td style={{ width: '20%', textAlign: 'right' }}>
 				<button
