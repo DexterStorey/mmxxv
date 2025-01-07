@@ -72,7 +72,7 @@ export default async function UserProfilePage({ params }: PageProps) {
 				<div className="card">
 					<div className="user-profile-header">
 						<div>
-							<UserPill {...user} showEmail={true} className="user-profile-name" />
+							<UserPill {...user} showEmail={false} className="user-profile-name" />
 						</div>
 						<div className="user-profile-points">{points} points</div>
 					</div>
