@@ -11,7 +11,7 @@ export default async function About() {
 			<Nav unauthenticated={userCookies === undefined} />
 			<div className="container">
 				<div className="card">
-					<h1 className="title">MMXIV</h1>
+					<h1 className="title">MMXXV</h1>
 					<p className="description">A prediction game for 2025.</p>
 
 					<div className="section">
