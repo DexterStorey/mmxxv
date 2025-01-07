@@ -118,7 +118,7 @@ export function CreateMarketForm({
 					)}
 					<div className="form-group">
 						<label htmlFor="market-title" className="form-label">
-							itle
+							Title
 						</label>
 						<input
 							id="market-title"
