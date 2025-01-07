@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { MarketDetail } from '~/components/market-detail'
-import type { MarketWithVotesAndComments } from '~/components/market-item'
 import Nav from '~/components/nav'
 import UserPill from '~/components/user-pill'
 import { db } from '~/db'
