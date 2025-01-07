@@ -25,7 +25,7 @@ export default async function About() {
 						<h3 className="subtitle">Initial Points</h3>
 						<p>You can earn points in two ways during the early stages:</p>
 						<ul>
-							<li>10 points for each person you refer (up to 10 people, maximum 100 points)</li>
+							<li>10 points for each person you refer (up to 5 people, maximum 50 points)</li>
 							<li>10 points for each market you create (up to 5 markets, maximum 50 points)</li>
 						</ul>
 
