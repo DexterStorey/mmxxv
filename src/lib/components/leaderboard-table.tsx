@@ -20,31 +20,35 @@ function LeaderboardRow({ user, rank }: { user: User; rank: number }) {
 
 	return (
 		<tr className="market-row">
-			<td style={{ width: '10%' }}>
+			<td style={{ width: '15%', textAlign: 'center' }}>
 				<button
 					onClick={handleRowClick}
 					onKeyDown={handleKeyDown}
 					className="market-button"
 					type="button"
 				>
-					<span className="market-meta">{rank}</span>
+					<div className="market-meta centered" style={{ fontWeight: 500 }}>
+						{rank}
+					</div>
 				</button>
 			</td>
 			<td
-				style={{ width: '70%' }}
+				style={{ width: '55%' }}
 				onClick={e => e.stopPropagation()}
 				onKeyDown={e => e.stopPropagation()}
 			>
 				<UserPill {...user} />
 			</td>
-			<td style={{ width: '20%', textAlign: 'right' }}>
+			<td style={{ width: '30%', textAlign: 'center' }}>
 				<button
 					onClick={handleRowClick}
 					onKeyDown={handleKeyDown}
 					className="market-button"
 					type="button"
 				>
-					<span className="market-meta">{user.points}</span>
+					<div className="market-meta centered" style={{ color: 'var(--success)', fontWeight: 500 }}>
+						{user.points}
+					</div>
 				</button>
 			</td>
 		</tr>
@@ -53,21 +57,19 @@ function LeaderboardRow({ user, rank }: { user: User; rank: number }) {
 
 export function LeaderboardTable({ users }: { users: User[] }) {
 	return (
-		<div className="card">
-			<table className="table">
-				<thead>
-					<tr>
-						<th style={{ width: '10%' }}>RANK</th>
-						<th style={{ width: '70%' }}>USER</th>
-						<th style={{ width: '20%', textAlign: 'right' }}>POINTS</th>
-					</tr>
-				</thead>
-				<tbody>
-					{users.map((user, index) => (
-						<LeaderboardRow key={user.id} user={user} rank={index + 1} />
-					))}
-				</tbody>
-			</table>
-		</div>
+		<table className="table">
+			<thead>
+				<tr>
+					<th style={{ width: '15%', textAlign: 'center' }}>RANK</th>
+					<th style={{ width: '55%' }}>USER</th>
+					<th style={{ width: '30%', textAlign: 'center' }}>POINTS</th>
+				</tr>
+			</thead>
+			<tbody>
+				{users.map((user, index) => (
+					<LeaderboardRow key={user.id} user={user} rank={index + 1} />
+				))}
+			</tbody>
+		</table>
 	)
 }

@@ -115,20 +115,20 @@ export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
 					<button
 						onClick={e => handleVote(e, () => upvoteMarket(market.id))}
 						onKeyDown={e => e.key === 'Enter' && handleVote(e, () => upvoteMarket(market.id))}
-						className="vote-button"
+						className={`vote-pill ${hasUpvoted ? 'active up' : ''}`}
 						disabled={!user}
 						type="button"
 					>
-						<span className={`vote-up ${hasUpvoted ? 'active' : ''}`}>↑{market.upvotes}</span>
+						↑{market.upvotes}
 					</button>
 					<button
 						onClick={e => handleVote(e, () => downvoteMarket(market.id))}
 						onKeyDown={e => e.key === 'Enter' && handleVote(e, () => downvoteMarket(market.id))}
-						className="vote-button"
+						className={`vote-pill ${hasDownvoted ? 'active down' : ''}`}
 						disabled={!user}
 						type="button"
 					>
-						<span className={`vote-down ${hasDownvoted ? 'active' : ''}`}>↓{market.downvotes}</span>
+						↓{market.downvotes}
 					</button>
 				</div>
 			</td>

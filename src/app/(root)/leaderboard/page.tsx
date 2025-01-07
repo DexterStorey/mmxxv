@@ -27,10 +27,24 @@ export default async function LeaderboardPage() {
 			<Nav />
 			<div className="container">
 				<div className="card">
-					<div className="card-header">
-						<h1 className="title" style={{ margin: 0, borderBottom: 'none', fontFamily: 'inherit' }}>
-							Leaderboard
-						</h1>
+					<div
+						className="card-header"
+						style={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'flex-start',
+							gap: '2rem',
+							padding: '1rem'
+						}}
+					>
+						<div>
+							<h1 className="title" style={{ margin: 0, marginBottom: '0.5rem', fontFamily: 'inherit' }}>
+								Leaderboard
+							</h1>
+							<p className="description" style={{ margin: 0, color: 'var(--muted)' }}>
+								Points are awarded for creating markets, inviting users, and making accurate predictions.
+							</p>
+						</div>
 					</div>
 					<div className="overflow-x-auto">
 						<LeaderboardTable users={sortedUsers} />

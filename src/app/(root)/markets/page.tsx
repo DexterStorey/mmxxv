@@ -15,6 +15,7 @@ export default async function MarketsPage() {
 	})
 
 	const markets = await db.market.findMany({
+		orderBy: { createdAt: 'desc' },
 		include: {
 			author: {
 				select: {
@@ -30,6 +31,7 @@ export default async function MarketsPage() {
 				select: { userId: true }
 			},
 			comments: {
+				orderBy: { createdAt: 'desc' },
 				include: {
 					author: {
 						select: {
@@ -39,6 +41,7 @@ export default async function MarketsPage() {
 						}
 					},
 					replies: {
+						orderBy: { createdAt: 'desc' },
 						include: {
 							author: {
 								select: {
@@ -50,20 +53,25 @@ export default async function MarketsPage() {
 						}
 					}
 				}
+			},
+			edits: {
+				orderBy: {
+					createdAt: 'desc'
+				},
+				include: {
+					editor: {
+						select: {
+							id: true,
+							email: true,
+							username: true
+						}
+					}
+				}
 			}
 		}
 	})
 
-	const sortedMarkets = markets.sort((a, b) => {
-		const aNetVotes = a.upvotes - a.downvotes
-		const bNetVotes = b.upvotes - b.downvotes
-		if (aNetVotes !== bNetVotes) {
-			return bNetVotes - aNetVotes
-		}
-		return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime() // Then by date asc
-	})
-
-	const marketsWithReplies: MarketWithVotesAndComments[] = sortedMarkets.map(market => ({
+	const marketsWithReplies: MarketWithVotesAndComments[] = markets.map(market => ({
 		...market,
 		comments: market.comments.map(comment => ({
 			...comment,
@@ -79,11 +87,26 @@ export default async function MarketsPage() {
 			<Nav />
 			<div className="container">
 				<div className="card">
-					<div className="card-header">
-						<h1 className="title" style={{ margin: 0, borderBottom: 'none', fontFamily: 'inherit' }}>
-							Markets
-						</h1>
-						<CreateMarketForm marketCount={marketCount} />
+					<div
+						className="card-header"
+						style={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'flex-start',
+							gap: '2rem',
+							padding: '1rem'
+						}}
+					>
+						<div>
+							<h1 className="title" style={{ margin: 0, marginBottom: '0.5rem', fontFamily: 'inherit' }}>
+								Market Proposals
+							</h1>
+							<p className="description" style={{ margin: 0, color: 'var(--muted)' }}>
+								Market Proposals are due on January 20. Submit markets and vote on which ones you want to
+								see in the game!
+							</p>
+						</div>
+						<CreateMarketForm marketCount={marketCount} buttonText="Propose Market" />
 					</div>
 					<div className="overflow-x-auto">
 						<MarketsTable markets={marketsWithReplies} />

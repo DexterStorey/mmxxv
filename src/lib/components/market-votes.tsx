@@ -13,25 +13,19 @@ export function MarketVotes({ market }: { market: MarketWithVotesAndComments }) 
 		<div className="votes-container">
 			<button
 				type="button"
-				className="vote-button"
+				className={`vote-pill ${hasUpvoted ? 'active up' : ''}`}
 				onClick={() => upvoteMarket(market.id)}
 				disabled={!user}
 			>
-				<div className={`vote-up ${hasUpvoted ? 'active' : ''}`}>
-					<span className="vote-count">↑ {market.upvotes}</span>
-					<span className="vote-label">Upvotes</span>
-				</div>
+				↑{market.upvotes}
 			</button>
 			<button
 				type="button"
-				className="vote-button"
+				className={`vote-pill ${hasDownvoted ? 'active down' : ''}`}
 				onClick={() => downvoteMarket(market.id)}
 				disabled={!user}
 			>
-				<div className={`vote-down ${hasDownvoted ? 'active' : ''}`}>
-					<span className="vote-count">↓ {market.downvotes}</span>
-					<span className="vote-label">Downvotes</span>
-				</div>
+				↓{market.downvotes}
 			</button>
 		</div>
 	)
