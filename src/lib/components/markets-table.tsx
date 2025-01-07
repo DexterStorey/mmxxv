@@ -11,7 +11,7 @@ const marketsTableCols = {
 	title: { label: 'TITLE', width: '22%' },
 	description: { label: 'DESCRIPTION', width: '23%' },
 	categories: { label: 'TAGS', width: '15%' },
-	author: { label: 'AUTHOR', width: '15%', accessor: 'id' },
+	author: { label: 'AUTHOR', width: '15%', accessor: 'username' },
 	upvotes: { label: 'VOTES', width: '12%' },
 	comments: { label: 'COMMENTS', width: '9%' }
 } as const satisfies {
