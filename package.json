@@ -1,7 +1,7 @@
 {
 	"dependencies": {
 		"@prisma/client": "latest",
-		"@rubriclab/auth": "^0.0.13",
+		"@rubriclab/auth": "^0.0.15",
 		"@rubriclab/ui": "^5.0.46",
 		"@t3-oss/env-nextjs": "latest",
 		"next": "15.1.3",

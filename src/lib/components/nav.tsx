@@ -6,20 +6,22 @@ import { useState } from 'react'
 
 export default function Nav({ unauthenticated }: { unauthenticated?: boolean }) {
 	if (unauthenticated) {
-		return (<nav className="nav">
-		<div className="nav-list">
-			<div className="nav-list-main">
-				<Link href="/about" className="nav-link">
-					About
-				</Link>
-			</div>
-			<div className="nav-list-desktop-account">
-				<Link href="/auth/signin" className="nav-link">
-					Sign In
-				</Link>
-			</div>
-		</div>
-	</nav>)
+		return (
+			<nav className="nav">
+				<div className="nav-list">
+					<div className="nav-list-main">
+						<Link href="/about" className="nav-link">
+							About
+						</Link>
+					</div>
+					<div className="nav-list-desktop-account">
+						<Link href="/auth/signin" className="nav-link">
+							Sign In
+						</Link>
+					</div>
+				</div>
+			</nav>
+		)
 	}
 
 	const { user } = useSession()

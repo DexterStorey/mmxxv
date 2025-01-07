@@ -3,7 +3,6 @@ import Nav from '~/components/nav'
 import { Timeline } from '~/components/timeline'
 
 export default async function About() {
-
 	const userCookies = (await cookies()).get('user')
 
 	return (
@@ -62,21 +61,21 @@ export default async function About() {
 							</li>
 						</ul>
 						<div className="example">
-							Example 1: A market has a 10% consensus probability (x = 0.1). You predict YES, and it happens.
-							You earn 50 points (min(100, 5/0.1) = min(100, 50) = 50).
+							Example 1: A market has a 10% consensus probability (x = 0.1). You predict YES, and it
+							happens. You earn 50 points (min(100, 5/0.1) = min(100, 50) = 50).
 						</div>
 						<div className="example">
-							Example 2: A market has a 1% consensus probability (x = 0.01). You predict YES, and it happens.
-							You earn 100 points (min(100, 5/0.01) = min(100, 500) = 100).
+							Example 2: A market has a 1% consensus probability (x = 0.01). You predict YES, and it
+							happens. You earn 100 points (min(100, 5/0.01) = min(100, 500) = 100).
 						</div>
 						<div className="example">
-							Example 3: A market has a 10% consensus probability (x = 0.1). You predict YES, and it doesn't
-							happen. You lose 20 points (min(50, 2/0.1) = min(50, 20) = 20).
+							Example 3: A market has a 10% consensus probability (x = 0.1). You predict YES, and it
+							doesn't happen. You lose 20 points (min(50, 2/0.1) = min(50, 20) = 20).
 						</div>
 						<p>
-							Markets resolve either when their defined resolution criteria are met or at the end of 2025 if
-							the predicted event hasn't occurred. The winner of the game is the user with the highest total
-							points summed across all predictions.
+							Markets resolve either when their defined resolution criteria are met or at the end of 2025
+							if the predicted event hasn't occurred. The winner of the game is the user with the highest
+							total points summed across all predictions.
 						</p>
 					</div>
 
