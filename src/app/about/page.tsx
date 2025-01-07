@@ -26,7 +26,7 @@ export default async function About() {
 						<p>You can earn points in two ways during the early stages:</p>
 						<ul>
 							<li>10 points for each person you refer (up to 10 people, maximum 100 points)</li>
-							<li>10 points for each market you create (up to 3 markets, maximum 30 points)</li>
+							<li>10 points for each market you create (up to 5 markets, maximum 50 points)</li>
 						</ul>
 
 						<h3 className="subtitle">Market Selection Bonus</h3>

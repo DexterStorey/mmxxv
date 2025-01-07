@@ -78,10 +78,10 @@ export function CreateMarketForm({
 				type="button"
 				className="button button-primary"
 				onClick={() => setIsOpen(true)}
-				disabled={marketCount >= 3}
-				title={marketCount >= 3 ? 'You have created the maximum number of markets' : undefined}
+				disabled={marketCount >= 5}
+				title={marketCount >= 5 ? 'You have created the maximum number of markets' : undefined}
 			>
-				{buttonText} ({marketCount}/3)
+				{buttonText} ({marketCount}/5)
 			</button>
 		)
 	}

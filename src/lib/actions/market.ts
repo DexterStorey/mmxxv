@@ -7,7 +7,7 @@ import { handleNewComment } from '~/services/notifications'
 import { generateMarketCategories } from '~/utils/category-generation'
 import { generateMarketImage } from '~/utils/image-generation'
 
-const MAX_MARKETS_PER_USER = 3
+const MAX_MARKETS_PER_USER = 5
 
 export async function createMarket(data: {
 	title: string
