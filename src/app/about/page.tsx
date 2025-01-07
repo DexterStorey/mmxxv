@@ -1,10 +1,14 @@
-import PublicNav from '~/components/public-nav'
+import { cookies } from 'next/headers'
+import Nav from '~/components/nav'
 import { Timeline } from '~/components/timeline'
 
-export default function About() {
+export default async function About() {
+
+	const userCookies = (await cookies()).get('user')
+
 	return (
 		<>
-			<PublicNav />
+			<Nav unauthenticated={userCookies === undefined} />
 			<div className="container">
 				<div className="card">
 					<h1 className="title">MMXIV</h1>

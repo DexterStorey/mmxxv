@@ -1,15 +1,22 @@
+import { ClientAuthProvider } from '@rubriclab/auth'
+import type { ReactNode } from 'react'
+import { getSession } from '~/actions/auth'
 import '../globals.css'
 
 export { metadata } from '~/constants'
 
-export default function AboutLayout({
+export default async function RootLayout({
 	children
 }: {
-	children: React.ReactNode
+	children: ReactNode
 }) {
+	const session = (await getSession({ redirectUnauthorizedUsers: false })) ?? { sessionKey: '', user: { id: '', authProviders: [] }}
+
 	return (
 		<html lang="en">
-			<body>{children}</body>
+			<body>
+				<ClientAuthProvider session={session}>{children}</ClientAuthProvider>
+			</body>
 		</html>
 	)
 }

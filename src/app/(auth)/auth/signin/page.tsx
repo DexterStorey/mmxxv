@@ -3,7 +3,7 @@
 import { Button, Input } from 'rubricui'
 import { z } from 'zod'
 import { sendMagicLink } from '~/actions/auth'
-import Link from 'next/link'
+import Nav from '~/components/nav'
 
 async function handleSubmit(formData: FormData) {
 	try {
@@ -16,27 +16,25 @@ async function handleSubmit(formData: FormData) {
 
 export default function SignInPage() {
 	return (
-		<div className="container">
-			<div className="card">
-				<h1 className="title">Welcome to MMXXV</h1>
-				<p className="description">A prediction game for 2025. Enter your email to get started.</p>
-				<form action={handleSubmit} className="form">
-					<div className="form-group">
-						<label htmlFor="email" className="form-label">
-							Email
-						</label>
-						<Input id="email" name="email" className="input" placeholder="your@email.com" />
-					</div>
-					<Button type="submit" className="button-primary">
-						Send Magic Link 🪄
-					</Button>
-				</form>
-				<div className="mt-4 text-center">
-					<Link href="/about" className="text-blue-500 hover:underline">
-						Learn more about the game
-					</Link>
+		<>
+			<Nav unauthenticated={true} />
+			<div className="container">
+				<div className="card">
+					<h1 className="title">Welcome to MMXXV</h1>
+					<p className="description">A prediction game for 2025. Enter your email to get started.</p>
+					<form action={handleSubmit} className="form">
+						<div className="form-group">
+							<label htmlFor="email" className="form-label">
+								Email
+							</label>
+							<Input id="email" name="email" className="input" placeholder="your@email.com" />
+						</div>
+						<Button type="submit" className="button-primary">
+							Send Magic Link 🪄
+						</Button>
+					</form>
 				</div>
 			</div>
-		</div>
+		</>
 	)
 }

@@ -10,7 +10,7 @@ export default async function RootLayout({
 }: {
 	children: ReactNode
 }) {
-	const session = await getSession()
+	const session = (await getSession({ redirectUnauthorizedUsers: false })) ?? { sessionKey: '', user: { id: '', authProviders: [] }}
 
 	return (
 		<html lang="en">
