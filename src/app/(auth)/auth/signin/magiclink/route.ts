@@ -11,7 +11,8 @@ export async function GET(request: Request) {
 
 	const cookieStore = await cookies()
 
-	const invitedBy = cookieStore.get('invitedBy')?.value
+	const redirectUrlSearchParams = new URL(redirectUrl).searchParams
+	const invitedBy = redirectUrlSearchParams.get('user')
 
 	const { user } = await db.session.findUniqueOrThrow({
 		where: {
@@ -45,7 +46,6 @@ export async function GET(request: Request) {
 
 	cookieStore.set('key', key)
 	cookieStore.set('user', JSON.stringify(user))
-	cookieStore.delete('invitedBy')
 
 	redirect(redirectUrl)
 }
