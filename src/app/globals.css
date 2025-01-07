@@ -2163,3 +2163,89 @@ body {
 .diff-line:hover {
 	background: color-mix(in srgb, var(--background) 95%, var(--border));
 }
+
+/* Market Detail */
+.market-detail .market-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 2rem;
+	margin-bottom: 2rem;
+}
+
+.market-detail .market-header-content {
+	flex: 1;
+}
+
+.market-detail .market-actions {
+	display: flex;
+	gap: 0.75rem;
+	margin-left: auto;
+}
+
+.market-detail .votes-container {
+	display: flex;
+	gap: 1rem;
+	margin: 2rem 0;
+	justify-content: center;
+}
+
+.market-detail .vote-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 1rem 2rem;
+	min-width: 160px;
+	font-size: 1rem;
+	font-weight: 600;
+	border: 2px solid var(--border);
+	border-radius: 8px;
+	background: var(--card);
+	color: var(--muted);
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.market-detail .vote-button:hover:not(:disabled) {
+	transform: translateY(-2px);
+	border-color: var(--foreground);
+	color: var(--foreground);
+}
+
+.market-detail .vote-button.up:hover:not(:disabled) {
+	border-color: var(--success);
+	color: var(--success);
+	background: color-mix(in srgb, var(--success) 4%, transparent);
+}
+
+.market-detail .vote-button.down:hover:not(:disabled) {
+	border-color: var(--error);
+	color: var(--error);
+	background: color-mix(in srgb, var(--error) 4%, transparent);
+}
+
+.market-detail .vote-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.market-detail .vote-button.active.up {
+	border-color: var(--success);
+	color: var(--success);
+	background: color-mix(in srgb, var(--success) 8%, transparent);
+}
+
+.market-detail .vote-button.active.down {
+	border-color: var(--error);
+	color: var(--error);
+	background: color-mix(in srgb, var(--error) 8%, transparent);
+}
+
+.market-detail .vote-count {
+	font-size: 1.25rem;
+	font-weight: 600;
+	min-width: 2ch;
+	text-align: center;
+}

@@ -15,7 +15,17 @@ export default async function MarketsPage() {
 	})
 
 	const markets = await db.market.findMany({
-		orderBy: { createdAt: 'desc' },
+		orderBy: [
+			{
+				upvotes: 'desc'
+			},
+			{
+				downvotes: 'asc'
+			},
+			{
+				createdAt: 'asc'
+			}
+		],
 		include: {
 			author: {
 				select: {
