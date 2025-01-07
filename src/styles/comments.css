@@ -1,4 +1,4 @@
-/* Comments */
+/* Comments Section */
 .comments-section {
 	margin-top: 2rem;
 	padding-top: 2rem;
@@ -8,23 +8,22 @@
 .comments-list {
 	display: flex;
 	flex-direction: column;
-	gap: 1rem;
-	margin-top: 1rem;
+	gap: 1.5rem;
 }
 
+/* Comment Thread */
 .comment-thread {
 	display: flex;
 	flex-direction: column;
-	gap: 1rem;
 }
 
+/* Individual Comment */
 .comment {
 	position: relative;
 	padding: 1rem;
 	border: 1px solid var(--border);
 	border-radius: 4px;
-	margin-bottom: 1rem;
-	transition: all 0.3s ease;
+	background: var(--card);
 }
 
 .comment.highlighted {
@@ -33,6 +32,7 @@
 	box-shadow: 0 0 0 2px var(--primary);
 }
 
+/* Comment Header */
 .comment-header {
 	display: flex;
 	justify-content: space-between;
@@ -42,9 +42,8 @@
 
 .comment-meta {
 	display: flex;
-	gap: 0.75rem;
 	align-items: center;
-	flex-wrap: wrap;
+	gap: 0.75rem;
 }
 
 .comment-author {
@@ -57,29 +56,24 @@
 	font-size: 0.8rem;
 }
 
+/* Comment Content */
 .comment-content {
 	font-size: 0.9rem;
 	line-height: 1.5;
-	margin: 0;
-	margin-bottom: 1rem;
 	color: var(--foreground);
+	margin-bottom: 1rem;
 }
 
+/* Comment Actions */
 .comment-actions {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-top: 1rem;
 	padding-top: 0.75rem;
 	border-top: 1px solid var(--border);
 }
 
-.comment-actions-left {
-	display: flex;
-	gap: 1rem;
-	align-items: center;
-}
-
+.comment-actions-left,
 .comment-actions-right {
 	display: flex;
 	gap: 1rem;
@@ -93,9 +87,9 @@
 	border: none;
 	cursor: pointer;
 	padding: 0.5rem;
-	transition: all 0.2s ease;
 	border-radius: 4px;
 	white-space: nowrap;
+	transition: all 0.2s ease;
 }
 
 .comment-action-button:hover {
@@ -103,28 +97,57 @@
 	background: var(--hover);
 }
 
+/* Comment Replies */
 .comment-replies {
-	margin-left: 0.75rem;
-	padding-left: 0.75rem;
-	border-left-width: 1px;
+	margin-top: 1.5rem;
+	margin-left: 1.5rem;
+	padding-left: 1.5rem;
+	border-left: 1px solid var(--border);
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
 }
 
+/* Nested comment styles */
+.comment-replies.depth-0 {
+	border-left-color: var(--border);
+}
+
+.comment-replies.depth-1 {
+	border-left-color: var(--border);
+	margin-left: 1.25rem;
+	padding-left: 1.25rem;
+}
+
+.comment-replies.depth-2 {
+	border-left-color: var(--border);
+	margin-left: 1rem;
+	padding-left: 1rem;
+}
+
+.comment-replies.depth-3 {
+	border-left-color: var(--border);
+	margin-left: 0.875rem;
+	padding-left: 0.875rem;
+}
+
+.comment-replies.depth-4 {
+	border-left-color: var(--border);
+	margin-left: 0.75rem;
+	padding-left: 0.75rem;
+}
+
+.comment-replies.depth-5 {
+	border-left-color: var(--border);
+	margin-left: 0.625rem;
+	padding-left: 0.625rem;
+}
+
+/* Reply Form */
 .comment-reply-form {
 	margin-top: 1rem;
 	padding-top: 1rem;
 	border-top: 1px solid var(--border);
-}
-
-/* Comment Meta */
-.comment-meta {
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-}
-
-.comment-time {
-	font-size: 0.8rem;
-	color: var(--muted);
 }
 
 /* Comments Count */
@@ -140,30 +163,10 @@
 	border-radius: 999px;
 }
 
+/* Responsive Adjustments */
 @media (max-width: 768px) {
 	.comment {
-		padding: 0.875rem;
-	}
-
-	.comment-header {
-		margin-bottom: 0.5rem;
-	}
-
-	.comment-content {
-		margin-bottom: 0.75rem;
-	}
-
-	.comment-actions {
-		margin-top: 0.75rem;
-		padding-top: 0.75rem;
-	}
-
-	.comment-action-button {
-		padding: 0.5rem;
-		min-height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		padding: 0.75rem;
 	}
 
 	.comment-header {
@@ -171,28 +174,27 @@
 		gap: 0.5rem;
 	}
 
-	.comment-actions {
-		position: relative;
-		left: -0.5rem;
-		padding: 0.5rem 0;
-		width: calc(100% + 1rem);
-		justify-content: space-around;
-		border-top: 1px solid var(--border);
-		margin-top: 0.5rem;
-	}
-
-	.comment-action-button {
-		flex: 1;
-		text-align: center;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.5rem;
+	.comment-meta {
+		flex-wrap: wrap;
 	}
 
 	.comment-replies {
 		margin-left: 0.75rem;
 		padding-left: 0.75rem;
-		border-left-width: 1px;
+		gap: 1rem;
+	}
+
+	.comment-replies.depth-2,
+	.comment-replies.depth-3,
+	.comment-replies.depth-4,
+	.comment-replies.depth-5 {
+		margin-left: 0.5rem;
+		padding-left: 0.5rem;
+	}
+
+	.comment-actions {
+		flex-direction: row;
+		justify-content: flex-start;
+		gap: 1rem;
 	}
 }

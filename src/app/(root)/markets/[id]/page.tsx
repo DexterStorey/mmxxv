@@ -49,6 +49,42 @@ export default async function MarketPage({
 									email: true,
 									username: true
 								}
+							},
+							replies: {
+								orderBy: { createdAt: 'asc' },
+								include: {
+									author: {
+										select: {
+											id: true,
+											email: true,
+											username: true
+										}
+									},
+									replies: {
+										orderBy: { createdAt: 'asc' },
+										include: {
+											author: {
+												select: {
+													id: true,
+													email: true,
+													username: true
+												}
+											},
+											replies: {
+												orderBy: { createdAt: 'asc' },
+												include: {
+													author: {
+														select: {
+															id: true,
+															email: true,
+															username: true
+														}
+													}
+												}
+											}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -75,16 +111,7 @@ export default async function MarketPage({
 		notFound()
 	}
 
-	const marketWithReplies = {
-		...market,
-		comments: market.comments.map(comment => ({
-			...comment,
-			replies: comment.replies.map(reply => ({
-				...reply,
-				replies: []
-			}))
-		}))
-	}
+	const marketWithReplies = market
 
 	return (
 		<div className="market-page">

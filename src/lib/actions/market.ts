@@ -345,6 +345,48 @@ export async function getMarketById(marketId: string) {
 									email: true,
 									username: true
 								}
+							},
+							replies: {
+								orderBy: {
+									createdAt: 'asc'
+								},
+								include: {
+									author: {
+										select: {
+											id: true,
+											email: true,
+											username: true
+										}
+									},
+									replies: {
+										orderBy: {
+											createdAt: 'asc'
+										},
+										include: {
+											author: {
+												select: {
+													id: true,
+													email: true,
+													username: true
+												}
+											},
+											replies: {
+												orderBy: {
+													createdAt: 'asc'
+												},
+												include: {
+													author: {
+														select: {
+															id: true,
+															email: true,
+															username: true
+														}
+													}
+												}
+											}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -380,41 +422,41 @@ export async function getMarketById(marketId: string) {
 		replies: CommentWithReplies[]
 	}
 
-	// Recursively build the comment tree
-	const commentMap = new Map<string, CommentWithReplies>(
-		market.comments.map(comment => [comment.id, { ...comment, replies: [] }])
-	)
+	// Recursively build the comment tree with depth tracking
+	const commentMap = new Map<string, CommentWithReplies>()
 	const rootComments: CommentWithReplies[] = []
 
-	// First, collect all comments with their replies
+	// First pass: Create all comment objects
 	for (const comment of market.comments) {
+		commentMap.set(comment.id, { ...comment, replies: [] })
+	}
+
+	// Second pass: Build the tree structure
+	for (const comment of market.comments) {
+		const commentWithReplies = commentMap.get(comment.id)
+		if (!commentWithReplies) continue
+
 		if (comment.parentId) {
 			const parent = commentMap.get(comment.parentId)
-			const commentWithReplies = commentMap.get(comment.id)
-			if (parent && commentWithReplies) {
+			if (parent) {
 				parent.replies.push(commentWithReplies)
 			}
 		} else {
-			const commentWithReplies = commentMap.get(comment.id)
-			if (commentWithReplies) {
-				rootComments.push(commentWithReplies)
+			rootComments.push(commentWithReplies)
+		}
+	}
+
+	// Sort all replies by createdAt
+	const sortReplies = (comments: CommentWithReplies[]) => {
+		comments.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+		for (const comment of comments) {
+			if (comment.replies.length > 0) {
+				sortReplies(comment.replies)
 			}
 		}
 	}
 
-	// Then sort all replies arrays by createdAt asc
-	for (const comment of Array.from(commentMap.values())) {
-		comment.replies.sort(
-			(a: CommentWithReplies, b: CommentWithReplies) => a.createdAt.getTime() - b.createdAt.getTime()
-		)
-	}
-
-	// Sort root comments by createdAt asc
-	rootComments.sort(
-		(a: CommentWithReplies, b: CommentWithReplies) => a.createdAt.getTime() - b.createdAt.getTime()
-	)
-
-	market.comments = rootComments
+	sortReplies(rootComments)
 
 	return {
 		...market,

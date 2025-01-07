@@ -70,12 +70,15 @@ function formatCommentContent(content: string, currentUserId: string | undefined
 function CommentThread({
 	comment,
 	highlightedCommentId,
-	onReply
+	onReply,
+	depth = 0
 }: {
 	comment: CommentWithReplies
 	highlightedCommentId: string | undefined
 	onReply: (parentId: string) => void
+	depth?: number
 }) {
+	const MAX_DEPTH = 6
 	const { user } = useSession()
 	const [showReplyForm, setShowReplyForm] = useState(false)
 	const [showReplies, setShowReplies] = useState(false)
@@ -86,6 +89,7 @@ function CommentThread({
 	const isHighlighted = comment.id === highlightedCommentId
 	const hasHighlightedReply = comment.replies.some(reply => reply.id === highlightedCommentId)
 	const isAuthor = user?.id === comment.author.id
+	const canNest = depth < MAX_DEPTH
 
 	// Auto-expand replies if a nested reply is highlighted
 	useEffect(() => {
@@ -135,14 +139,18 @@ function CommentThread({
 				<div className="comment-content">{formatCommentContent(comment.content, user?.id)}</div>
 				<div className="comment-actions">
 					<div className="comment-actions-left">
-						<button
-							type="button"
-							className="comment-action-button"
-							onClick={() => setShowReplyForm(!showReplyForm)}
-							disabled={!user}
-						>
-							Reply
-						</button>
+						{canNest ? (
+							<button
+								type="button"
+								className="comment-action-button"
+								onClick={() => setShowReplyForm(!showReplyForm)}
+								disabled={!user}
+							>
+								Reply
+							</button>
+						) : (
+							<span className="text-muted text-sm">Max nesting depth reached</span>
+						)}
 					</div>
 					<div className="comment-actions-right">
 						{hasReplies && (
@@ -156,7 +164,7 @@ function CommentThread({
 						)}
 					</div>
 				</div>
-				{showReplyForm && (
+				{showReplyForm && canNest && (
 					<div className="comment-reply-form">
 						<AddCommentForm
 							marketId={comment.marketId}
@@ -170,13 +178,14 @@ function CommentThread({
 				)}
 			</div>
 			{hasReplies && showReplies && (
-				<div className="comment-replies">
+				<div className={`comment-replies depth-${depth}`}>
 					{comment.replies.map(reply => (
 						<CommentThread
 							key={reply.id}
 							comment={reply}
 							onReply={onReply}
 							highlightedCommentId={highlightedCommentId}
+							depth={depth + 1}
 						/>
 					))}
 				</div>
