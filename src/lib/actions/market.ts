@@ -2,12 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { getSession } from '~/actions/auth'
+import { MAX_MARKETS_PER_USER } from '~/constants'
 import { db } from '~/db'
 import { handleNewComment } from '~/services/notifications'
 import { generateMarketCategories } from '~/utils/category-generation'
 import { generateMarketImage } from '~/utils/image-generation'
-
-const MAX_MARKETS_PER_USER = 5
 
 export async function createMarket(data: {
 	title: string

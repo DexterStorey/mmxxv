@@ -1,8 +1,5 @@
 import type { Market, User } from '@prisma/client'
-
-const POINTS_PER_MARKET = 10
-const POINTS_PER_INVITE = 10
-const MAX_INVITE_POINTS = 100
+import { MAX_INVITE_POINTS, POINTS_PER_INVITE, POINTS_PER_MARKET } from '~/constants'
 
 export type UserWithPoints = User & {
 	points: number

@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { createMarket } from '~/actions/market'
+import { MAX_MARKETS_PER_USER } from '~/constants'
 
 interface CreateMarketFormProps {
 	marketCount: number
@@ -78,10 +79,14 @@ export function CreateMarketForm({
 				type="button"
 				className="button button-primary"
 				onClick={() => setIsOpen(true)}
-				disabled={marketCount >= 5}
-				title={marketCount >= 5 ? 'You have created the maximum number of markets' : undefined}
+				disabled={marketCount >= MAX_MARKETS_PER_USER}
+				title={
+					marketCount >= MAX_MARKETS_PER_USER
+						? 'You have created the maximum number of markets'
+						: undefined
+				}
 			>
-				{buttonText} ({marketCount}/5)
+				{buttonText} ({marketCount}/{MAX_MARKETS_PER_USER})
 			</button>
 		)
 	}
