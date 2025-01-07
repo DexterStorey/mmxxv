@@ -102,7 +102,7 @@ export default async function MarketsPage() {
 						style={{
 							display: 'flex',
 							justifyContent: 'space-between',
-							alignItems: 'flex-start',
+							alignItems: 'center',
 							gap: '2rem',
 							padding: '1rem'
 						}}
@@ -111,12 +111,14 @@ export default async function MarketsPage() {
 							<h1 className="title" style={{ margin: 0, marginBottom: '0.5rem', fontFamily: 'inherit' }}>
 								Market Proposals
 							</h1>
-							<p className="description" style={{ margin: 0, color: 'var(--muted)' }}>
+							<p className="description" style={{ margin: 0, color: 'var(--muted)', maxWidth: '35rem' }}>
 								Market Proposals are due on January 20. Submit markets and vote on which ones you want to
 								see in the game!
 							</p>
 						</div>
-						<CreateMarketForm marketCount={marketCount} buttonText="Propose Market" />
+						<div style={{ flexShrink: 0, alignSelf: 'flex-start', marginTop: '0.25rem' }}>
+							<CreateMarketForm marketCount={marketCount} buttonText="Propose Market" />
+						</div>
 					</div>
 					<div className="overflow-x-auto">
 						<MarketsTable markets={marketsWithReplies} />

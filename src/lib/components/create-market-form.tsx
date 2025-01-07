@@ -50,7 +50,7 @@ export function CreateMarketForm({
 		return (
 			<button
 				type="button"
-				className="button"
+				className="button button-primary"
 				onClick={() => setIsOpen(true)}
 				disabled={marketCount >= 10}
 				title={marketCount >= 10 ? 'You have created the maximum number of markets' : undefined}
@@ -114,10 +114,10 @@ export function CreateMarketForm({
 						/>
 					</div>
 					<div className="modal-footer">
-						<button type="button" className="button" onClick={() => setIsOpen(false)}>
+						<button type="button" className="button button-cancel" onClick={() => setIsOpen(false)}>
 							Cancel
 						</button>
-						<button type="submit" className="button-primary">
+						<button type="submit" className="button button-primary">
 							{buttonText}
 						</button>
 					</div>
