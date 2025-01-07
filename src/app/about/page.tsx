@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import Nav from '~/components/nav'
 import { Timeline } from '~/components/timeline'
+import PredictionCharts from '../../components/prediction-charts'
 
 export default async function About() {
 	const userCookies = (await cookies()).get('user')
@@ -60,6 +61,9 @@ export default async function About() {
 								probability
 							</li>
 						</ul>
+
+						<PredictionCharts />
+
 						<div className="example">
 							Example 1: A market has a 10% consensus probability (x = 0.1). You predict YES, and it
 							happens. You earn 50 points (min(100, 5/0.1) = min(100, 50) = 50).
