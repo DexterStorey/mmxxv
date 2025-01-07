@@ -61,7 +61,7 @@ export function MarketDetail({
 						</button>
 					)}
 				</div>
-				<div className="market-meta">Created by {market.author.email}</div>
+				<div className="market-meta">Created by {market.author.username || market.author.email}</div>
 
 				<div className="section">
 					<h2 className="section-title">Description</h2>

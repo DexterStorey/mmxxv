@@ -2,22 +2,29 @@ import { notFound } from 'next/navigation'
 import { MarketDetail } from '~/components/market-detail'
 import type { MarketWithVotesAndComments } from '~/components/market-item'
 import Nav from '~/components/nav'
+import UserPill from '~/components/user-pill'
 import { db } from '~/db'
+import { formatDate } from '~/utils/date'
 
-type PageProps = {
+export default async function MarketPage({
+	params,
+	searchParams
+}: {
 	params: Promise<{ id: string }>
-	searchParams: Promise<{ commentId?: string }>
-}
-
-export default async function MarketPage({ params, searchParams }: PageProps) {
+	searchParams: Promise<{ comment?: string }>
+}) {
 	const { id } = await params
-	const { commentId } = await searchParams
+	const { comment: commentId } = await searchParams
 
 	const market = await db.market.findUnique({
 		where: { id },
 		include: {
 			author: {
-				select: { email: true, id: true }
+				select: {
+					id: true,
+					email: true,
+					username: true
+				}
 			},
 			upvoters: {
 				select: { userId: true }
@@ -26,14 +33,24 @@ export default async function MarketPage({ params, searchParams }: PageProps) {
 				select: { userId: true }
 			},
 			comments: {
+				orderBy: { createdAt: 'desc' },
 				include: {
 					author: {
-						select: { email: true, id: true }
+						select: {
+							id: true,
+							email: true,
+							username: true
+						}
 					},
 					replies: {
+						orderBy: { createdAt: 'desc' },
 						include: {
 							author: {
-								select: { email: true, id: true }
+								select: {
+									id: true,
+									email: true,
+									username: true
+								}
 							}
 						}
 					}
@@ -46,7 +63,6 @@ export default async function MarketPage({ params, searchParams }: PageProps) {
 		notFound()
 	}
 
-	// Transform the data to match the expected type
 	const marketWithReplies: MarketWithVotesAndComments = {
 		...market,
 		comments: market.comments.map(comment => ({
@@ -62,7 +78,10 @@ export default async function MarketPage({ params, searchParams }: PageProps) {
 		<>
 			<Nav />
 			<div className="container">
-				<MarketDetail market={marketWithReplies} highlightedCommentId={commentId || undefined} />
+				<MarketDetail market={marketWithReplies} highlightedCommentId={commentId} />
+				<div className="market-meta">
+					Posted by <UserPill {...market.author} /> on {formatDate(market.createdAt)}
+				</div>
 			</div>
 		</>
 	)

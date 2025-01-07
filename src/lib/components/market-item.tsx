@@ -2,15 +2,15 @@
 
 import type { Comment, Market } from '@prisma/client'
 import { useSession } from '@rubriclab/auth'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { deleteMarket, downvoteMarket, upvoteMarket } from '~/actions/market'
 import { formatDate, isNew } from '~/utils/date'
+import UserPill from './user-pill'
 
 export type CommentWithAuthor = Comment & {
-	author: { email: string; id: string }
+	author: { email: string; id: string; username: string | null }
 }
 
 export type CommentWithReplies = CommentWithAuthor & {
@@ -21,7 +21,7 @@ export type MarketWithVotesAndComments = Market & {
 	upvoters: { userId: string }[]
 	downvoters: { userId: string }[]
 	comments: CommentWithReplies[]
-	author: { email: string; id: string }
+	author: { email: string; id: string; username: string | null }
 }
 
 export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
@@ -84,14 +84,12 @@ export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
 					{market.description}
 				</div>
 			</td>
-			<td style={{ width: '15%' }}>
-				<Link
-					href={`/users/${market.author.id}`}
-					className="market-meta"
-					onClick={e => e.stopPropagation()}
-				>
-					{market.author.email}
-				</Link>
+			<td
+				style={{ width: '15%' }}
+				onClick={e => e.stopPropagation()}
+				onKeyDown={e => e.stopPropagation()}
+			>
+				<UserPill {...market.author} />
 			</td>
 			<td
 				style={{ width: '12%' }}
@@ -119,12 +117,17 @@ export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
 					</button>
 				</div>
 			</td>
-			<td style={{ width: '5%' }}>{market.comments.length}</td>
-			<td
-				style={{ width: '3%' }}
-				onClick={e => e.stopPropagation()}
-				onKeyDown={e => e.stopPropagation()}
-			>
+			<td style={{ width: '5%' }}>
+				<button
+					onClick={handleRowClick}
+					onKeyDown={handleKeyDown}
+					className="market-button"
+					type="button"
+				>
+					<div className="market-meta">{market.comments.length}</div>
+				</button>
+			</td>
+			<td style={{ width: '3%' }}>
 				{isOwner && (
 					<button
 						type="button"
@@ -141,28 +144,26 @@ export function MarketItem({ market }: { market: MarketWithVotesAndComments }) {
 			</td>
 			{showDeleteModal &&
 				createPortal(
-					<div className="modal-overlay">
-						<div className="modal">
-							<div className="modal-header">
-								<h2 className="modal-title">Delete Market</h2>
-								<button type="button" className="modal-close" onClick={() => setShowDeleteModal(false)}>
-									×
-								</button>
-							</div>
-							<p className="description">
-								Are you sure you want to delete this market? This action cannot be undone.
-							</p>
-							<div className="modal-footer">
-								<button type="button" className="button" onClick={() => setShowDeleteModal(false)}>
+					<div className="modal">
+						<div className="modal-content">
+							<h2>Delete Market</h2>
+							<p>Are you sure you want to delete this market? This action cannot be undone.</p>
+							<div className="modal-actions">
+								<button
+									type="button"
+									onClick={() => setShowDeleteModal(false)}
+									className="button button-cancel"
+									disabled={isDeleting}
+								>
 									Cancel
 								</button>
 								<button
 									type="button"
-									className="button button-danger"
 									onClick={handleDelete}
+									className="button button-danger"
 									disabled={isDeleting}
 								>
-									{isDeleting ? 'Deleting...' : 'Delete Market'}
+									{isDeleting ? 'Deleting...' : 'Delete'}
 								</button>
 							</div>
 						</div>

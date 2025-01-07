@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { searchUsers } from '~/actions/user'
+import UserPill from './user-pill'
 
 type User = {
 	id: string
 	email: string
+	username: string | null
 }
 
 type MentionInputProps = {
@@ -19,14 +21,21 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 	const [mentionUsers, setMentionUsers] = useState<User[]>([])
 	const [showDropdown, setShowDropdown] = useState(false)
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null)
+	const [displayValue, setDisplayValue] = useState(value)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const dropdownRef = useRef<HTMLDivElement>(null)
+
+	// Convert internal format to display format
+	useEffect(() => {
+		const displayText = value.replace(/@\[([^:]+):([^\]]+)\]/g, '@$2')
+		setDisplayValue(displayText)
+	}, [value])
 
 	// Handle @ symbol typing
 	const handleInput = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		const newValue = e.target.value
+		setDisplayValue(newValue)
 		const cursorPos = e.target.selectionStart
-		onChange(newValue)
 		setCursorPosition(cursorPos)
 
 		// Find the @ symbol before the cursor
@@ -41,21 +50,31 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 		} else {
 			setShowDropdown(false)
 		}
+
+		// Convert display format back to internal format for storage
+		const internalValue = newValue.replace(/@([a-zA-Z0-9]+)/g, (match, username) => {
+			const user = mentionUsers.find(u => u.username === username)
+			return user ? `@[${user.id}:${user.username}]` : match
+		})
+		onChange(internalValue)
 	}
 
 	const handleSelectUser = (selectedUser: User) => {
-		if (!cursorPosition) return
+		if (!cursorPosition || !selectedUser.username) return
 
-		const beforeMention = value.slice(0, value.lastIndexOf('@', cursorPosition))
-		const afterMention = value.slice(cursorPosition)
-		const newValue = `${beforeMention}@${selectedUser.email} ${afterMention}`
+		const beforeMention = displayValue.slice(0, displayValue.lastIndexOf('@', cursorPosition))
+		const afterMention = displayValue.slice(cursorPosition)
+		const newDisplayValue = `${beforeMention}@${selectedUser.username} ${afterMention}`
+		setDisplayValue(newDisplayValue)
 
-		onChange(newValue)
+		const newInternalValue = `${value.slice(0, value.lastIndexOf('@', cursorPosition))}@[${selectedUser.id}:${selectedUser.username}] ${value.slice(cursorPosition)}`
+		onChange(newInternalValue)
+
 		setShowDropdown(false)
 
 		if (textareaRef.current) {
 			textareaRef.current.focus()
-			const newCursorPos = beforeMention.length + selectedUser.email.length + 2 // +2 for @ and space
+			const newCursorPos = beforeMention.length + selectedUser.username.length + 2 // +2 for @ and space
 			textareaRef.current.setSelectionRange(newCursorPos, newCursorPos)
 		}
 	}
@@ -110,7 +129,7 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 		<div className="mention-input-container relative">
 			<textarea
 				ref={textareaRef}
-				value={value}
+				value={displayValue}
 				onChange={handleInput}
 				onKeyDown={handleKeyDown}
 				placeholder={placeholder}
@@ -133,7 +152,7 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 							<span className="mention-pill mr-2 rounded-full bg-blue-100 px-2 py-0.5 text-blue-700 text-sm">
 								@
 							</span>
-							{user.email}
+							<UserPill {...user} />
 						</button>
 					))}
 				</div>

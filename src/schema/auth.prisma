@@ -4,7 +4,7 @@ model User {
   index Int @default(autoincrement())
 
   email    String  @unique
-  username String? @unique @default(nanoid())
+  username String? @unique
 
   agentIsAlive Boolean @default(true)
 

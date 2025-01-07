@@ -1,11 +1,11 @@
 'use client'
 
 import { useSession } from '@rubriclab/auth'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { downvoteMarket, upvoteMarket } from '~/actions/market'
 import { formatDate, isNew } from '~/utils/date'
 import type { MarketWithVotesAndComments } from './market-item'
+import UserPill from './user-pill'
 
 interface MarketRowProps {
 	market: MarketWithVotesAndComments
@@ -64,21 +64,12 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 					<div className="market-meta">{market.description}</div>
 				</button>
 			</td>
-			<td style={{ width: '15%' }}>
-				<button
-					onClick={handleRowClick}
-					onKeyDown={handleKeyDown}
-					className="market-button"
-					type="button"
-				>
-					<Link
-						href={`/users/${market.author.id}`}
-						className="market-meta"
-						onClick={e => e.stopPropagation()}
-					>
-						{market.author.email}
-					</Link>
-				</button>
+			<td
+				style={{ width: '15%' }}
+				onClick={e => e.stopPropagation()}
+				onKeyDown={e => e.stopPropagation()}
+			>
+				<UserPill {...market.author} />
 			</td>
 			<td
 				style={{ width: '12%' }}
@@ -116,11 +107,7 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 					<div className="market-meta">{market.comments.length}</div>
 				</button>
 			</td>
-			<td
-				style={{ width: '3%' }}
-				onClick={e => e.stopPropagation()}
-				onKeyDown={e => e.stopPropagation()}
-			>
+			<td style={{ width: '3%' }}>
 				{isOwner && (
 					<button
 						type="button"

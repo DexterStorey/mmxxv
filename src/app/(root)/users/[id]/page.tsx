@@ -1,39 +1,13 @@
-import type { Comment, Market } from '@prisma/client'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { MarketItem } from '~/components/market-item'
 import type { MarketWithVotesAndComments } from '~/components/market-item'
+import { MarketItem } from '~/components/market-item'
 import Nav from '~/components/nav'
+import UserPill from '~/components/user-pill'
 import { db } from '~/db'
 import { calculatePoints } from '~/utils/points'
 
 type PageProps = {
 	params: Promise<{ id: string }>
-}
-
-type RawMarket = Market & {
-	comments: (Comment & {
-		author: { id: string; email: string }
-		replies: (Comment & {
-			author: { id: string; email: string }
-		})[]
-	})[]
-	author: { id: string; email: string }
-	upvoters: { userId: string }[]
-	downvoters: { userId: string }[]
-}
-
-function transformMarket(market: RawMarket): MarketWithVotesAndComments {
-	return {
-		...market,
-		comments: market.comments.map(comment => ({
-			...comment,
-			replies: comment.replies.map(reply => ({
-				...reply,
-				replies: []
-			}))
-		}))
-	}
 }
 
 export default async function UserProfilePage({ params }: PageProps) {
@@ -44,15 +18,15 @@ export default async function UserProfilePage({ params }: PageProps) {
 		include: {
 			markets: {
 				include: {
-					author: { select: { email: true, id: true } },
+					author: { select: { email: true, username: true, id: true } },
 					upvoters: { select: { userId: true } },
 					downvoters: { select: { userId: true } },
 					comments: {
 						include: {
-							author: { select: { email: true, id: true } },
+							author: { select: { email: true, username: true, id: true } },
 							replies: {
 								include: {
-									author: { select: { email: true, id: true } }
+									author: { select: { email: true, username: true, id: true } }
 								}
 							}
 						}
@@ -67,15 +41,15 @@ export default async function UserProfilePage({ params }: PageProps) {
 				include: {
 					market: {
 						include: {
-							author: { select: { email: true, id: true } },
+							author: { select: { email: true, username: true, id: true } },
 							upvoters: { select: { userId: true } },
 							downvoters: { select: { userId: true } },
 							comments: {
 								include: {
-									author: { select: { email: true, id: true } },
+									author: { select: { email: true, username: true, id: true } },
 									replies: {
 										include: {
-											author: { select: { email: true, id: true } }
+											author: { select: { email: true, username: true, id: true } }
 										}
 									}
 								}
@@ -83,54 +57,13 @@ export default async function UserProfilePage({ params }: PageProps) {
 						}
 					}
 				}
-			},
-			downvotedMarkets: {
-				include: {
-					market: {
-						include: {
-							author: { select: { email: true, id: true } },
-							upvoters: { select: { userId: true } },
-							downvoters: { select: { userId: true } },
-							comments: {
-								include: {
-									author: { select: { email: true, id: true } },
-									replies: {
-										include: {
-											author: { select: { email: true, id: true } }
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-			comments: {
-				include: {
-					market: {
-						include: {
-							author: { select: { email: true, id: true } }
-						}
-					}
-				},
-				orderBy: { createdAt: 'desc' }
 			}
 		}
 	})
 
-	if (!user) {
-		notFound()
-	}
+	if (!user) return notFound()
 
-	// Calculate user's points
 	const points = calculatePoints(user)
-
-	// Transform the markets to include proper reply structure
-	const transformedMarkets = user.markets.map(transformMarket)
-	const transformedUpvotedMarkets = user.upvotedMarkets.map(({ market }) => transformMarket(market))
-	const transformedDownvotedMarkets = user.downvotedMarkets.map(({ market }) =>
-		transformMarket(market)
-	)
 
 	return (
 		<>
@@ -138,84 +71,53 @@ export default async function UserProfilePage({ params }: PageProps) {
 			<div className="container">
 				<div className="card">
 					<div className="user-profile-header">
-						<h1 className="user-profile-email">{user.email}</h1>
+						<div>
+							<UserPill {...user} showEmail={true} className="user-profile-name" />
+						</div>
 						<div className="user-profile-points">{points} points</div>
 					</div>
-
 					<div className="section">
 						<h2 className="section-title">Created Markets ({user.markets.length}/10)</h2>
-						<table className="table">
-							<thead>
-								<tr>
-									<th>Title</th>
-									<th>Description</th>
-									<th>Author</th>
-									<th>Votes</th>
-									<th>Comments</th>
-								</tr>
-							</thead>
-							<tbody>
-								{transformedMarkets.map(market => (
-									<MarketItem key={market.id} market={market} />
-								))}
-							</tbody>
-						</table>
-					</div>
-
-					<div className="section">
-						<h2 className="section-title">Voting Activity</h2>
-						<div className="section">
-							<h3 className="subtitle">Upvoted Markets</h3>
+						<div className="table-container">
 							<table className="table">
 								<thead>
 									<tr>
-										<th>Title</th>
-										<th>Description</th>
-										<th>Author</th>
-										<th>Votes</th>
-										<th>Comments</th>
+										<th style={{ width: '35%' }}>TITLE</th>
+										<th style={{ width: '30%' }}>DESCRIPTION</th>
+										<th style={{ width: '15%' }}>AUTHOR</th>
+										<th style={{ width: '12%' }}>VOTES</th>
+										<th style={{ width: '5%' }}>COMMENTS</th>
+										<th style={{ width: '3%' }} />
 									</tr>
 								</thead>
 								<tbody>
-									{transformedUpvotedMarkets.map(market => (
-										<MarketItem key={market.id} market={market} />
-									))}
-								</tbody>
-							</table>
-						</div>
-
-						<div className="section">
-							<h3 className="subtitle">Downvoted Markets</h3>
-							<table className="table">
-								<thead>
-									<tr>
-										<th>Title</th>
-										<th>Description</th>
-										<th>Author</th>
-										<th>Votes</th>
-										<th>Comments</th>
-									</tr>
-								</thead>
-								<tbody>
-									{transformedDownvotedMarkets.map(market => (
-										<MarketItem key={market.id} market={market} />
+									{user.markets.map(market => (
+										<MarketItem key={market.id} market={market as MarketWithVotesAndComments} />
 									))}
 								</tbody>
 							</table>
 						</div>
 					</div>
-
 					<div className="section">
-						<h2 className="section-title">Recent Comments</h2>
-						<div className="comments-list">
-							{user.comments.map(comment => (
-								<div key={comment.id} className="comment">
-									<Link href={`/markets/${comment.market.id}`} className="nav-link">
-										{comment.market.title}
-									</Link>
-									<p className="section-content">{comment.content}</p>
-								</div>
-							))}
+						<h2 className="section-title">Upvoted Markets ({user.upvotedMarkets.length})</h2>
+						<div className="table-container">
+							<table className="table">
+								<thead>
+									<tr>
+										<th style={{ width: '35%' }}>TITLE</th>
+										<th style={{ width: '30%' }}>DESCRIPTION</th>
+										<th style={{ width: '15%' }}>AUTHOR</th>
+										<th style={{ width: '12%' }}>VOTES</th>
+										<th style={{ width: '5%' }}>COMMENTS</th>
+										<th style={{ width: '3%' }} />
+									</tr>
+								</thead>
+								<tbody>
+									{user.upvotedMarkets.map(({ market }) => (
+										<MarketItem key={market.id} market={market as MarketWithVotesAndComments} />
+									))}
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div>
