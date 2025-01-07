@@ -7,6 +7,8 @@ import Nav from '~/components/nav'
 import { db } from '~/db'
 import type { MarketWithVotesAndComments } from '~/types/market'
 
+export const maxDuration = 300
+
 export default async function MarketsPage({
 	searchParams
 }: {
