@@ -7,11 +7,8 @@ import { db } from '~/db'
 export default async () => {
 	await getSession()
 
-	const { stage } = await db.settings.findUniqueOrThrow({
-		where: {
-			id: '0'
-		}
-	})
+	const { stage } = await db.settings.findUniqueOrThrow({ where: { id: '0' } })
+
 	return (
 		<>
 			<Nav />
