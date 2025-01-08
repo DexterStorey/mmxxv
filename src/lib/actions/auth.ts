@@ -33,20 +33,11 @@ export async function sendMagicLink({
 	email,
 	invitedBy
 }: { redirectUrl?: string; email: string; invitedBy?: string }) {
-	// Generate a username from email prefix
-	const baseUsername = generateUsername(email)
-	let username = baseUsername
-	let counter = 1
+	const existingUser = await db.user.findUnique({
+		where: { email }
+	})
 
-	// Keep trying with incremented numbers until we find a unique username
-	while (true) {
-		const existingUser = await db.user.findFirst({
-			where: { username }
-		})
-		if (!existingUser) break
-		username = `${baseUsername}${counter}`
-		counter++
-	}
+	const username = existingUser?.username || (await generateUniqueUsername(email))
 
 	const { key } = await db.session.create({
 		data: {
@@ -78,6 +69,23 @@ export async function sendMagicLink({
 	})
 
 	redirect('/auth/signin/magiclink/sent')
+}
+
+async function generateUniqueUsername(email: string): Promise<string> {
+	const baseUsername = generateUsername(email)
+	let username = baseUsername
+	let counter = 1
+
+	while (true) {
+		const existingUser = await db.user.findFirst({
+			where: { username }
+		})
+		if (!existingUser) break
+		username = `${baseUsername}${counter}`
+		counter++
+	}
+
+	return username
 }
 
 export async function handleSignOut({ redirectUrl }: { redirectUrl: string }) {

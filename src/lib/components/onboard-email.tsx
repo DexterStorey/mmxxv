@@ -64,7 +64,7 @@ export function MagicLinkEmailTemplate({
 				<p style={styles.text}>Click the button below to sign in and start predicting the future.</p>
 
 				<p style={styles.text}>
-					Your username has been set to <strong>{username}</strong>. You can change this in your account
+					Your current username is <strong>{username}</strong>. You can change this in your account
 					settings after signing in.
 				</p>
 
