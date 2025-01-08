@@ -195,6 +195,32 @@
 .comment-reactions {
 	display: flex;
 	gap: 0.25rem;
+	align-items: center;
+}
+
+.reaction-picker {
+	position: relative;
+}
+
+.reaction-options {
+	position: absolute;
+	bottom: 100%;
+	left: 0;
+	display: flex;
+	gap: 0.25rem;
+	background: var(--background);
+	border: 1px solid var(--border);
+	border-radius: 1rem;
+	padding: 0.5rem;
+	margin-bottom: 0.5rem;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.2s, visibility 0.2s;
+}
+
+.reaction-picker:hover .reaction-options {
+	opacity: 1;
+	visibility: visible;
 }
 
 /* Responsive Adjustments */

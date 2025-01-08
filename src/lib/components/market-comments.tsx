@@ -177,8 +177,8 @@ function CommentThread({
 						) : (
 							<span className="text-muted text-sm">Max nesting depth reached</span>
 						)}
+						<CommentReactions comment={comment} userId={user?.id || ''} onReaction={handleReaction} />
 					</div>
-					<CommentReactions comment={comment} userId={user?.id || ''} onReaction={handleReaction} />
 					<div className="comment-actions-right">
 						{hasReplies && (
 							<button

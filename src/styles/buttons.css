@@ -84,10 +84,15 @@
 }
 
 .button-icon {
-	padding: 0.5rem;
+	padding: 0.25rem;
 	border: none;
 	background: transparent;
-	border-radius: 1.5rem;
+	border-radius: 0.625rem;
+	aspect-ratio: 1 / 1;
+	min-width: 2.25rem;
+	min-height: 2.25rem;
+	align-items: center;
+	justify-content: center;
 	cursor: pointer;
 	color: var(--muted);
 	display: flex;
