@@ -8,12 +8,17 @@ export default async function Invite() {
 
 	if (!session) return <></>
 
-	const { username } = await db.user.findUniqueOrThrow({
+	const { username, _count } = await db.user.findUniqueOrThrow({
 		where: {
 			id: session.user.id
 		},
 		select: {
-			username: true
+			username: true,
+			_count: {
+				select: {
+					invitees: true
+				}
+			}
 		}
 	})
 
@@ -21,7 +26,7 @@ export default async function Invite() {
 
 	return (
 		<Suspense fallback={<>...</>}>
-			<InviteClient id={username} />
+			<InviteClient id={username} invitees={_count.invitees} />
 		</Suspense>
 	)
 }
