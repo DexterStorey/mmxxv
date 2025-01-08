@@ -1,10 +1,11 @@
-import type { Comment, Market } from '@prisma/client'
+import type { Comment, CommentReaction, Market, User } from '@prisma/client'
 
-export type CommentWithAuthor = Comment & {
-	author: { email: string; id: string; username: string | null }
+export type CommentWithAuthorAndReactions = Comment & {
+	author: Pick<User, 'id' | 'email' | 'username'>
+	reactions: Pick<CommentReaction, 'type' | 'authorId'>[]
 }
 
-export type CommentWithReplies = CommentWithAuthor & {
+export type CommentWithReplies = CommentWithAuthorAndReactions & {
 	replies: CommentWithReplies[]
 }
 

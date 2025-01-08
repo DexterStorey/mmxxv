@@ -72,6 +72,12 @@ export default async function MarketsPage({
 							username: true
 						}
 					},
+					reactions: {
+						select: {
+							type: true,
+							authorId: true
+						}
+					},
 					replies: {
 						orderBy: { createdAt: 'desc' },
 						include: {
@@ -80,6 +86,12 @@ export default async function MarketsPage({
 									id: true,
 									email: true,
 									username: true
+								}
+							},
+							reactions: {
+								select: {
+									type: true,
+									authorId: true
 								}
 							}
 						}

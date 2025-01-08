@@ -1,23 +1,17 @@
 'use client'
 
-import type { Comment, User } from '@prisma/client'
+import type { CommentReactionType } from '@prisma/client'
 import { useSession } from '@rubriclab/auth'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { addCommentReaction, removeCommentReaction } from '~/actions/comment'
 import { deleteComment, getMarketById } from '~/actions/market'
 import { getCurrentUsername } from '~/actions/user'
-import type { MarketWithVotesAndComments } from '~/types/market'
+import type { CommentWithReplies, MarketWithVotesAndComments } from '~/types/market'
 import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
+import CommentReactions from './comment-reactions'
 import { DeleteCommentModal } from './delete-comment-modal'
 import UserPill from './user-pill'
-
-type CommentWithAuthor = Comment & {
-	author: Pick<User, 'id' | 'email' | 'username'>
-}
-
-type CommentWithReplies = CommentWithAuthor & {
-	replies: CommentWithReplies[]
-}
 
 function formatCommentContent(content: string, currentUserId: string | undefined) {
 	const [formattedContent, setFormattedContent] = useState<React.ReactNode[]>([])
@@ -137,6 +131,19 @@ function CommentThread({
 		}
 	}
 
+	const handleReaction = async (type: CommentReactionType) => {
+		try {
+			if (comment.reactions.filter(r => r.type === type).some(r => r.authorId === user?.id)) {
+				await removeCommentReaction({ commentId: comment.id, type })
+			} else {
+				await addCommentReaction({ commentId: comment.id, type })
+			}
+		} catch (error) {
+			console.error('Error reacting to comment:', error)
+			alert('Failed to add reaction')
+		}
+	}
+
 	return (
 		<div className="comment-thread" ref={commentRef} data-comment-id={comment.id}>
 			<div className={`comment ${isTemporarilyHighlighted ? 'highlight-flash' : ''}`}>
@@ -171,6 +178,7 @@ function CommentThread({
 							<span className="text-muted text-sm">Max nesting depth reached</span>
 						)}
 					</div>
+					<CommentReactions comment={comment} userId={user?.id || ''} onReaction={handleReaction} />
 					<div className="comment-actions-right">
 						{hasReplies && (
 							<button
