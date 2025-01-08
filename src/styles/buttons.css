@@ -82,3 +82,24 @@
 .button-danger-subtle:hover:not(:disabled) {
 	color: var(--error);
 }
+
+.button-icon {
+	padding: 0.5rem;
+	border: none;
+	background: transparent;
+	border-radius: 1.5rem;
+	cursor: pointer;
+	color: var(--muted);
+	display: flex;
+	gap: 0.25rem;
+	border: 1px solid transparent;
+}
+
+.button-icon:hover:not(:disabled) {
+	background: var(--hover);
+	border-color: var(--foreground);
+}
+
+.button-icon[data-active="true"] {
+	border-color: var(--success);
+}

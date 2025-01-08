@@ -40,12 +40,39 @@ model Comment {
     parentId String?
     replies  Comment[] @relation("CommentReplies")
 
-    mentions     User[]         @relation("CommentMentions")
+    mentions     User[]            @relation("CommentMentions")
     Notification Notification[]
+    reactions    CommentReaction[]
 
     @@index([parentId])
     @@index([authorId])
     @@index([marketId])
+}
+
+enum CommentReactionType {
+    LAUGH
+    HEART
+    UFO
+    FIRE
+    CRYSTAL_BALL
+    UP_TREND
+    DOWN_TREND
+}
+
+model CommentReaction {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+    commentId String
+
+    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    authorId String
+
+    type CommentReactionType
+
+    @@unique([commentId, type, authorId])
 }
 
 model MarketUpvotes {

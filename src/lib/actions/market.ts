@@ -333,6 +333,12 @@ export async function getMarketById(marketId: string) {
 							username: true
 						}
 					},
+					reactions: {
+						select: {
+							type: true,
+							authorId: true
+						}
+					},
 					replies: {
 						orderBy: {
 							createdAt: 'asc'
@@ -343,6 +349,12 @@ export async function getMarketById(marketId: string) {
 									id: true,
 									email: true,
 									username: true
+								}
+							},
+							reactions: {
+								select: {
+									type: true,
+									authorId: true
 								}
 							},
 							replies: {
@@ -357,6 +369,12 @@ export async function getMarketById(marketId: string) {
 											username: true
 										}
 									},
+									reactions: {
+										select: {
+											type: true,
+											authorId: true
+										}
+									},
 									replies: {
 										orderBy: {
 											createdAt: 'asc'
@@ -369,6 +387,12 @@ export async function getMarketById(marketId: string) {
 													username: true
 												}
 											},
+											reactions: {
+												select: {
+													type: true,
+													authorId: true
+												}
+											},
 											replies: {
 												orderBy: {
 													createdAt: 'asc'
@@ -379,6 +403,12 @@ export async function getMarketById(marketId: string) {
 															id: true,
 															email: true,
 															username: true
+														}
+													},
+													reactions: {
+														select: {
+															type: true,
+															authorId: true
 														}
 													}
 												}

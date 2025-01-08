@@ -21,6 +21,7 @@ model User {
   notifications    Notification[]
   mentions         Comment[]         @relation("CommentMentions")
   marketEdits      MarketEdit[]
+  commentReactions CommentReaction[]
 
   invitedById String?
   invitedBy   User?   @relation("InvitedBy", fields: [invitedById], references: [id])
