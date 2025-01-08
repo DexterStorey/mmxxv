@@ -30,8 +30,9 @@ function generateUsername(email: string): string {
 
 export async function sendMagicLink({
 	redirectUrl,
-	email
-}: { redirectUrl?: string; email: string }) {
+	email,
+	invitedBy
+}: { redirectUrl?: string; email: string; invitedBy?: string }) {
 	// Generate a username from email prefix
 	const baseUsername = generateUsername(email)
 	let username = baseUsername
@@ -56,14 +57,18 @@ export async function sendMagicLink({
 					},
 					create: {
 						email,
-						username
+						username,
+						...(invitedBy ? { invitedBy: { connect: { username: invitedBy } } } : {})
 					}
 				}
 			}
 		}
 	})
 
-	const magicLink = `${env.URL}/auth/signin/magiclink?key=${key}&redirectUrl=${encodeURIComponent(redirectUrl || '/')}`
+	const url = new URL('/auth/signin/magiclink', env.URL)
+	url.searchParams.append('key', key)
+	if (redirectUrl) url.searchParams.append('redirectUrl', redirectUrl)
+	const magicLink = url.toString()
 
 	await resend.emails.send({
 		from: 'MMXXV <welcome@mmxxv.bet>',

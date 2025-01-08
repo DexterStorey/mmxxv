@@ -4,11 +4,13 @@ import { db } from '~/db'
 import InviteClient from './invite.client'
 
 export default async function Invite() {
-	const { user } = await getSession()
+	const session = await getSession({ redirectUnauthorizedUsers: false })
+
+	if (!session) return <></>
 
 	const { username } = await db.user.findUniqueOrThrow({
 		where: {
-			id: user.id
+			id: session.user.id
 		},
 		select: {
 			username: true

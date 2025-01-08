@@ -4,7 +4,7 @@
 		"@heroicons/react": "^2.2.0",
 		"@prisma/client": "latest",
 		"@rubriclab/agents": "^0.0.20",
-		"@rubriclab/auth": "^0.0.15",
+		"@rubriclab/auth": "^0.0.17",
 		"@rubriclab/ui": "^5.0.46",
 		"@t3-oss/env-nextjs": "latest",
 		"chart.js": "^4.4.7",
