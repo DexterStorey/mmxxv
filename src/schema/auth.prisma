@@ -5,6 +5,7 @@ model User {
 
   email    String  @unique
   username String? @unique
+  bio      String?
 
   agentIsAlive Boolean @default(true)
 

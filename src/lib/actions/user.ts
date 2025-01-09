@@ -64,12 +64,13 @@ const updateUsernameSchema = z.object({
 		.min(1)
 		.max(20)
 		.regex(/^[a-zA-Z0-9]+$/, 'Username must be alphanumeric'),
+	bio: z.string().max(100).optional(),
 	userId: z.string()
 })
 
 export async function updateUsername(formData: FormData) {
 	try {
-		const { username, userId } = updateUsernameSchema.parse(Object.fromEntries(formData))
+		const { username, bio, userId } = updateUsernameSchema.parse(Object.fromEntries(formData))
 
 		// Get the current user to find their old username
 		const currentUser = await db.user.findUnique({
@@ -80,7 +81,10 @@ export async function updateUsername(formData: FormData) {
 		// Update the user's username
 		await db.user.update({
 			where: { id: userId },
-			data: { username }
+			data: {
+				username,
+				...(bio ? { bio } : {})
+			}
 		})
 
 		// If the user had a previous username, update any mentions in comments

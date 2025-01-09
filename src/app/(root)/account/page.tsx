@@ -10,9 +10,9 @@ export default async function AccountPage({
 	searchParams: Promise<{ error?: string }>
 }) {
 	const { user } = await getSession()
-	const { email, username } = await db.user.findUniqueOrThrow({
+	const { email, username, bio } = await db.user.findUniqueOrThrow({
 		where: { id: user.id },
-		select: { email: true, username: true }
+		select: { email: true, username: true, bio: true }
 	})
 
 	const errorMessages = {
@@ -47,8 +47,15 @@ export default async function AccountPage({
 									className="input"
 									maxLength={20}
 								/>
+								<textarea
+									name="bio"
+									placeholder="About your methodology"
+									className="input"
+									maxLength={100}
+									defaultValue={bio || ''}
+								/>
 								<input type="hidden" name="userId" value={user.id} />
-								<button type="submit" className="button">
+								<button type="submit" className="button-primary">
 									Save
 								</button>
 								{error && (
