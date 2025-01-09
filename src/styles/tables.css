@@ -123,3 +123,17 @@
 		-webkit-overflow-scrolling: touch;
 	}
 }
+
+.leaderboard-user-bio {
+	opacity: 0.5;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.leaderboard-user-cell {
+	width: 55%;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}

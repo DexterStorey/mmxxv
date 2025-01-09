@@ -33,11 +33,12 @@ function LeaderboardRow({ user, rank }: { user: User; rank: number }) {
 				</button>
 			</td>
 			<td
-				style={{ width: '55%' }}
+				className="leaderboard-user-cell"
 				onClick={e => e.stopPropagation()}
 				onKeyDown={e => e.stopPropagation()}
 			>
 				<UserPill {...user} />
+				<div className="leaderboard-user-bio">{user.bio}</div>
 			</td>
 			<td style={{ width: '30%', textAlign: 'center' }}>
 				<button
