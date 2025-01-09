@@ -1,14 +1,14 @@
 import { Stage } from '@prisma/client'
+import { getSession } from '~/actions/auth'
 import Invite from '~/components/invite'
 import Nav from '~/components/nav'
 import { db } from '~/db'
 
 export default async () => {
-	const { stage } = await db.settings.findUniqueOrThrow({
-		where: {
-			id: '0'
-		}
-	})
+	await getSession()
+
+	const { stage } = await db.settings.findUniqueOrThrow({ where: { id: '0' } })
+
 	return (
 		<>
 			<Nav />

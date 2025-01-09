@@ -4,14 +4,21 @@ import { db } from '~/db'
 import InviteClient from './invite.client'
 
 export default async function Invite() {
-	const { user } = await getSession()
+	const session = await getSession({ redirectUnauthorizedUsers: false })
 
-	const { username } = await db.user.findUniqueOrThrow({
+	if (!session) return <></>
+
+	const { username, _count } = await db.user.findUniqueOrThrow({
 		where: {
-			id: user.id
+			id: session.user.id
 		},
 		select: {
-			username: true
+			username: true,
+			_count: {
+				select: {
+					invitees: true
+				}
+			}
 		}
 	})
 
@@ -19,7 +26,7 @@ export default async function Invite() {
 
 	return (
 		<Suspense fallback={<>...</>}>
-			<InviteClient id={username} />
+			<InviteClient id={username} invitees={_count.invitees} />
 		</Suspense>
 	)
 }

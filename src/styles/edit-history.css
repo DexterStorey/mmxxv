@@ -1,0 +1,196 @@
+/* Edit History */
+.edit-history-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: 0.75rem;
+	margin-bottom: 1rem;
+	border-bottom: 1px solid var(--border);
+}
+
+.edit-history-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.edit-history-title h2 {
+	font-size: 0.875rem;
+	font-weight: 500;
+}
+
+.edit-count {
+	background: var(--border);
+	color: var(--muted);
+	font-size: 0.75rem;
+	padding: 0.125rem 0.5rem;
+	border-radius: 999px;
+}
+
+.edit-history-toggle {
+	font-size: 0.875rem;
+	color: var(--muted);
+}
+
+.edit-history-toggle:hover {
+	color: var(--foreground);
+}
+
+.edit-history-content {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.edit-entry {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 1rem;
+}
+
+.edit-meta {
+	font-size: 0.875rem;
+	color: var(--muted);
+	padding-bottom: 0.5rem;
+	border-bottom: 1px solid var(--border);
+}
+
+.edit-diffs {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+/* Diff UI */
+.diff-section {
+	background: color-mix(in srgb, var(--background) 97%, var(--border));
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.diff-header {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.75rem 1rem;
+	text-align: left;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: var(--foreground);
+}
+
+.diff-header:hover {
+	background: color-mix(in srgb, var(--background) 60%, var(--border));
+}
+
+.diff-expander {
+	color: var(--muted);
+	font-size: 0.75rem;
+	width: 1rem;
+}
+
+.diff-header-left {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.diff-title {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--foreground);
+}
+
+.diff-stats {
+	font-size: 0.75rem;
+	color: var(--muted);
+}
+
+.diff-header-right {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: 0.75rem;
+}
+
+.diff-delete-count {
+	color: var(--error);
+}
+
+.diff-separator {
+	color: var(--muted);
+}
+
+.diff-add-count {
+	color: var(--success);
+}
+
+.diff-content {
+	border-top: 1px solid var(--border);
+}
+
+.diff-line {
+	display: flex;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+		"Courier New", monospace;
+}
+
+.diff-line-number {
+	width: 3.5rem;
+	padding: 0.25rem 0.75rem;
+	text-align: right;
+	color: var(--muted);
+	font-size: 0.75rem;
+	user-select: none;
+	background: color-mix(in srgb, var(--background) 97%, var(--border));
+	border-right: 1px solid var(--border);
+}
+
+.diff-line-sign {
+	width: 2.5rem;
+	padding: 0.25rem 0.75rem;
+	color: var(--muted);
+	font-size: 0.75rem;
+	user-select: none;
+	background: color-mix(in srgb, var(--background) 97%, var(--border));
+	border-right: 1px solid var(--border);
+}
+
+.diff-line-content {
+	flex: 1;
+	padding: 0.25rem 0.75rem;
+}
+
+.diff-line-content pre {
+	font-size: 0.875rem;
+	white-space: pre-wrap;
+	margin: 0;
+	color: var(--foreground);
+}
+
+.diff-delete {
+	background: color-mix(in srgb, var(--error) 3%, var(--background));
+}
+
+.diff-delete .diff-line-content pre {
+	color: color-mix(in srgb, var(--error) 85%, var(--foreground));
+}
+
+.diff-add {
+	background: color-mix(in srgb, var(--success) 3%, var(--background));
+}
+
+.diff-add .diff-line-content pre {
+	color: color-mix(in srgb, var(--success) 85%, var(--foreground));
+}
+
+.diff-line:hover {
+	background: color-mix(in srgb, var(--background) 95%, var(--border));
+}

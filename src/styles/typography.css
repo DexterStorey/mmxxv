@@ -1,0 +1,56 @@
+/* Typography */
+.title,
+.subtitle,
+.section-title,
+.modal-title,
+.timeline-title,
+.market-title-container {
+	font-family: inherit;
+	font-size: 1.5rem;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	color: var(--foreground);
+	letter-spacing: -0.5px;
+}
+
+.market-title-container {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.95rem;
+	font-weight: 500;
+	font-family: inherit;
+}
+
+.market-title {
+	font-family: inherit;
+	font-size: 0.95rem;
+	font-weight: 500;
+}
+
+.market-meta {
+	font-size: 0.8rem;
+	color: var(--muted);
+	margin-top: 0.25rem;
+	font-family: inherit;
+}
+
+.description {
+	color: var(--foreground);
+	margin-bottom: 2rem;
+	font-size: 0.9rem;
+}
+
+.text-muted {
+	color: var(--muted);
+}
+
+.mention {
+	color: var(--primary);
+	font-weight: 500;
+	text-decoration: none;
+}
+
+.mention:hover {
+	text-decoration: underline;
+}

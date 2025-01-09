@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import Nav from '~/components/nav'
-import { Timeline } from '~/components/timeline'
 import PredictionCharts from '~/components/prediction-charts'
+import { Timeline } from '~/components/timeline'
 
 export default async function About() {
 	const userCookies = (await cookies()).get('user')
@@ -11,7 +11,7 @@ export default async function About() {
 			<Nav unauthenticated={userCookies === undefined} />
 			<div className="container">
 				<div className="card">
-					<h1 className="title">MMXIV</h1>
+					<h1 className="title">MMXXV</h1>
 					<p className="description">A prediction game for 2025.</p>
 
 					<div className="section">
@@ -25,8 +25,8 @@ export default async function About() {
 						<h3 className="subtitle">Initial Points</h3>
 						<p>You can earn points in two ways during the early stages:</p>
 						<ul>
-							<li>10 points for each person you refer (up to 10 people, maximum 100 points)</li>
-							<li>10 points for each market you create (up to 10 markets, maximum 100 points)</li>
+							<li>10 points for each person you refer (up to 5 people, maximum 50 points)</li>
+							<li>10 points for each market you create (up to 5 markets, maximum 50 points)</li>
 						</ul>
 
 						<h3 className="subtitle">Market Selection Bonus</h3>

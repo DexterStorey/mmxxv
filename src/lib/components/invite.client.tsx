@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { MAX_INVITEES } from '~/constants'
 
-export default function InviteClient({ id }: { id: string }) {
+export default function InviteClient({ id, invitees }: { id: string; invitees: number }) {
 	const [isCopied, setIsCopied] = useState(false)
 	const [inviteLink, setInviteLink] = useState('')
 
@@ -20,9 +21,11 @@ export default function InviteClient({ id }: { id: string }) {
 				setIsCopied(true)
 			}}
 			className="button"
-			disabled={isCopied}
+			disabled={isCopied || invitees >= MAX_INVITEES}
 		>
-			{isCopied ? 'Copied! Send to a friend.' : 'Copy Invite Link'}
+			{isCopied
+				? 'Copied! Send to a friend.'
+				: `Copy Invite Link (${Math.max(0, MAX_INVITEES - invitees)}/${MAX_INVITEES})`}
 		</button>
 	)
 }

@@ -1,0 +1,14 @@
+/* Card Header */
+.card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+/* Card Responsive */
+@media (max-width: 768px) {
+	.card {
+		padding: 1rem;
+	}
+}

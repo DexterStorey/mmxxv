@@ -1,0 +1,62 @@
+/* Sections */
+.section {
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	margin-bottom: 1rem;
+	padding: 1.5rem 2rem;
+}
+
+.section:last-child {
+	margin-bottom: 0;
+}
+
+.section-title {
+	font-size: 1rem;
+	font-weight: 500;
+	color: var(--muted);
+	margin-bottom: 1.5rem;
+	font-family: inherit;
+}
+
+.section p {
+	font-size: 0.9rem;
+	line-height: 1.5;
+	margin-bottom: 1rem;
+}
+
+.section p:last-child {
+	margin-bottom: 0;
+}
+
+.subtitle {
+	font-size: 1rem;
+	font-weight: 600;
+	margin-top: 1.5rem;
+	margin-bottom: 0.5rem;
+	font-family: inherit;
+}
+
+.subtitle:first-of-type {
+	margin-top: 0;
+}
+
+.example {
+	background: var(--background);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 1rem 1.5rem;
+	margin-top: 0.75rem;
+	font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+	.section {
+		padding: 1rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.section-title {
+		font-size: 0.9rem;
+		margin-bottom: 1rem;
+	}
+}

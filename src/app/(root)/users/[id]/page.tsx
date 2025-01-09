@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation'
-import type { MarketWithVotesAndComments } from '~/components/market-item'
-import { MarketItem } from '~/components/market-item'
+import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
 import UserPill from '~/components/user-pill'
 import { db } from '~/db'
+import type { MarketWithVotesAndComments } from '~/types/market'
 import { calculatePoints } from '~/utils/points'
 
 type PageProps = {
@@ -72,52 +72,22 @@ export default async function UserProfilePage({ params }: PageProps) {
 				<div className="card">
 					<div className="user-profile-header">
 						<div>
-							<UserPill {...user} showEmail={true} className="user-profile-name" />
+							<UserPill {...user} showEmail={false} className="user-profile-name" />
 						</div>
 						<div className="user-profile-points">{points} points</div>
 					</div>
 					<div className="section">
 						<h2 className="section-title">Created Markets ({user.markets.length}/10)</h2>
 						<div className="table-container">
-							<table className="table">
-								<thead>
-									<tr>
-										<th style={{ width: '35%' }}>TITLE</th>
-										<th style={{ width: '30%' }}>DESCRIPTION</th>
-										<th style={{ width: '15%' }}>AUTHOR</th>
-										<th style={{ width: '12%' }}>VOTES</th>
-										<th style={{ width: '5%' }}>COMMENTS</th>
-										<th style={{ width: '3%' }} />
-									</tr>
-								</thead>
-								<tbody>
-									{user.markets.map(market => (
-										<MarketItem key={market.id} market={market as MarketWithVotesAndComments} />
-									))}
-								</tbody>
-							</table>
+							<MarketsTable markets={user.markets as MarketWithVotesAndComments[]} />
 						</div>
 					</div>
 					<div className="section">
 						<h2 className="section-title">Upvoted Markets ({user.upvotedMarkets.length})</h2>
 						<div className="table-container">
-							<table className="table">
-								<thead>
-									<tr>
-										<th style={{ width: '35%' }}>TITLE</th>
-										<th style={{ width: '30%' }}>DESCRIPTION</th>
-										<th style={{ width: '15%' }}>AUTHOR</th>
-										<th style={{ width: '12%' }}>VOTES</th>
-										<th style={{ width: '5%' }}>COMMENTS</th>
-										<th style={{ width: '3%' }} />
-									</tr>
-								</thead>
-								<tbody>
-									{user.upvotedMarkets.map(({ market }) => (
-										<MarketItem key={market.id} market={market as MarketWithVotesAndComments} />
-									))}
-								</tbody>
-							</table>
+							<MarketsTable
+								markets={user.upvotedMarkets.map(({ market }) => market as MarketWithVotesAndComments)}
+							/>
 						</div>
 					</div>
 				</div>

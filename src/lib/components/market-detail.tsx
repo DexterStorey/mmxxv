@@ -1,24 +1,47 @@
 'use client'
 
+import { formatDistanceToNow } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { getSession } from '~/actions/auth'
 import { deleteMarket } from '~/actions/market'
+import type { MarketWithVotesAndComments } from '~/types/market'
 import { DeleteMarketModal } from './delete-market-modal'
+import { EditMarketForm } from './edit-market-form'
 import { MarketComments } from './market-comments'
-import type { MarketWithVotesAndComments } from './market-item'
+import { MarketEditHistory } from './market-edit-history'
 import { MarketVotes } from './market-votes'
+import UserPill from './user-pill'
 
 export function MarketDetail({
 	market,
-	highlightedCommentId
+	highlightedCommentId,
+	hideTitle = false
 }: {
-	market: MarketWithVotesAndComments
+	market: MarketWithVotesAndComments & {
+		edits: Array<{
+			id: string
+			createdAt: Date
+			editor: {
+				id: string
+				username: string | null
+				email: string
+			}
+			previousTitle: string
+			previousDescription: string
+			previousResolutionCriteria: string
+			newTitle: string
+			newDescription: string
+			newResolutionCriteria: string
+		}>
+	}
 	highlightedCommentId: string | undefined
+	hideTitle?: boolean
 }) {
 	const router = useRouter()
 	const [isDeleting, setIsDeleting] = useState(false)
 	const [showDeleteModal, setShowDeleteModal] = useState(false)
+	const [showEditModal, setShowEditModal] = useState(false)
 	const [userId, setUserId] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -36,32 +59,36 @@ export function MarketDetail({
 		}
 	}
 
-	// Transform the market data to include empty replies arrays if they don't exist
-	const marketWithReplies = {
-		...market,
-		comments: market.comments.map(comment => ({
-			...comment,
-			replies: comment.replies || []
-		}))
-	}
-
 	return (
 		<>
-			<div className="card">
-				<div className="card-header">
-					<h1 className="title">{market.title}</h1>
-					{userId === market.authorId && (
-						<button
-							type="button"
-							onClick={() => setShowDeleteModal(true)}
-							className="button button-danger"
-						>
-							<span>×</span>
-							Delete Market
-						</button>
+			<div className="card market-detail">
+				<div className="market-header">
+					<div className="market-header-content">
+						{!hideTitle && (
+							<>
+								<h1 className="market-title">{market.title}</h1>
+								<div className="market-meta">
+									Posted by <UserPill {...market.author} /> {formatDistanceToNow(market.createdAt)} ago
+								</div>
+							</>
+						)}
+					</div>
+					{userId === market.author.id && (
+						<div className="market-actions">
+							<button type="button" className="button button-ghost" onClick={() => setShowEditModal(true)}>
+								Edit
+							</button>
+							<button
+								type="button"
+								className="button button-ghost button-danger"
+								onClick={() => setShowDeleteModal(true)}
+								disabled={isDeleting}
+							>
+								{isDeleting ? 'Deleting...' : '× Delete'}
+							</button>
+						</div>
 					)}
 				</div>
-				<div className="market-meta">Created by {market.author.username || market.author.email}</div>
 
 				<div className="section">
 					<h2 className="section-title">Description</h2>
@@ -74,15 +101,19 @@ export function MarketDetail({
 				</div>
 
 				<MarketVotes market={market} />
-				<MarketComments market={marketWithReplies} highlightedCommentId={highlightedCommentId} />
+				<MarketEditHistory edits={market.edits || []} />
+				<MarketComments market={market} highlightedCommentId={highlightedCommentId} />
 			</div>
 
-			<DeleteMarketModal
-				isOpen={showDeleteModal}
-				onClose={() => setShowDeleteModal(false)}
-				onDelete={handleDelete}
-				isDeleting={isDeleting}
-			/>
+			{showDeleteModal && (
+				<DeleteMarketModal
+					isOpen={showDeleteModal}
+					onClose={() => setShowDeleteModal(false)}
+					onDelete={handleDelete}
+					isDeleting={isDeleting}
+				/>
+			)}
+			{showEditModal && <EditMarketForm market={market} onClose={() => setShowEditModal(false)} />}
 		</>
 	)
 }

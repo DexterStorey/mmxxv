@@ -4,8 +4,8 @@ import Nav from '~/components/nav'
 import { ProbabilityMarketsTable } from '~/components/probability-markets-table'
 import { db } from '~/db'
 
-// January 20, 2025 at midnight EST = January 21, 2025 at 05:00 UTC
-const PROBABILITIES_START_DATE = new Date('2025-01-21T05:00:00.000Z')
+// Temporarily set to yesterday for testing
+const PROBABILITIES_START_DATE = new Date('2024-01-08T05:00:00.000Z')
 
 export default async function ProbabilityAssignmentPage() {
 	// Redirect if before the start date

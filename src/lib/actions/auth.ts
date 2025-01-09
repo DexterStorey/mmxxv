@@ -30,22 +30,14 @@ function generateUsername(email: string): string {
 
 export async function sendMagicLink({
 	redirectUrl,
-	email
-}: { redirectUrl?: string; email: string }) {
-	// Generate a username from email prefix
-	const baseUsername = generateUsername(email)
-	let username = baseUsername
-	let counter = 1
+	email,
+	invitedBy
+}: { redirectUrl?: string; email: string; invitedBy?: string }) {
+	const existingUser = await db.user.findUnique({
+		where: { email }
+	})
 
-	// Keep trying with incremented numbers until we find a unique username
-	while (true) {
-		const existingUser = await db.user.findFirst({
-			where: { username }
-		})
-		if (!existingUser) break
-		username = `${baseUsername}${counter}`
-		counter++
-	}
+	const username = existingUser?.username || (await generateUniqueUsername(email))
 
 	const { key } = await db.session.create({
 		data: {
@@ -56,14 +48,18 @@ export async function sendMagicLink({
 					},
 					create: {
 						email,
-						username
+						username,
+						...(invitedBy ? { invitedBy: { connect: { username: invitedBy } } } : {})
 					}
 				}
 			}
 		}
 	})
 
-	const magicLink = `${env.URL}/auth/signin/magiclink?key=${key}&redirectUrl=${encodeURIComponent(redirectUrl || '/')}`
+	const url = new URL('/auth/signin/magiclink', env.URL)
+	url.searchParams.append('key', key)
+	if (redirectUrl) url.searchParams.append('redirectUrl', redirectUrl)
+	const magicLink = url.toString()
 
 	await resend.emails.send({
 		from: 'MMXXV <welcome@mmxxv.bet>',
@@ -73,6 +69,23 @@ export async function sendMagicLink({
 	})
 
 	redirect('/auth/signin/magiclink/sent')
+}
+
+async function generateUniqueUsername(email: string): Promise<string> {
+	const baseUsername = generateUsername(email)
+	let username = baseUsername
+	let counter = 1
+
+	while (true) {
+		const existingUser = await db.user.findFirst({
+			where: { username }
+		})
+		if (!existingUser) break
+		username = `${baseUsername}${counter}`
+		counter++
+	}
+
+	return username
 }
 
 export async function handleSignOut({ redirectUrl }: { redirectUrl: string }) {

@@ -1,22 +1,17 @@
 'use client'
 
-import type { Comment, User } from '@prisma/client'
+import type { CommentReactionType } from '@prisma/client'
 import { useSession } from '@rubriclab/auth'
-import { useEffect, useRef, useState } from 'react'
-import { getMarketById } from '~/actions/market'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { addCommentReaction, removeCommentReaction } from '~/actions/comment'
+import { deleteComment, getMarketById } from '~/actions/market'
 import { getCurrentUsername } from '~/actions/user'
+import type { CommentWithReplies, MarketWithVotesAndComments } from '~/types/market'
 import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
-import type { MarketWithVotesAndComments } from './market-item'
+import CommentReactions from './comment-reactions'
+import { DeleteCommentModal } from './delete-comment-modal'
 import UserPill from './user-pill'
-
-type CommentWithAuthor = Comment & {
-	author: Pick<User, 'id' | 'email' | 'username'>
-}
-
-type CommentWithReplies = CommentWithAuthor & {
-	replies: CommentWithReplies[]
-}
 
 function formatCommentContent(content: string, currentUserId: string | undefined) {
 	const [formattedContent, setFormattedContent] = useState<React.ReactNode[]>([])
@@ -69,59 +64,126 @@ function formatCommentContent(content: string, currentUserId: string | undefined
 function CommentThread({
 	comment,
 	highlightedCommentId,
-	onReply
+	onReply,
+	depth = 0
 }: {
 	comment: CommentWithReplies
 	highlightedCommentId: string | undefined
 	onReply: (parentId: string) => void
+	depth?: number
 }) {
+	const MAX_DEPTH = 6
 	const { user } = useSession()
 	const [showReplyForm, setShowReplyForm] = useState(false)
 	const [showReplies, setShowReplies] = useState(false)
+	const [isDeleting, setIsDeleting] = useState(false)
+	const [showDeleteModal, setShowDeleteModal] = useState(false)
+	const [isTemporarilyHighlighted, setIsTemporarilyHighlighted] = useState(false)
 	const hasReplies = comment.replies?.length > 0
 	const commentRef = useRef<HTMLDivElement>(null)
 	const isHighlighted = comment.id === highlightedCommentId
-	const hasHighlightedReply = comment.replies.some(reply => reply.id === highlightedCommentId)
+	const isAuthor = user?.id === comment.author.id
+	const canNest = depth < MAX_DEPTH
 
-	// Auto-expand replies if a nested reply is highlighted
-	useEffect(() => {
-		if (hasHighlightedReply) {
-			setShowReplies(true)
-		}
-	}, [hasHighlightedReply])
+	// Check if this comment thread contains the highlighted comment
+	const findHighlightedComment = useCallback(
+		(replies: CommentWithReplies[]): boolean => {
+			for (const reply of replies) {
+				if (reply.id === highlightedCommentId) return true
+				if (reply.replies.length > 0 && findHighlightedComment(reply.replies)) return true
+			}
+			return false
+		},
+		[highlightedCommentId]
+	)
 
 	useEffect(() => {
-		if (isHighlighted && commentRef.current) {
-			commentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+		if (highlightedCommentId && comment.replies.length > 0) {
+			const shouldExpand = findHighlightedComment(comment.replies)
+			if (shouldExpand) {
+				setShowReplies(true)
+			}
 		}
+	}, [highlightedCommentId, comment.replies, findHighlightedComment])
+
+	useEffect(() => {
+		if (isHighlighted) {
+			setIsTemporarilyHighlighted(true)
+			const timer = setTimeout(() => {
+				setIsTemporarilyHighlighted(false)
+			}, 4000)
+			return () => clearTimeout(timer)
+		}
+		return
 	}, [isHighlighted])
 
+	const handleDelete = async () => {
+		try {
+			setIsDeleting(true)
+			await deleteComment(comment.id)
+			onReply(comment.id)
+		} catch (error) {
+			console.error('Error deleting comment:', error)
+			alert('Failed to delete comment')
+		} finally {
+			setIsDeleting(false)
+			setShowDeleteModal(false)
+		}
+	}
+
+	const handleReaction = async (type: CommentReactionType) => {
+		try {
+			if (comment.reactions.filter(r => r.type === type).some(r => r.authorId === user?.id)) {
+				await removeCommentReaction({ commentId: comment.id, type })
+			} else {
+				await addCommentReaction({ commentId: comment.id, type })
+			}
+		} catch (error) {
+			console.error('Error reacting to comment:', error)
+			alert('Failed to add reaction')
+		}
+	}
+
 	return (
-		<div className="comment-thread" ref={commentRef}>
-			<div className={`comment ${isHighlighted ? 'highlighted' : ''}`}>
+		<div className="comment-thread" ref={commentRef} data-comment-id={comment.id}>
+			<div className={`comment ${isTemporarilyHighlighted ? 'highlight-flash' : ''}`}>
 				<div className="comment-header">
 					<div className="comment-meta">
 						<UserPill {...comment.author} />
 						<span className="comment-time">{formatDate(comment.createdAt)}</span>
 					</div>
+					{isAuthor && (
+						<button
+							type="button"
+							className="comment-action-button button-danger-subtle"
+							onClick={() => setShowDeleteModal(true)}
+						>
+							Delete
+						</button>
+					)}
 				</div>
 				<div className="comment-content">{formatCommentContent(comment.content, user?.id)}</div>
 				<div className="comment-actions">
 					<div className="comment-actions-left">
-						<button
-							type="button"
-							className="comment-action-button"
-							onClick={() => setShowReplyForm(!showReplyForm)}
-							disabled={!user}
-						>
-							Reply
-						</button>
+						{canNest ? (
+							<button
+								type="button"
+								className="comment-action-button"
+								onClick={() => setShowReplyForm(!showReplyForm)}
+								disabled={!user}
+							>
+								Reply
+							</button>
+						) : (
+							<span className="text-muted text-sm">Max nesting depth reached</span>
+						)}
+						<CommentReactions comment={comment} userId={user?.id || ''} onReaction={handleReaction} />
 					</div>
 					<div className="comment-actions-right">
 						{hasReplies && (
 							<button
 								type="button"
-								className="comment-action-button"
+								className="comment-action-button show-replies-btn"
 								onClick={() => setShowReplies(!showReplies)}
 							>
 								{showReplies ? 'Hide Replies' : `Show Replies (${comment.replies.length})`}
@@ -129,7 +191,7 @@ function CommentThread({
 						)}
 					</div>
 				</div>
-				{showReplyForm && (
+				{showReplyForm && canNest && (
 					<div className="comment-reply-form">
 						<AddCommentForm
 							marketId={comment.marketId}
@@ -143,17 +205,24 @@ function CommentThread({
 				)}
 			</div>
 			{hasReplies && showReplies && (
-				<div className="comment-replies">
+				<div className={`comment-replies depth-${depth}`}>
 					{comment.replies.map(reply => (
 						<CommentThread
 							key={reply.id}
 							comment={reply}
 							onReply={onReply}
 							highlightedCommentId={highlightedCommentId}
+							depth={depth + 1}
 						/>
 					))}
 				</div>
 			)}
+			<DeleteCommentModal
+				isOpen={showDeleteModal}
+				onClose={() => setShowDeleteModal(false)}
+				onDelete={handleDelete}
+				isDeleting={isDeleting}
+			/>
 		</div>
 	)
 }
@@ -165,50 +234,89 @@ export function MarketComments({
 	market: MarketWithVotesAndComments
 	highlightedCommentId?: string | undefined
 }) {
-	// First, sort all comments by date
-	const sortedComments = [...market.comments].sort(
-		(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-	)
-
-	// Then organize into threads while preserving chronological order
-	const [comments, setComments] = useState<CommentWithReplies[]>(
-		sortedComments
-			.filter(comment => !comment.parentId)
-			.map(comment => ({
-				...comment,
-				replies: sortedComments.filter(reply => reply.parentId === comment.id)
-			}))
-	)
+	const [comments, setComments] = useState<CommentWithReplies[]>(market.comments)
+	const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
 	const refreshComments = async () => {
 		const updatedMarket = await getMarketById(market.id)
 		if (updatedMarket) {
-			const allSortedComments = [...updatedMarket.comments].sort(
-				(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-			)
-			const topLevelComments = allSortedComments
-				.filter(comment => !comment.parentId)
-				.map(comment => ({
-					...comment,
-					replies: allSortedComments.filter(reply => reply.parentId === comment.id)
-				}))
-			setComments(topLevelComments)
+			setComments(updatedMarket.comments)
 		}
 	}
 
-	// Update comments when market data changes
 	useEffect(() => {
-		const allSortedComments = [...market.comments].sort(
-			(a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-		)
-		const topLevelComments = allSortedComments
-			.filter(comment => !comment.parentId)
-			.map(comment => ({
-				...comment,
-				replies: allSortedComments.filter(reply => reply.parentId === comment.id)
-			}))
-		setComments(topLevelComments)
+		setComments(market.comments)
 	}, [market])
+
+	useEffect(() => {
+		if (!highlightedCommentId) return
+
+		if (scrollTimeoutRef.current) {
+			clearTimeout(scrollTimeoutRef.current)
+		}
+
+		const findAndExpandParents = (commentId: string, comments: CommentWithReplies[]): boolean => {
+			for (const comment of comments) {
+				if (comment.id === commentId) {
+					return true
+				}
+
+				const foundInDirectReplies = comment.replies.some(reply => reply.id === commentId)
+				if (foundInDirectReplies) {
+					const commentEl = document.querySelector(`[data-comment-id="${comment.id}"]`)
+					if (commentEl) {
+						const showRepliesBtn = commentEl.querySelector('.show-replies-btn') as HTMLButtonElement
+						if (showRepliesBtn) {
+							showRepliesBtn.click()
+						}
+					}
+					return true
+				}
+
+				if (comment.replies.length > 0) {
+					const found = findAndExpandParents(commentId, comment.replies)
+					if (found) {
+						const commentEl = document.querySelector(`[data-comment-id="${comment.id}"]`)
+						if (commentEl) {
+							const showRepliesBtn = commentEl.querySelector('.show-replies-btn') as HTMLButtonElement
+							if (showRepliesBtn) {
+								showRepliesBtn.click()
+							}
+						}
+						return true
+					}
+				}
+			}
+			return false
+		}
+
+		const attemptScroll = (attempt = 0) => {
+			if (attempt > 10) return
+
+			const highlightedComment = document.querySelector(`[data-comment-id="${highlightedCommentId}"]`)
+			if (highlightedComment) {
+				highlightedComment.scrollIntoView({ behavior: 'smooth', block: 'center' })
+				const commentEl = highlightedComment.querySelector('.comment')
+				if (commentEl) {
+					commentEl.classList.add('highlight-flash')
+					setTimeout(() => {
+						commentEl.classList.remove('highlight-flash')
+					}, 4000)
+				}
+			} else {
+				scrollTimeoutRef.current = setTimeout(() => attemptScroll(attempt + 1), 100)
+			}
+		}
+
+		findAndExpandParents(highlightedCommentId, comments)
+		attemptScroll()
+
+		return () => {
+			if (scrollTimeoutRef.current) {
+				clearTimeout(scrollTimeoutRef.current)
+			}
+		}
+	}, [highlightedCommentId, comments])
 
 	return (
 		<div className="comments-section">

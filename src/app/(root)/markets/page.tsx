@@ -1,12 +1,21 @@
+import type { MarketCategory } from '@prisma/client'
 import { getSession } from '~/actions/auth'
 import { CreateMarketForm } from '~/components/create-market-form'
-import type { MarketWithVotesAndComments } from '~/components/market-item'
+import { MarketFilters } from '~/components/market-filters'
 import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
 import { db } from '~/db'
+import type { MarketWithVotesAndComments } from '~/types/market'
 
-export default async function MarketsPage() {
+export const maxDuration = 300
+
+export default async function MarketsPage({
+	searchParams
+}: {
+	searchParams: Promise<{ search?: string; category?: MarketCategory }>
+}) {
 	const { user } = await getSession()
+	const { search, category } = await searchParams
 
 	const marketCount = await db.market.count({
 		where: {
@@ -15,6 +24,30 @@ export default async function MarketsPage() {
 	})
 
 	const markets = await db.market.findMany({
+		where: {
+			AND: [
+				search
+					? {
+							OR: [
+								{ title: { contains: search, mode: 'insensitive' } },
+								{ description: { contains: search, mode: 'insensitive' } }
+							]
+						}
+					: {},
+				category ? { categories: { has: category } } : {}
+			]
+		},
+		orderBy: [
+			{
+				upvotes: 'desc'
+			},
+			{
+				downvotes: 'asc'
+			},
+			{
+				createdAt: 'asc'
+			}
+		],
 		include: {
 			author: {
 				select: {
@@ -30,6 +63,7 @@ export default async function MarketsPage() {
 				select: { userId: true }
 			},
 			comments: {
+				orderBy: { createdAt: 'desc' },
 				include: {
 					author: {
 						select: {
@@ -38,7 +72,14 @@ export default async function MarketsPage() {
 							username: true
 						}
 					},
+					reactions: {
+						select: {
+							type: true,
+							authorId: true
+						}
+					},
 					replies: {
+						orderBy: { createdAt: 'desc' },
 						include: {
 							author: {
 								select: {
@@ -46,7 +87,27 @@ export default async function MarketsPage() {
 									email: true,
 									username: true
 								}
+							},
+							reactions: {
+								select: {
+									type: true,
+									authorId: true
+								}
 							}
+						}
+					}
+				}
+			},
+			edits: {
+				orderBy: {
+					createdAt: 'desc'
+				},
+				include: {
+					editor: {
+						select: {
+							id: true,
+							email: true,
+							username: true
 						}
 					}
 				}
@@ -54,16 +115,7 @@ export default async function MarketsPage() {
 		}
 	})
 
-	const sortedMarkets = markets.sort((a, b) => {
-		const aNetVotes = a.upvotes - a.downvotes
-		const bNetVotes = b.upvotes - b.downvotes
-		if (aNetVotes !== bNetVotes) {
-			return bNetVotes - aNetVotes
-		}
-		return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime() // Then by date asc
-	})
-
-	const marketsWithReplies: MarketWithVotesAndComments[] = sortedMarkets.map(market => ({
+	const marketsWithReplies: MarketWithVotesAndComments[] = markets.map(market => ({
 		...market,
 		comments: market.comments.map(comment => ({
 			...comment,
@@ -80,11 +132,18 @@ export default async function MarketsPage() {
 			<div className="container">
 				<div className="card">
 					<div className="card-header">
-						<h1 className="title" style={{ margin: 0, borderBottom: 'none', fontFamily: 'inherit' }}>
-							Markets
-						</h1>
-						<CreateMarketForm marketCount={marketCount} />
+						<div>
+							<h1 className="title">Market Proposals</h1>
+							<p className="description">
+								Market Proposals are due on January 20. Submit markets and vote on which ones you want to
+								see in the game!
+							</p>
+						</div>
+						<div>
+							<CreateMarketForm marketCount={marketCount} buttonText="Propose Market" />
+						</div>
 					</div>
+					<MarketFilters />
 					<div className="overflow-x-auto">
 						<MarketsTable markets={marketsWithReplies} />
 					</div>

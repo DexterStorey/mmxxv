@@ -1,0 +1,84 @@
+/* Mention Input */
+.mention-input-container {
+	position: relative;
+	width: 100%;
+}
+
+.mention-dropdown {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	margin-top: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	z-index: 10;
+	max-height: 200px;
+	overflow-y: auto;
+}
+
+.mention-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	padding: 8px 12px;
+	background: none;
+	border: none;
+	text-align: left;
+	cursor: pointer;
+	color: var(--foreground);
+	font-size: 0.9rem;
+	transition: background-color 0.2s ease;
+}
+
+.mention-item:hover {
+	background: var(--hover);
+}
+
+.mention-pill {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--border);
+	color: var(--muted);
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	font-size: 0.8rem;
+	font-weight: 500;
+}
+
+/* Comment Mentions */
+.mention-tag {
+	display: inline-block;
+	padding: 0.125rem 0.375rem;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	font-weight: 500;
+	margin: 0 0.125rem;
+}
+
+.mention-tag-self {
+	background-color: #e5edff;
+	color: #3b82f6;
+}
+
+.mention-tag-other {
+	background-color: #e5e7eb;
+	color: #374151;
+}
+
+@media (max-width: 768px) {
+	.mention-dropdown {
+		max-height: 40vh;
+		border-radius: 8px;
+	}
+
+	.mention-item {
+		padding: 0.75rem;
+		min-height: 44px;
+	}
+}

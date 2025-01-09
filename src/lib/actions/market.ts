@@ -2,10 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { getSession } from '~/actions/auth'
+import { MAX_MARKETS_PER_USER } from '~/constants'
 import { db } from '~/db'
 import { handleNewComment } from '~/services/notifications'
-
-const MAX_MARKETS_PER_USER = 10
+import { generateMarketCategories } from '~/utils/category-generation'
+import { generateMarketImage } from '~/utils/image-generation'
 
 export async function createMarket(data: {
 	title: string
@@ -14,7 +15,6 @@ export async function createMarket(data: {
 }) {
 	const { user } = await getSession()
 
-	// Check if user has reached market limit
 	const marketCount = await db.market.count({
 		where: {
 			authorId: user.id
@@ -25,15 +25,77 @@ export async function createMarket(data: {
 		throw new Error(`You can only create up to ${MAX_MARKETS_PER_USER} markets`)
 	}
 
+	const [imageUrl, categories] = await Promise.all([
+		generateMarketImage(data.title, data.description),
+		generateMarketCategories(data.title, data.description)
+	])
+
 	const market = await db.market.create({
 		data: {
 			...data,
+			imageUrl,
+			categories,
 			authorId: user.id
 		}
 	})
 
 	revalidatePath('/markets')
-	return market
+	return { id: market.id }
+}
+
+export async function editMarket(data: {
+	id: string
+	title: string
+	description: string
+	resolutionCriteria: string
+}) {
+	const { user } = await getSession()
+
+	// Check if user owns the market
+	const market = await db.market.findUnique({
+		where: { id: data.id },
+		select: {
+			authorId: true,
+			title: true,
+			description: true,
+			resolutionCriteria: true
+		}
+	})
+
+	if (!market) {
+		throw new Error('Market not found')
+	}
+
+	if (market.authorId !== user.id) {
+		throw new Error('You can only edit your own markets')
+	}
+
+	// Create edit history record
+	await db.marketEdit.create({
+		data: {
+			marketId: data.id,
+			editorId: user.id,
+			previousTitle: market.title,
+			previousDescription: market.description,
+			previousResolutionCriteria: market.resolutionCriteria,
+			newTitle: data.title,
+			newDescription: data.description,
+			newResolutionCriteria: data.resolutionCriteria
+		}
+	})
+
+	const updatedMarket = await db.market.update({
+		where: { id: data.id },
+		data: {
+			title: data.title,
+			description: data.description,
+			resolutionCriteria: data.resolutionCriteria
+		}
+	})
+
+	revalidatePath('/markets')
+	revalidatePath(`/markets/${data.id}`)
+	return updatedMarket
 }
 
 export async function upvoteMarket(marketId: string) {
@@ -261,7 +323,7 @@ export async function getMarketById(marketId: string) {
 			downvoters: true,
 			comments: {
 				orderBy: {
-					createdAt: 'desc'
+					createdAt: 'asc'
 				},
 				include: {
 					author: {
@@ -271,13 +333,88 @@ export async function getMarketById(marketId: string) {
 							username: true
 						}
 					},
+					reactions: {
+						select: {
+							type: true,
+							authorId: true
+						}
+					},
 					replies: {
+						orderBy: {
+							createdAt: 'asc'
+						},
 						include: {
 							author: {
 								select: {
 									id: true,
 									email: true,
 									username: true
+								}
+							},
+							reactions: {
+								select: {
+									type: true,
+									authorId: true
+								}
+							},
+							replies: {
+								orderBy: {
+									createdAt: 'asc'
+								},
+								include: {
+									author: {
+										select: {
+											id: true,
+											email: true,
+											username: true
+										}
+									},
+									reactions: {
+										select: {
+											type: true,
+											authorId: true
+										}
+									},
+									replies: {
+										orderBy: {
+											createdAt: 'asc'
+										},
+										include: {
+											author: {
+												select: {
+													id: true,
+													email: true,
+													username: true
+												}
+											},
+											reactions: {
+												select: {
+													type: true,
+													authorId: true
+												}
+											},
+											replies: {
+												orderBy: {
+													createdAt: 'asc'
+												},
+												include: {
+													author: {
+														select: {
+															id: true,
+															email: true,
+															username: true
+														}
+													},
+													reactions: {
+														select: {
+															type: true,
+															authorId: true
+														}
+													}
+												}
+											}
+										}
+									}
 								}
 							}
 						}
@@ -290,6 +427,20 @@ export async function getMarketById(marketId: string) {
 					email: true,
 					username: true
 				}
+			},
+			edits: {
+				orderBy: {
+					createdAt: 'desc'
+				},
+				include: {
+					editor: {
+						select: {
+							id: true,
+							email: true,
+							username: true
+						}
+					}
+				}
 			}
 		}
 	})
@@ -300,26 +451,41 @@ export async function getMarketById(marketId: string) {
 		replies: CommentWithReplies[]
 	}
 
-	// Recursively build the comment tree
-	const commentMap = new Map<string, CommentWithReplies>(
-		market.comments.map(comment => [comment.id, { ...comment, replies: [] }])
-	)
+	// Recursively build the comment tree with depth tracking
+	const commentMap = new Map<string, CommentWithReplies>()
 	const rootComments: CommentWithReplies[] = []
 
+	// First pass: Create all comment objects
 	for (const comment of market.comments) {
+		commentMap.set(comment.id, { ...comment, replies: [] })
+	}
+
+	// Second pass: Build the tree structure
+	for (const comment of market.comments) {
+		const commentWithReplies = commentMap.get(comment.id)
+		if (!commentWithReplies) continue
+
 		if (comment.parentId) {
 			const parent = commentMap.get(comment.parentId)
-			const commentWithReplies = commentMap.get(comment.id)
-			if (parent && commentWithReplies) {
+			if (parent) {
 				parent.replies.push(commentWithReplies)
 			}
 		} else {
-			const commentWithReplies = commentMap.get(comment.id)
-			if (commentWithReplies) {
-				rootComments.push(commentWithReplies)
+			rootComments.push(commentWithReplies)
+		}
+	}
+
+	// Sort all replies by createdAt
+	const sortReplies = (comments: CommentWithReplies[]) => {
+		comments.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+		for (const comment of comments) {
+			if (comment.replies.length > 0) {
+				sortReplies(comment.replies)
 			}
 		}
 	}
+
+	sortReplies(rootComments)
 
 	return {
 		...market,
@@ -349,5 +515,68 @@ export async function deleteMarket(marketId: string) {
 	})
 
 	revalidatePath('/markets')
+	revalidatePath(`/markets/${marketId}`)
+}
+
+export async function deleteComment(commentId: string) {
+	const session = await getSession()
+	if (!session.user) throw new Error('Not authenticated')
+
+	// Check if comment exists and user is the author
+	const comment = await db.comment.findUnique({
+		where: { id: commentId },
+		select: {
+			authorId: true,
+			marketId: true
+		}
+	})
+
+	if (!comment) {
+		throw new Error('Comment not found')
+	}
+
+	if (comment.authorId !== session.user.id) {
+		throw new Error('Unauthorized')
+	}
+
+	await db.comment.delete({
+		where: { id: commentId }
+	})
+
+	revalidatePath(`/markets/${comment.marketId}`)
+	return comment.marketId
+}
+
+export async function regenerateMarketImage(marketId: string) {
+	const { user } = await getSession()
+
+	const market = await db.market.findUnique({
+		where: { id: marketId },
+		select: {
+			authorId: true,
+			title: true,
+			description: true
+		}
+	})
+
+	if (!market) {
+		throw new Error('Market not found')
+	}
+
+	if (market.authorId !== user.id) {
+		throw new Error('You can only regenerate images for your own markets')
+	}
+
+	const imageUrl = await generateMarketImage(market.title, market.description)
+
+	if (!imageUrl) {
+		throw new Error('Failed to generate new image')
+	}
+
+	await db.market.update({
+		where: { id: marketId },
+		data: { imageUrl }
+	})
+
 	revalidatePath(`/markets/${marketId}`)
 }

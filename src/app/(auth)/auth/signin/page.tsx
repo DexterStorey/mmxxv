@@ -1,20 +1,27 @@
-'use client'
-
-import { Button, Input } from 'rubricui'
+import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { sendMagicLink } from '~/actions/auth'
 import Nav from '~/components/nav'
 
 async function handleSubmit(formData: FormData) {
-	try {
-		const { email } = z
-			.object({ email: z.string().email() })
-			.parse(Object.fromEntries(formData.entries()))
-		await sendMagicLink({ email })
-	} catch (e) {}
+	'use server'
+	const { email, invitedBy } = z
+		.object({
+			email: z.string().email(),
+			invitedBy: z.string().optional()
+		})
+		.parse(Object.fromEntries(formData.entries()))
+
+	await sendMagicLink({
+		email,
+		...(invitedBy ? { invitedBy } : {})
+	})
 }
 
-export default function SignInPage() {
+export default async function SignInPage() {
+	const cookieStore = await cookies()
+	const invitedBy = cookieStore.get('invitedBy')
+
 	return (
 		<>
 			<Nav unauthenticated={true} />
@@ -27,11 +34,12 @@ export default function SignInPage() {
 							<label htmlFor="email" className="form-label">
 								Email
 							</label>
-							<Input id="email" name="email" className="input" placeholder="your@email.com" />
+							<input id="email" name="email" className="input" placeholder="your@email.com" />
 						</div>
-						<Button type="submit" className="button-primary">
+						<input type="hidden" name="invitedBy" value={invitedBy?.value} />
+						<button type="submit" className="button-primary">
 							Send Magic Link 🪄
-						</Button>
+						</button>
 					</form>
 				</div>
 			</div>
