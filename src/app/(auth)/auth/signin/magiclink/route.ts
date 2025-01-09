@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { db } from '~/db'
 
+const LOGIN_EXPIRY = 60 * 60 * 24 * 30 // 30 days
+
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url)
 	const { key, redirectUrl } = z
@@ -33,8 +35,8 @@ export async function GET(request: Request) {
 		}
 	})
 
-	cookieStore.set('key', key)
-	cookieStore.set('user', JSON.stringify(user))
+	cookieStore.set('key', key, { maxAge: LOGIN_EXPIRY })
+	cookieStore.set('user', JSON.stringify(user), { maxAge: LOGIN_EXPIRY })
 	cookieStore.delete('invitedBy')
 
 	redirect(redirectUrl)
