@@ -52,7 +52,7 @@ export const MarketsTableServer = async ({
 				downvotes: 'asc'
 			},
 			{
-				updatedAt: 'asc'
+				updatedAt: 'desc'
 			}
 		],
 		include: {
