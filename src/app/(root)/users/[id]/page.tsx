@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
 import UserPill from '~/components/user-pill'
+import { MAX_MARKETS_PER_USER } from '~/constants'
 import { db } from '~/db'
 import type { MarketWithVotesAndComments } from '~/types/market'
 import { calculatePoints } from '~/utils/points'
@@ -77,7 +78,9 @@ export default async function UserProfilePage({ params }: PageProps) {
 						<div className="user-profile-points">{points} points</div>
 					</div>
 					<div className="section">
-						<h2 className="section-title">Created Markets ({user.markets.length}/10)</h2>
+						<h2 className="section-title">
+							Created Markets ({user.markets.length}/{MAX_MARKETS_PER_USER})
+						</h2>
 						<div className="table-container">
 							<MarketsTable markets={user.markets as MarketWithVotesAndComments[]} />
 						</div>
