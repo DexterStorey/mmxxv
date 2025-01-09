@@ -70,7 +70,7 @@ export default function Nav({ unauthenticated }: { unauthenticated?: boolean }) 
 					<Link href="/" className="nav-link" onClick={closeMenu}>
 						Home
 					</Link>
-					<Link href="/markets" className="nav-link" onClick={closeMenu}>
+					<Link href="/markets" prefetch={false} className="nav-link" onClick={closeMenu}>
 						Markets
 					</Link>
 					{isProbabilitiesEnabled && (
@@ -78,7 +78,7 @@ export default function Nav({ unauthenticated }: { unauthenticated?: boolean }) 
 							Probabilities
 						</Link>
 					)}
-					<Link href="/leaderboard" className="nav-link" onClick={closeMenu}>
+					<Link href="/leaderboard" prefetch={false} className="nav-link" onClick={closeMenu}>
 						Leaderboard
 					</Link>
 					<Link href="/about" className="nav-link" onClick={closeMenu}>

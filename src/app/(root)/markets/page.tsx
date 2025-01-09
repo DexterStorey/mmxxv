@@ -5,7 +5,6 @@ import { MarketFilters } from '~/components/market-filters'
 import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
 import { db } from '~/db'
-import type { MarketWithVotesAndComments } from '~/types/market'
 
 export const maxDuration = 300
 
@@ -22,109 +21,6 @@ export default async function MarketsPage({
 			authorId: user.id
 		}
 	})
-
-	const markets = await db.market.findMany({
-		where: {
-			AND: [
-				search
-					? {
-							OR: [
-								{ title: { contains: search, mode: 'insensitive' } },
-								{ description: { contains: search, mode: 'insensitive' } }
-							]
-						}
-					: {},
-				category ? { categories: { has: category } } : {}
-			]
-		},
-		orderBy: [
-			{
-				upvotes: 'desc'
-			},
-			{
-				downvotes: 'asc'
-			},
-			{
-				createdAt: 'asc'
-			}
-		],
-		include: {
-			author: {
-				select: {
-					id: true,
-					email: true,
-					username: true
-				}
-			},
-			upvoters: {
-				select: { userId: true }
-			},
-			downvoters: {
-				select: { userId: true }
-			},
-			comments: {
-				orderBy: { createdAt: 'desc' },
-				include: {
-					author: {
-						select: {
-							id: true,
-							email: true,
-							username: true
-						}
-					},
-					reactions: {
-						select: {
-							type: true,
-							authorId: true
-						}
-					},
-					replies: {
-						orderBy: { createdAt: 'desc' },
-						include: {
-							author: {
-								select: {
-									id: true,
-									email: true,
-									username: true
-								}
-							},
-							reactions: {
-								select: {
-									type: true,
-									authorId: true
-								}
-							}
-						}
-					}
-				}
-			},
-			edits: {
-				orderBy: {
-					createdAt: 'desc'
-				},
-				include: {
-					editor: {
-						select: {
-							id: true,
-							email: true,
-							username: true
-						}
-					}
-				}
-			}
-		}
-	})
-
-	const marketsWithReplies: MarketWithVotesAndComments[] = markets.map(market => ({
-		...market,
-		comments: market.comments.map(comment => ({
-			...comment,
-			replies: comment.replies.map(reply => ({
-				...reply,
-				replies: []
-			}))
-		}))
-	}))
 
 	return (
 		<>
@@ -145,7 +41,7 @@ export default async function MarketsPage({
 					</div>
 					<MarketFilters />
 					<div className="overflow-x-auto">
-						<MarketsTable markets={marketsWithReplies} />
+						<MarketsTable search={search} category={category} />
 					</div>
 				</div>
 			</div>

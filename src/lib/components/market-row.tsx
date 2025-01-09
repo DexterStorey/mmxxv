@@ -18,7 +18,7 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 	const hasUpvoted = market.upvoters.some((u: { userId: string }) => u.userId === user?.id)
 	const hasDownvoted = market.downvoters.some((u: { userId: string }) => u.userId === user?.id)
 	const isOwner = user?.id === market.author.id
-	const isNewMarket = isNew(market.createdAt)
+	const isNewMarket = isNew(market.updatedAt)
 
 	const handleVote = async (
 		e: React.MouseEvent | React.KeyboardEvent,
@@ -60,7 +60,7 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 			<td style={{ width: '22%' }}>
 				<div className="market-title">{market.title}</div>
 				<div className="market-meta">
-					<span className={`time-pill ${isNewMarket ? 'new' : ''}`}>{formatDate(market.createdAt)}</span>
+					<span className={`time-pill ${isNewMarket ? 'new' : ''}`}>{formatDate(market.updatedAt)}</span>
 				</div>
 			</td>
 			<td style={{ width: '23%' }}>

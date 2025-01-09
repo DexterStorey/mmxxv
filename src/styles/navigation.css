@@ -4,7 +4,7 @@
 	top: 0;
 	left: 0;
 	right: 0;
-	height: 3rem;
+	height: 4rem;
 	padding: 0 1rem;
 	border-bottom: 1px solid var(--border);
 	background: var(--card);
@@ -36,10 +36,14 @@
 	transition: color 0.2s ease;
 	white-space: nowrap;
 	padding: 0.5rem;
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+	border-radius: 0.25rem;
 }
 
 .nav-link:hover {
 	color: var(--foreground);
+	background: var(--hover);
 }
 
 .nav-link-account {

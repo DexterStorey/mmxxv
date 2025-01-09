@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { MarketsTable } from '~/components/markets-table'
+import { MarketsTableClient } from '~/components/markets-table.client'
 import Nav from '~/components/nav'
 import UserPill from '~/components/user-pill'
 import { MAX_MARKETS_PER_USER } from '~/constants'
@@ -82,13 +82,13 @@ export default async function UserProfilePage({ params }: PageProps) {
 							Created Markets ({user.markets.length}/{MAX_MARKETS_PER_USER})
 						</h2>
 						<div className="table-container">
-							<MarketsTable markets={user.markets as MarketWithVotesAndComments[]} />
+							<MarketsTableClient markets={user.markets as MarketWithVotesAndComments[]} />
 						</div>
 					</div>
 					<div className="section">
 						<h2 className="section-title">Upvoted Markets ({user.upvotedMarkets.length})</h2>
 						<div className="table-container">
-							<MarketsTable
+							<MarketsTableClient
 								markets={user.upvotedMarkets.map(({ market }) => market as MarketWithVotesAndComments)}
 							/>
 						</div>
