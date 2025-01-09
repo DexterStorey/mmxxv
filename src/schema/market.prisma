@@ -12,6 +12,7 @@ model Market {
 
     upvoters   MarketUpvotes[]   @relation("MarketUpvoters")
     downvoters MarketDownvotes[] @relation("MarketDownvoters")
+    predictions Prediction[]
 
     author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId String
@@ -88,4 +89,22 @@ enum NotificationType {
     MARKET_COMMENT
     COMMENT_REPLY
     MENTION
+}
+
+model Prediction {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    probability Float  // The user's estimated probability (0.0 to 1.0)
+
+    market   Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+    marketId String
+
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
+
+    @@unique([marketId, userId])  // One prediction per user per market
+    @@index([userId])
+    @@index([marketId])
 }
