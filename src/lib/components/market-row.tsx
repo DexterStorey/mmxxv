@@ -60,7 +60,9 @@ export function MarketRow({ market, onDeleteClick }: MarketRowProps) {
 			<td style={{ width: '22%' }}>
 				<div className="market-title">{market.title}</div>
 				<div className="market-meta">
-					<span className={`time-pill ${isNewMarket ? 'new' : ''}`}>{formatDate(market.updatedAt)}</span>
+					<span className={`time-pill ${isNewMarket ? 'new' : ''}`}>
+						Updated {formatDate(market.updatedAt)}
+					</span>
 				</div>
 			</td>
 			<td style={{ width: '23%' }}>
