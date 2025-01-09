@@ -16,6 +16,7 @@ model User {
 
   upvotedMarkets   MarketUpvotes[]   @relation("MarketUpvoters")
   downvotedMarkets MarketDownvotes[] @relation("MarketDownvoters")
+  predictions      Prediction[]
   comments         Comment[]
   markets          Market[]
   notifications    Notification[]

@@ -14,7 +14,7 @@ import {Line} from 'react-chartjs-2'
 import {
   calculateCorrectPoints,
   calculateIncorrectPoints
-} from '../lib/graphics/graphics'
+} from '~/graphics/graphics'
 
 ChartJS.register(
   CategoryScale,
