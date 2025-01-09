@@ -14,6 +14,7 @@ body {
 	max-width: 65rem;
 	margin: 0 auto;
 	margin-top: 4.5rem;
+	min-width: 768px;
 }
 
 .card {

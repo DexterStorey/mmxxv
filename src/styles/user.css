@@ -7,7 +7,7 @@
 	padding: 1rem;
 	background: var(--card);
 	border: 1px solid var(--border);
-	border-radius: 8px;
+	border-radius: 0.25rem;
 }
 
 .user-profile-name {

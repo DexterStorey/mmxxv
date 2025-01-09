@@ -48,7 +48,7 @@
 	gap: 0.75rem;
 	background: var(--card);
 	border: 1px solid var(--border);
-	border-radius: 8px;
+	border-radius: 0.25rem;
 	padding: 1rem;
 }
 

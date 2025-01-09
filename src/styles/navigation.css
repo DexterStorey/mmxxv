@@ -35,9 +35,7 @@
 	text-decoration: none;
 	transition: color 0.2s ease;
 	white-space: nowrap;
-	padding: 0.5rem;
-	padding-left: 0.75rem;
-	padding-right: 0.75rem;
+	padding: 0.5rem 0.75rem;
 	border-radius: 0.25rem;
 }
 
