@@ -4,8 +4,8 @@ import { useSession } from '@rubriclab/auth'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-// Temporarily set to yesterday for testing
-const PROBABILITIES_START_DATE = new Date('2024-01-08T05:00:00.000Z')
+// January 20, 2025 at midnight EST = January 21, 2025 at 05:00 UTC
+const PROBABILITIES_START_DATE = new Date('2025-01-21T05:00:00.000Z')
 
 export default function Nav({ unauthenticated }: { unauthenticated?: boolean }) {
 	const [isProbabilitiesEnabled, setIsProbabilitiesEnabled] = useState(false)
