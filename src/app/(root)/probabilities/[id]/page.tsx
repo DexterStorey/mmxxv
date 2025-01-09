@@ -9,13 +9,15 @@ import { formatDate } from '~/utils/date'
 // January 20, 2025 at midnight EST = January 21, 2025 at 05:00 UTC
 const PROBABILITIES_START_DATE = new Date('2025-01-21T05:00:00.000Z')
 
-export default async function MarketProbabilityPage({ params }: any) {
+export default async function MarketProbabilityPage({
+	params
+}: { params: Promise<{ id: string }> }) {
 	// Redirect if before the start date
 	if (new Date() < PROBABILITIES_START_DATE) {
 		redirect('/markets')
 	}
 
-	const { id } = params
+	const { id } = await params
 
 	const { user } = await getSession()
 
@@ -66,7 +68,7 @@ export default async function MarketProbabilityPage({ params }: any) {
 					</div>
 					<div className="section-content">
 						<p>{market.description}</p>
-						<p className="text-sm text-gray-500 mt-2">
+						<p className="mt-2 text-gray-500 text-sm">
 							Posted by <UserPill {...market.author} /> on {formatDate(market.createdAt)}
 						</p>
 					</div>
