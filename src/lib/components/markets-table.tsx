@@ -1,137 +1,144 @@
-import type { MarketCategory } from '@prisma/client'
-import React, { Suspense } from 'react'
-import { db } from '~/db'
-import type { MarketWithVotesAndComments } from '~/types/market'
-import { MarketsTableClient } from './markets-table.client'
+'use client'
 
-export const MarketsTable = ({
-	search,
-	category,
-	limit = 50
-}: {
-	search?: string | undefined
-	category?: MarketCategory | undefined
-	limit?: number
-}) => {
-	return (
-		<Suspense fallback={<div className="container">Loading...</div>}>
-			<MarketsTableServer search={search} category={category} limit={limit} />
-		</Suspense>
-	)
-}
+import { MarketCategory } from '@prisma/client'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useState } from 'react'
+import { downvoteMarket, getMarkets, upvoteMarket } from '~/actions/market'
+import { useDebounce } from '~/hooks/use-debounce'
+import type { MarketFromAction } from '~/types/market'
+import {
+	Button,
+	Heading,
+	Link,
+	Pill,
+	Search,
+	Section,
+	Select,
+	SelectOption,
+	Stack,
+	Table,
+	TableCell,
+	TableRow,
+	Tag
+} from '~/ui'
+import { formatDate } from '~/utils/date'
 
-export const MarketsTableServer = async ({
-	search,
-	category,
-	limit = 50
+export function MarketsTable({
+	initialMarkets
 }: {
-	search?: string | undefined
-	category?: MarketCategory | undefined
-	limit?: number | undefined
-}) => {
-	const markets = await db.market.findMany({
-		where: {
-			AND: [
-				search
-					? {
-							OR: [
-								{ title: { contains: search, mode: 'insensitive' } },
-								{ description: { contains: search, mode: 'insensitive' } }
-							]
-						}
-					: {},
-				category ? { categories: { has: category } } : {}
-			]
-		},
-		take: limit,
-		orderBy: [
-			{
-				upvotes: 'desc'
-			},
-			{
-				downvotes: 'asc'
-			},
-			{
-				updatedAt: 'desc'
-			}
-		],
-		include: {
-			author: {
-				select: {
-					id: true,
-					email: true,
-					username: true
-				}
-			},
-			upvoters: {
-				select: { userId: true }
-			},
-			downvoters: {
-				select: { userId: true }
-			},
-			comments: {
-				orderBy: { createdAt: 'desc' },
-				include: {
-					author: {
-						select: {
-							id: true,
-							email: true,
-							username: true
-						}
-					},
-					reactions: {
-						select: {
-							type: true,
-							authorId: true
-						}
-					},
-					replies: {
-						orderBy: { createdAt: 'desc' },
-						include: {
-							author: {
-								select: {
-									id: true,
-									email: true,
-									username: true
-								}
-							},
-							reactions: {
-								select: {
-									type: true,
-									authorId: true
-								}
-							}
-						}
-					}
-				}
-			},
-			edits: {
-				orderBy: {
-					createdAt: 'desc'
-				},
-				include: {
-					editor: {
-						select: {
-							id: true,
-							email: true,
-							username: true
-						}
-					}
-				}
-			}
+	initialMarkets: MarketFromAction[]
+}) {
+	const router = useRouter()
+	const searchParams = useSearchParams()
+	const [markets, setMarkets] = useState(initialMarkets)
+	const [searchValue, setSearchValue] = useState(searchParams.get('search') || '')
+
+	const handleSearch = useDebounce(async (search: string) => {
+		const params = new URLSearchParams(searchParams)
+		if (search) {
+			params.set('search', search)
+		} else {
+			params.delete('search')
 		}
-	})
+		router.push(`/markets?${params.toString()}`)
+		const updatedMarkets = await getMarkets({
+			search,
+			category: (searchParams.get('category') as MarketCategory) || undefined,
+			limit: 50
+		})
+		setMarkets(updatedMarkets)
+	}, 300)
 
-	const marketsWithReplies: MarketWithVotesAndComments[] = markets.map(market => ({
-		...market,
-		comments: market.comments.map(comment => ({
-			...comment,
-			replies: comment.replies.map(reply => ({
-				...reply,
-				replies: []
-			}))
-		}))
-	}))
+	const handleSearchChange = (value: string) => {
+		setSearchValue(value)
+		handleSearch(value)
+	}
 
-	return <MarketsTableClient markets={marketsWithReplies} />
+	const handleCategoryChange = useCallback(
+		async (category: string) => {
+			const params = new URLSearchParams(searchParams)
+			if (category && category !== 'all') {
+				params.set('category', category)
+			} else {
+				params.delete('category')
+			}
+			router.push(`/markets?${params.toString()}`)
+			const updatedMarkets = await getMarkets({
+				search: searchParams.get('search') || undefined,
+				category: category !== 'all' ? (category as MarketCategory) : undefined,
+				limit: 50
+			})
+			setMarkets(updatedMarkets)
+		},
+		[router, searchParams]
+	)
+
+	return (
+		<>
+			<Section>
+				<Stack>
+					<Search
+						ROLE="filter"
+						placeholder="Search markets..."
+						onChange={handleSearchChange}
+						value={searchValue}
+					/>
+					<Select
+						onChange={value => handleCategoryChange(value)}
+						value={searchParams.get('category') || 'all'}
+					>
+						<SelectOption value="all">All Categories</SelectOption>
+						{Object.entries(MarketCategory).map(([key, value]) => (
+							<SelectOption key={key} value={value}>
+								{key.charAt(0) + key.slice(1).toLowerCase().replace(/_/g, ' ')}
+							</SelectOption>
+						))}
+					</Select>
+				</Stack>
+			</Section>
+
+			<Table>
+				<TableRow>
+					<TableCell ROLE="header">Title</TableCell>
+					<TableCell ROLE="header">Description</TableCell>
+					<TableCell ROLE="header">Tags</TableCell>
+					<TableCell ROLE="header">Author</TableCell>
+					<TableCell ROLE="header">Votes</TableCell>
+					<TableCell ROLE="header">Comments</TableCell>
+				</TableRow>
+				{markets.map(market => (
+					<TableRow key={market.id}>
+						<TableCell ROLE="data">
+							<Link ROLE="inline" href={`/markets/${market.id}`} key={market.id}>
+								<Heading ROLE="section">{market.title}</Heading>
+							</Link>
+							<Pill ROLE="status">{`Updated ${formatDate(market.updatedAt)}`}</Pill>
+						</TableCell>
+						<TableCell ROLE="data">{market.description}</TableCell>
+						<TableCell ROLE="data">
+							{market.categories?.map(category => (
+								<Tag ROLE="category" key={category}>
+									{category.toLowerCase()}
+								</Tag>
+							))}
+						</TableCell>
+						<TableCell ROLE="data">
+							<Link ROLE="inline" href={`/users/${market.author.id}`}>
+								{market.author.username}
+							</Link>
+						</TableCell>
+						<TableCell ROLE="data">
+							<Button ROLE="success" onClick={() => upvoteMarket(market.id)}>
+								↑{market.upvoters.length}
+							</Button>
+							<Button ROLE="destructive" onClick={() => downvoteMarket(market.id)}>
+								↓{market.downvoters.length}
+							</Button>
+						</TableCell>
+						<TableCell ROLE="data">{market.comments.length}</TableCell>
+					</TableRow>
+				))}
+			</Table>
+		</>
+	)
 }

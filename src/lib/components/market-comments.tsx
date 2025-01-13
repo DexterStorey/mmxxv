@@ -7,6 +7,7 @@ import { addCommentReaction, removeCommentReaction } from '~/actions/comment'
 import { deleteComment, getMarketById } from '~/actions/market'
 import { getCurrentUsername } from '~/actions/user'
 import type { CommentWithReplies, MarketWithVotesAndComments } from '~/types/market'
+import { Heading, Section } from '~/ui'
 import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
 import CommentReactions from './comment-reactions'
@@ -192,16 +193,14 @@ function CommentThread({
 					</div>
 				</div>
 				{showReplyForm && canNest && (
-					<div className="comment-reply-form">
-						<AddCommentForm
-							marketId={comment.marketId}
-							parentId={comment.id}
-							onCommentAdded={() => {
-								setShowReplyForm(false)
-								onReply(comment.id)
-							}}
-						/>
-					</div>
+					<AddCommentForm
+						marketId={comment.marketId}
+						parentId={comment.id}
+						onCommentAdded={() => {
+							setShowReplyForm(false)
+							onReply(comment.id)
+						}}
+					/>
 				)}
 			</div>
 			{hasReplies && showReplies && (
@@ -319,19 +318,17 @@ export function MarketComments({
 	}, [highlightedCommentId, comments])
 
 	return (
-		<div className="comments-section">
-			<h2 className="subtitle">Comments ({comments.length})</h2>
+		<Section>
+			<Heading ROLE="section">Comments ({comments.length})</Heading>
 			<AddCommentForm marketId={market.id} onCommentAdded={refreshComments} />
-			<div className="comments-list">
-				{comments.map(comment => (
-					<CommentThread
-						key={comment.id}
-						comment={comment}
-						onReply={refreshComments}
-						highlightedCommentId={highlightedCommentId}
-					/>
-				))}
-			</div>
-		</div>
+			{comments.map(comment => (
+				<CommentThread
+					key={comment.id}
+					comment={comment}
+					onReply={refreshComments}
+					highlightedCommentId={highlightedCommentId}
+				/>
+			))}
+		</Section>
 	)
 }

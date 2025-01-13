@@ -2,12 +2,14 @@
 
 import { MarketCategory } from '@prisma/client'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useDebounce } from '~/hooks/use-debounce'
+import { Search, Section, Select, SelectOption } from '~/ui'
 
 export function MarketFilters() {
 	const router = useRouter()
 	const searchParams = useSearchParams()
+	const [searchValue, setSearchValue] = useState(searchParams.get('search') || '')
 
 	const handleSearch = useDebounce((search: string) => {
 		const params = new URLSearchParams(searchParams)
@@ -18,6 +20,11 @@ export function MarketFilters() {
 		}
 		router.push(`/markets?${params.toString()}`)
 	}, 300)
+
+	const handleSearchChange = (value: string) => {
+		setSearchValue(value)
+		handleSearch(value)
+	}
 
 	const handleCategoryChange = useCallback(
 		(category: string) => {
@@ -33,26 +40,24 @@ export function MarketFilters() {
 	)
 
 	return (
-		<div className="market-filters">
-			<input
-				type="text"
+		<Section>
+			<Search
+				ROLE="filter"
 				placeholder="Search markets..."
-				className="input"
-				onChange={e => handleSearch(e.target.value)}
-				defaultValue={searchParams.get('search') || ''}
+				onChange={handleSearchChange}
+				value={searchValue}
 			/>
-			<select
-				className="select"
-				onChange={e => handleCategoryChange(e.target.value)}
-				defaultValue={searchParams.get('category') || 'all'}
+			<Select
+				onChange={value => handleCategoryChange(value)}
+				value={searchParams.get('category') || 'all'}
 			>
-				<option value="all">All Categories</option>
+				<SelectOption value="all">All Categories</SelectOption>
 				{Object.entries(MarketCategory).map(([key, value]) => (
-					<option key={key} value={value}>
+					<SelectOption key={key} value={value}>
 						{key.charAt(0) + key.slice(1).toLowerCase().replace(/_/g, ' ')}
-					</option>
+					</SelectOption>
 				))}
-			</select>
-		</div>
+			</Select>
+		</Section>
 	)
 }

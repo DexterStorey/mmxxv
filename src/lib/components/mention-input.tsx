@@ -1,5 +1,6 @@
 'use client'
 
+import { TextArea } from '@rubriclab/ui'
 import { useEffect, useRef, useState } from 'react'
 import { searchUsers } from '~/actions/user'
 import UserPill from './user-pill'
@@ -32,14 +33,13 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 	}, [value])
 
 	// Handle @ symbol typing
-	const handleInput = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		const newValue = e.target.value
-		setDisplayValue(newValue)
-		const cursorPos = e.target.selectionStart
-		setCursorPosition(cursorPos)
+	const handleInput = async (value: string) => {
+		setDisplayValue(value)
+		const cursorPos = textareaRef.current?.selectionStart
+		setCursorPosition(cursorPos || null)
 
 		// Find the @ symbol before the cursor
-		const beforeCursor = newValue.slice(0, cursorPos)
+		const beforeCursor = value.slice(0, cursorPos)
 		const atIndex = beforeCursor.lastIndexOf('@')
 
 		if (atIndex >= 0 && !beforeCursor.slice(atIndex).includes(' ')) {
@@ -52,7 +52,7 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 		}
 
 		// Convert display format back to internal format for storage
-		const internalValue = newValue.replace(/@([a-zA-Z0-9]+)/g, (match, username) => {
+		const internalValue = value.replace(/@([a-zA-Z0-9]+)/g, (match, username) => {
 			const user = mentionUsers.find(u => u.username === username)
 			return user ? `@[${user.id}:${user.username}]` : match
 		})
@@ -126,13 +126,12 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 	}, [])
 
 	return (
-		<div className="mention-input-container relative">
-			<textarea
-				ref={textareaRef}
+		<>
+			<TextArea
 				value={displayValue}
 				onChange={handleInput}
 				onKeyDown={handleKeyDown}
-				placeholder={placeholder}
+				placeholder={placeholder || ''}
 				className="textarea w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
 				rows={rows}
 			/>
@@ -157,25 +156,6 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 					))}
 				</div>
 			)}
-
-			<style jsx>{`
-				.textarea {
-					font-family: inherit;
-					line-height: 1.5;
-				}
-
-				.mention-pill {
-					display: inline-flex;
-					align-items: center;
-					background-color: #e5edff;
-					color: #3b82f6;
-					border-radius: 9999px;
-					padding: 0.125rem 0.5rem;
-					margin: 0 0.125rem;
-					font-size: 0.875rem;
-					font-weight: 500;
-				}
-			`}</style>
-		</div>
+		</>
 	)
 }

@@ -2,6 +2,7 @@ import { ClientAuthProvider } from '@rubriclab/auth'
 import type { ReactNode } from 'react'
 import { getSession } from '~/actions/auth'
 import '../globals.css'
+import { Layout } from '~/ui'
 
 export { metadata } from '~/constants'
 
@@ -13,10 +14,8 @@ export default async function RootLayout({
 	const session = await getSession({ redirectUnauthorizedUsers: false })
 
 	return (
-		<html lang="en">
-			<body>
-				<ClientAuthProvider session={session}>{children}</ClientAuthProvider>
-			</body>
-		</html>
+		<Layout>
+			<ClientAuthProvider session={session}>{children}</ClientAuthProvider>
+		</Layout>
 	)
 }

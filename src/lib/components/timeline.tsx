@@ -1,5 +1,7 @@
 'use client'
 
+import { Card, Pill } from '@rubriclab/ui'
+
 type Stage = {
 	number: number
 	title: string
@@ -54,20 +56,17 @@ export function Timeline() {
 	const currentStage = getCurrentStage()
 
 	return (
-		<div className="timeline">
-			<div className="timeline-line" />
+		<>
 			{stages.map((stage, index) => (
-				<div key={stage.number} className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}>
-					<div className={`timeline-card ${currentStage === stage.number ? 'current' : ''}`}>
-						<div className="timeline-number">{stage.number}</div>
-						<h3 className="timeline-title">
-							Stage {stage.number}: {stage.title}
-						</h3>
-						<p className="timeline-description">{stage.description}</p>
-						<time className="timeline-date">Ends on {stage.endsAt}</time>
-					</div>
-				</div>
+				<Card
+					key={stage.number}
+					ROLE={index === currentStage ? 'brand' : 'information'}
+					title={`Stage ${stage.number}: ${stage.title}`}
+				>
+					<p>{stage.description}</p>
+					<Pill ROLE="status">{`Ends on ${stage.endsAt}`}</Pill>
+				</Card>
 			))}
-		</div>
+		</>
 	)
 }

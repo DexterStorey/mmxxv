@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getMarketById } from '~/actions/market'
 import { MarketDetail } from '~/components/market-detail'
 import Nav from '~/components/nav'
+import { Page, Section, Tag } from '~/ui'
 
 export default async function MarketPage({
 	params,
@@ -21,28 +22,18 @@ export default async function MarketPage({
 	}
 
 	return (
-		<div className="market-page">
-			<Nav />
-			<div className="container">
-				{market.imageUrl && (
-					<div className="market-banner">
-						<div className="banner-image-container">
-							<Image src={market.imageUrl} alt={market.title} fill className="banner-image" priority />
-						</div>
-						<div className="banner-overlay" />
-						{market.categories?.length > 0 && (
-							<div className="banner-categories">
-								{market.categories.map(category => (
-									<span key={category} className="category-tag">
-										{category.replace(/_/g, ' ')}
-									</span>
-								))}
-							</div>
-						)}
-					</div>
-				)}
-				<MarketDetail market={market} highlightedCommentId={commentId} />
-			</div>
-		</div>
+		<Page nav={<Nav />}>
+			{market.imageUrl && (
+				<Section>
+					<Image width={500} height={200} src={market.imageUrl} alt={market.title} />
+					{market.categories.map(category => (
+						<Tag key={category} ROLE="category">
+							{category.replace(/_/g, ' ')}
+						</Tag>
+					))}
+				</Section>
+			)}
+			<MarketDetail market={market} highlightedCommentId={commentId} />
+		</Page>
 	)
 }

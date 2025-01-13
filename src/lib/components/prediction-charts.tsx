@@ -1,118 +1,53 @@
 'use client'
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
-import {Line} from 'react-chartjs-2'
-import {
-  calculateCorrectPoints,
-  calculateIncorrectPoints
-} from '~/graphics/graphics'
+import { Card, Chart, ChartLine, ChartLineItem } from '@rubriclab/ui'
+import type { FC } from 'react'
+import { calculateCorrectPoints, calculateIncorrectPoints } from '~/graphics/graphics'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
+const PredictionCharts: FC = () => {
+	// Generate data points from 0.01 to 1.0 in increments of 0.01
+	const probabilities = Array.from({ length: 100 }, (_, i) => (i + 1) / 100)
 
-const commonOptions = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const
-    }
-  },
-  scales: {
-    x: {
-      type: 'linear' as const,
-      title: {
-        display: true,
-        text: 'Probability'
-      },
-      min: 0,
-      max: 1,
-      ticks: {
-        stepSize: 0.1
-      }
-    }
-  }
+	const correctPoints = probabilities.map(p => ({
+		x: p * 100, // Scale to 0-100 for SVG
+		y: calculateCorrectPoints(p)
+	}))
+
+	const incorrectPoints = probabilities.map(p => ({
+		x: p * 100, // Scale to 0-100 for SVG
+		y: calculateIncorrectPoints(p)
+	}))
+
+	return (
+		<>
+			<Card ROLE="information" title="Points for Correct Prediction">
+				<Chart height={400} width={500}>
+					<ChartLine points={correctPoints} maxValue={125} />
+					{[0, 0.25, 0.5, 0.75, 1].map(p => (
+						<ChartLineItem
+							key={p}
+							x={p * 100}
+							y={(calculateCorrectPoints(p) / 125) * 100}
+							label={p.toString()}
+						/>
+					))}
+				</Chart>
+			</Card>
+			<Card ROLE="information" title="Points Lost for Incorrect Prediction">
+				<Chart height={400} width={500}>
+					<ChartLine points={incorrectPoints} maxValue={75} />
+					{[0, 0.25, 0.5, 0.75, 1].map(p => (
+						<ChartLineItem
+							key={p}
+							x={p * 100}
+							y={(calculateIncorrectPoints(p) / 75) * 100}
+							label={p.toString()}
+						/>
+					))}
+				</Chart>
+			</Card>
+		</>
+	)
 }
 
-const correctOptions = {
-  ...commonOptions,
-  scales: {
-    ...commonOptions.scales,
-    y: {
-      title: {
-        display: true,
-        text: 'Points'
-      },
-      min: 0,
-      max: 125
-    }
-  }
-}
-
-const incorrectOptions = {
-  ...commonOptions,
-  scales: {
-    ...commonOptions.scales,
-    y: {
-      title: {
-        display: true,
-        text: 'Points'
-      },
-      min: 0,
-      max: 75
-    }
-  }
-}
-
-export default function PredictionCharts() {
-  // Generate data points from 0.01 to 1.0 in increments of 0.01
-  const probabilities = Array.from({length: 100}, (_, i) => (i + 1) / 100)
-  
-  const correctData = {
-    datasets: [
-      {
-        label: 'Points for Correct Prediction',
-        data: probabilities.map(p => ({x: p, y: calculateCorrectPoints(p)})),
-        borderColor: 'rgb(75, 192, 192)',
-        backgroundColor: 'rgba(75, 192, 192, 0.5)'
-      }
-    ]
-  }
-
-  const incorrectData = {
-    datasets: [
-      {
-        label: 'Points Lost for Incorrect Prediction',
-        data: probabilities.map(p => ({x: p, y: calculateIncorrectPoints(p)})),
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)'
-      }
-    ]
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-      <div>
-        <Line options={correctOptions} data={correctData} />
-      </div>
-      <div>
-        <Line options={incorrectOptions} data={incorrectData} />
-      </div>
-    </div>
-  )
-} 
+export default PredictionCharts

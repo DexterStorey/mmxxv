@@ -2,6 +2,7 @@
 
 import { formatDistanceToNow } from 'date-fns'
 import { useState } from 'react'
+import { Card, Heading, Pill, Section } from '~/ui'
 
 interface MarketEdit {
 	id: string
@@ -105,46 +106,43 @@ export function MarketEditHistory({ edits }: MarketEditHistoryProps) {
 	}
 
 	return (
-		<div className="section">
-			<div className="edit-history-header">
-				<div className="edit-history-title">
-					<h2>Edit History</h2>
-					<span className="edit-count">{edits.length}</span>
-				</div>
-			</div>
-			<div className="edit-history-content">
-				{edits.map(edit => (
-					<div key={edit.id} className="edit-entry">
-						<div className="edit-meta">
-							Edited by {edit.editor.username || edit.editor.email} {formatDistanceToNow(edit.createdAt)}{' '}
-							ago
-						</div>
-						<div className="edit-diffs">
-							<DiffSection
-								label="Title"
-								oldValue={edit.previousTitle}
-								newValue={edit.newTitle}
-								isExpanded={!!expandedSections[`${edit.id}-title`]}
-								onToggle={() => toggleSection(edit.id, 'title')}
-							/>
-							<DiffSection
-								label="Description"
-								oldValue={edit.previousDescription}
-								newValue={edit.newDescription}
-								isExpanded={!!expandedSections[`${edit.id}-description`]}
-								onToggle={() => toggleSection(edit.id, 'description')}
-							/>
-							<DiffSection
-								label="Resolution Criteria"
-								oldValue={edit.previousResolutionCriteria}
-								newValue={edit.newResolutionCriteria}
-								isExpanded={!!expandedSections[`${edit.id}-resolution`]}
-								onToggle={() => toggleSection(edit.id, 'resolution')}
-							/>
-						</div>
-					</div>
-				))}
-			</div>
-		</div>
+		<Section
+			title={
+				<>
+					Edit History <Pill ROLE="count">{`${edits.length}`}</Pill>
+				</>
+			}
+		>
+			{edits.map(edit => (
+				<Card ROLE="information" key={edit.id}>
+					<Heading ROLE="minor">
+						Edited by {edit.editor.username || edit.editor.email} {formatDistanceToNow(edit.createdAt)}{' '}
+						ago
+					</Heading>
+
+					<DiffSection
+						label="Title"
+						oldValue={edit.previousTitle}
+						newValue={edit.newTitle}
+						isExpanded={!!expandedSections[`${edit.id}-title`]}
+						onToggle={() => toggleSection(edit.id, 'title')}
+					/>
+					<DiffSection
+						label="Description"
+						oldValue={edit.previousDescription}
+						newValue={edit.newDescription}
+						isExpanded={!!expandedSections[`${edit.id}-description`]}
+						onToggle={() => toggleSection(edit.id, 'description')}
+					/>
+					<DiffSection
+						label="Resolution Criteria"
+						oldValue={edit.previousResolutionCriteria}
+						newValue={edit.newResolutionCriteria}
+						isExpanded={!!expandedSections[`${edit.id}-resolution`]}
+						onToggle={() => toggleSection(edit.id, 'resolution')}
+					/>
+				</Card>
+			))}
+		</Section>
 	)
 }

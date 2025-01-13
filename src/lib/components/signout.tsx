@@ -1,15 +1,12 @@
 'use client'
 
 import { handleSignOut } from '~/actions/auth'
+import { Button } from '~/ui'
 
 export function SignOut() {
 	return (
-		<button
-			type="button"
-			className="button"
-			onClick={() => handleSignOut({ redirectUrl: '/auth/signin' })}
-		>
+		<Button ROLE="destructive" onClick={() => handleSignOut({ redirectUrl: '/auth/signin' })}>
 			Sign Out
-		</button>
+		</Button>
 	)
 }

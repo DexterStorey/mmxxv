@@ -1,5 +1,6 @@
 'use client'
 
+import { Button, Card, Heading, Link, Modal, Section } from '@rubriclab/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -11,7 +12,6 @@ import { EditMarketForm } from './edit-market-form'
 import { MarketComments } from './market-comments'
 import { MarketEditHistory } from './market-edit-history'
 import { MarketVotes } from './market-votes'
-import UserPill from './user-pill'
 
 export function MarketDetail({
 	market,
@@ -41,7 +41,6 @@ export function MarketDetail({
 	const router = useRouter()
 	const [isDeleting, setIsDeleting] = useState(false)
 	const [showDeleteModal, setShowDeleteModal] = useState(false)
-	const [showEditModal, setShowEditModal] = useState(false)
 	const [userId, setUserId] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -61,50 +60,44 @@ export function MarketDetail({
 
 	return (
 		<>
-			<div className="card market-detail">
-				<div className="market-header">
-					<div className="market-header-content">
-						{!hideTitle && (
-							<>
-								<h1 className="market-title">{market.title}</h1>
-								<div className="market-meta">
-									Posted by <UserPill {...market.author} /> {formatDistanceToNow(market.createdAt)} ago
-								</div>
-							</>
-						)}
-					</div>
-					{userId === market.author.id && (
-						<div className="market-actions">
-							<button type="button" className="button button-ghost" onClick={() => setShowEditModal(true)}>
-								Edit
-							</button>
-							<button
-								type="button"
-								className="button button-ghost button-danger"
-								onClick={() => setShowDeleteModal(true)}
-								disabled={isDeleting}
-							>
-								{isDeleting ? 'Deleting...' : '× Delete'}
-							</button>
-						</div>
+			<Section>
+				<Card ROLE="information">
+					{!hideTitle && (
+						<>
+							<Heading ROLE="page">{market.title}</Heading>
+							<p>
+								Posted by{' '}
+								<Link ROLE="inline" href={`/users/${market.author.id}`}>
+									{market.author.username}
+								</Link>{' '}
+								{formatDistanceToNow(market.createdAt)} ago
+							</p>
+						</>
 					)}
-				</div>
+					{userId === market.author.id && (
+						<>
+							<EditMarketForm market={market} />
+							<Button ROLE="destructive" onClick={() => setShowDeleteModal(true)} disabled={isDeleting}>
+								{isDeleting ? 'Deleting...' : 'Delete'}
+							</Button>
+						</>
+					)}
+				</Card>
 
-				<div className="section">
-					<h2 className="section-title">Description</h2>
-					<p className="section-content">{market.description}</p>
-				</div>
+				<Card ROLE="information">
+					<Heading ROLE="section">Description</Heading>
+					<p>{market.description}</p>
+				</Card>
 
-				<div className="section">
-					<h2 className="section-title">Resolution Criteria</h2>
-					<p className="section-content">{market.resolutionCriteria}</p>
-				</div>
+				<Card ROLE="information">
+					<Heading ROLE="section">Resolution Criteria</Heading>
+					<p>{market.resolutionCriteria}</p>
+				</Card>
+			</Section>
 
-				<MarketVotes market={market} />
-				<MarketEditHistory edits={market.edits || []} />
-				<MarketComments market={market} highlightedCommentId={highlightedCommentId} />
-			</div>
-
+			<MarketVotes market={market} />
+			<MarketEditHistory edits={market.edits || []} />
+			<MarketComments market={market} highlightedCommentId={highlightedCommentId} />
 			{showDeleteModal && (
 				<DeleteMarketModal
 					isOpen={showDeleteModal}
@@ -113,7 +106,6 @@ export function MarketDetail({
 					isDeleting={isDeleting}
 				/>
 			)}
-			{showEditModal && <EditMarketForm market={market} onClose={() => setShowEditModal(false)} />}
 		</>
 	)
 }

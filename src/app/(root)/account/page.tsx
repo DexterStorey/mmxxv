@@ -1,8 +1,9 @@
 import { getSession } from '~/actions/auth'
-import { updateUsername } from '~/actions/user'
+import { EditUserForm } from '~/components/edit-user-form'
 import Nav from '~/components/nav'
 import { SignOut } from '~/components/signout'
 import { db } from '~/db'
+import { Card, Page, Section } from '~/ui'
 
 export default async function AccountPage({
 	searchParams
@@ -15,60 +16,18 @@ export default async function AccountPage({
 		select: { email: true, username: true, bio: true }
 	})
 
-	const errorMessages = {
-		invalid: 'Username must be alphanumeric and between 1-20 characters',
-		taken: 'Username is already taken',
-		unknown: 'An error occurred'
-	}
-
 	const { error } = await searchParams
 
 	return (
-		<>
-			<Nav />
-			<div className="container">
-				<div className="card">
-					<h1 className="title">Account</h1>
-					<div className="section">
-						<h2 className="section-title">Profile</h2>
-						<p className="section-content">
-							Signed in as: <span className="meta">{email}</span>
-						</p>
-						<form action={updateUsername} className="form">
-							<div className="form-group">
-								<label htmlFor="username" className="form-label">
-									Username
-								</label>
-								<input
-									type="text"
-									name="username"
-									defaultValue={username || ''}
-									placeholder="Set username"
-									className="input"
-									maxLength={20}
-								/>
-								<textarea
-									name="bio"
-									placeholder="About your methodology"
-									className="input"
-									maxLength={100}
-									defaultValue={bio || ''}
-								/>
-								<input type="hidden" name="userId" value={user.id} />
-								<button type="submit" className="button-primary">
-									Save
-								</button>
-								{error && (
-									<p className="form-error">{errorMessages[error as keyof typeof errorMessages]}</p>
-								)}
-							</div>
-						</form>
-					</div>
-					<div className="section">
-						<SignOut />
-					</div>
-				</div>
-			</div>
-		</>
+		<Page nav={<Nav />}>
+			<Section>
+				<Card ROLE="information" title="Account">
+					<p>Signed in as: {email}</p>
+				</Card>
+			</Section>
+
+			<EditUserForm initialUsername={username} initialBio={bio} error={error} userId={user.id} />
+			<SignOut />
+		</Page>
 	)
 }
