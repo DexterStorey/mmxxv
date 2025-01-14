@@ -2,7 +2,6 @@ import { ClientAuthProvider } from '@rubriclab/auth'
 import type { ReactNode } from 'react'
 import { getSession } from '~/actions/auth'
 import { UsernamePrompt } from '~/components/username-prompt'
-import '../globals.css'
 import { Layout } from '~/ui'
 
 export { metadata } from '~/constants'
