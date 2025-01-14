@@ -10,13 +10,15 @@
 		"openai": "^4.78.1",
 		"resend": "latest",
 		"rubricui": "*",
-		"zod": "latest"
+		"zod": "latest",
+		"react": "latest",
+		"react-dom": "latest"
 	},
 	"devDependencies": {
 		"@rubriclab/config": "*",
 		"@types/node": "latest",
 		"@types/react": "latest",
-		"@types/react-dom": "^19.0.3",
+		"@types/react-dom": "latest",
 		"biome": "latest",
 		"npm-check-updates": "latest",
 		"prisma": "latest",
