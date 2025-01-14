@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Link, TextArea } from '@rubriclab/ui'
+import { TextArea } from '@rubriclab/ui'
 import { useEffect, useRef, useState } from 'react'
 import { searchUsers } from '~/actions/user'
 

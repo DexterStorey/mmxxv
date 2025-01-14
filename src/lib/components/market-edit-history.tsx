@@ -2,7 +2,6 @@
 
 import { Card, CodeBlock, Dropdown, Heading, Pill, Section } from '@rubriclab/ui'
 import { formatDistanceToNow } from 'date-fns'
-import { useState } from 'react'
 
 interface MarketEdit {
 	id: string

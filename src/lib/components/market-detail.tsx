@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Card, Heading, Link, Modal, Section } from '@rubriclab/ui'
+import { Button, Card, Heading, Link, Section } from '@rubriclab/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'

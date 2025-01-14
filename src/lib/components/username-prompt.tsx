@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession } from '@rubriclab/auth'
-import { Button, Card, Heading, Input, Modal, Stack, Text } from '@rubriclab/ui'
+import { Button, Heading, Input, Modal, Stack, Text } from '@rubriclab/ui'
 import { useEffect, useState } from 'react'
 import { updateUsername } from '~/actions/user'
 

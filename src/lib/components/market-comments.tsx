@@ -2,7 +2,7 @@
 
 import type { CommentReactionType } from '@prisma/client'
 import { useSession } from '@rubriclab/auth'
-import { Button, Card, Heading, Link, Section, Stack, Text } from '@rubriclab/ui'
+import { Button, Card, Heading, Link, Section, Stack } from '@rubriclab/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { addCommentReaction, removeCommentReaction } from '~/actions/comment'
 import { deleteComment, getMarketById } from '~/actions/market'
@@ -80,7 +80,7 @@ function CommentThread({
 	const [showDeleteModal, setShowDeleteModal] = useState(false)
 	const [isTemporarilyHighlighted, setIsTemporarilyHighlighted] = useState(false)
 	const hasReplies = comment.replies?.length > 0
-	const commentRef = useRef<HTMLDivElement>(null)
+	// const commentRef = useRef<HTMLDivElement>(null)
 	const isHighlighted = comment.id === highlightedCommentId
 	const isAuthor = user?.id === comment.author.id
 	const canNest = depth < MAX_DEPTH

@@ -13,47 +13,8 @@ import plus from './icons/plus'
 import search from './icons/search'
 import settings from './icons/settings'
 import trash from './icons/trash'
-
 import icon from './logos/icon'
 import wordmark from './logos/wordmark'
-import { RubricDesignSystem } from '@rubriclab/ui'
-
-export {
-	Button,
-	Card,
-	Chart,
-	ChartBarItem,
-	ChartLine,
-	ChartLineItem,
-	Dropdown,
-	DropdownItem,
-	Footer,
-	FooterSection,
-	Heading,
-	Image,
-	Input,
-	Link,
-	Modal,
-	Nav,
-	NavItem,
-	Page,
-	Pill,
-	List,
-	ListItem,
-	Search,
-	Section,
-	Select,
-	SelectOption,
-	Stack,
-	Table,
-	TableCell,
-	TableRow,
-	Tag,
-	TextArea,
-	Text,
-	Timeline,
-	TimelineItem
-} from '@rubriclab/ui'
 
 export const Layout = createLayout({
 	colors: {
