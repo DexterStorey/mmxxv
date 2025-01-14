@@ -1,9 +1,9 @@
+import { Card, Link, Page, Section } from '@rubriclab/ui'
 import Heading from '@rubriclab/ui/src/components/heading/heading'
 import { cookies } from 'next/headers'
 import Nav from '~/components/nav'
 import PredictionCharts from '~/components/prediction-charts'
 import { Timeline } from '~/components/timeline'
-import { Card, Link, Page, Section } from '~/ui'
 
 export default async function About() {
 	const userCookies = (await cookies()).get('user')

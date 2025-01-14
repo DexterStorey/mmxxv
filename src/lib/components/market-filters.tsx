@@ -1,10 +1,10 @@
 'use client'
 
 import { MarketCategory } from '@prisma/client'
+import { Search, Section, Select, SelectOption } from '@rubriclab/ui'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { useDebounce } from '~/hooks/use-debounce'
-import { Search, Section, Select, SelectOption } from '~/ui'
 
 export function MarketFilters() {
 	const router = useRouter()

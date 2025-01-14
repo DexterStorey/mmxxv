@@ -1,5 +1,5 @@
+import { Card, Page, Section } from '@rubriclab/ui'
 import Nav from '~/components/nav'
-import { Card, Page, Section } from '~/ui'
 
 export default function MagicLinkSent() {
 	return (

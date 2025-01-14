@@ -1,8 +1,8 @@
 'use client'
 
+import { Button } from '@rubriclab/ui'
 import { useEffect, useState } from 'react'
 import { MAX_INVITEES } from '~/constants'
-import { Button } from '~/ui'
 
 export default function InviteClient({ id, invitees }: { id: string; invitees: number }) {
 	const [isCopied, setIsCopied] = useState(false)

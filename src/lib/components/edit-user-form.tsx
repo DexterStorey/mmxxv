@@ -1,8 +1,8 @@
 'use client'
 
+import { Button, Card, Input, Section, TextArea } from '@rubriclab/ui'
 import { useState } from 'react'
 import { updateUsername } from '~/actions/user'
-import { Button, Card, Input, Section, TextArea } from '~/ui'
 
 const errorMessages: Record<string, string> = {
 	invalid: 'Username must be alphanumeric and between 1-20 characters',

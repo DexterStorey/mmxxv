@@ -1,9 +1,9 @@
 'use client'
 
 import { useSession } from '@rubriclab/auth'
+import { Button, Section } from '@rubriclab/ui'
 import { downvoteMarket, upvoteMarket } from '~/actions/market'
 import type { MarketWithVotesAndComments } from '~/types/market'
-import { Button, Section } from '~/ui'
 
 export function MarketVotes({ market }: { market: MarketWithVotesAndComments }) {
 	const { user } = useSession()

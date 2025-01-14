@@ -1,9 +1,9 @@
+import { Card, Page, Section } from '@rubriclab/ui'
 import { getSession } from '~/actions/auth'
 import { EditUserForm } from '~/components/edit-user-form'
 import Nav from '~/components/nav'
 import { SignOut } from '~/components/signout'
 import { db } from '~/db'
-import { Card, Page, Section } from '~/ui'
 
 export default async function AccountPage({
 	searchParams

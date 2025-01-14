@@ -1,11 +1,11 @@
 import type { MarketCategory } from '@prisma/client'
+import { Card, Page, Section } from '@rubriclab/ui'
 import { getSession } from '~/actions/auth'
 import { getMarkets } from '~/actions/market'
 import { CreateMarketForm } from '~/components/create-market-form'
 import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
 import { db } from '~/db'
-import { Card, Page, Section } from '~/ui'
 
 export const maxDuration = 300
 

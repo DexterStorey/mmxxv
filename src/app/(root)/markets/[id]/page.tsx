@@ -1,9 +1,9 @@
+import { Page, Section, Tag } from '@rubriclab/ui'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getMarketById } from '~/actions/market'
 import { MarketDetail } from '~/components/market-detail'
 import Nav from '~/components/nav'
-import { Page, Section, Tag } from '~/ui'
 
 export default async function MarketPage({
 	params,

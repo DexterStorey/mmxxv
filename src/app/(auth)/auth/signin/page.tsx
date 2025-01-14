@@ -1,7 +1,7 @@
+import { Card, Page, Section } from '@rubriclab/ui'
 import { cookies } from 'next/headers'
 import Nav from '~/components/nav'
 import { SignInForm } from '~/components/sign-in-form'
-import { Card, Page, Section } from '~/ui'
 
 export default async function SignInPage() {
 	const cookieStore = await cookies()

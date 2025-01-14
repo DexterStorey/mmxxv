@@ -1,11 +1,11 @@
 'use client'
 
 import { Button, Card, Input, Modal, TextArea } from '@rubriclab/ui'
+import { Heading } from '@rubriclab/ui'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { editMarket } from '~/actions/market'
 import type { MarketWithVotesAndComments } from '~/types/market'
-import { Heading } from '~/ui'
 
 interface EditMarketFormProps {
 	market: MarketWithVotesAndComments

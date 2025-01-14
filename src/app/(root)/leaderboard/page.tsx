@@ -1,7 +1,7 @@
+import { Card, Page, Section } from '@rubriclab/ui'
 import { LeaderboardTable } from '~/components/leaderboard-table'
 import Nav from '~/components/nav'
 import { db } from '~/db'
-import { Card, Page, Section } from '~/ui'
 import { type UserWithPoints, calculatePoints } from '~/utils/points'
 
 export default async function LeaderboardPage() {

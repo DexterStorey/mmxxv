@@ -1,11 +1,11 @@
 'use client'
 
-import { Heading, Input, Modal, TextArea } from '@rubriclab/ui'
+import { Heading, Input, Loader, Modal, Text, TextArea } from '@rubriclab/ui'
+import { Button } from '@rubriclab/ui'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { createMarket } from '~/actions/market'
 import { MAX_MARKETS_PER_USER } from '~/constants'
-import { Button } from '~/ui'
 
 interface CreateMarketFormProps {
 	marketCount: number
@@ -92,20 +92,14 @@ export function CreateMarketForm({
 			<Button ROLE="destructive" onClick={() => setIsOpen(false)} disabled={isLoading}>
 				Cancel
 			</Button>
-			{error && <div className="form-error">{error}</div>}
+			{error && <Text content={error} />}
 			{isLoading && loadingSteps.length > 0 && (
-				<div className="form-status">
-					<div className="loading-steps">
-						{loadingSteps.map((step, index) => (
-							<div key={index} className="loading-step">
-								{step}
-							</div>
-						))}
-					</div>
-					<div className="progress-bar">
-						<div className="progress-fill" style={{ width: `${progress}%` }} />
-					</div>
-				</div>
+				<>
+					{loadingSteps.map((step, index) => (
+						<Text key={index} content={step} />
+					))}
+					<Loader ROLE="progress" progress={progress} />
+				</>
 			)}
 
 			<Input

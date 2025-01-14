@@ -1,4 +1,5 @@
 import type { CommentReactionType } from '@prisma/client'
+import { Button, Dropdown, Stack } from '@rubriclab/ui'
 import type { CommentWithAuthorAndReactions } from '~/types/market'
 
 export const REACTIONS = {
@@ -26,42 +27,42 @@ const CommentReactions = ({
 	)
 
 	return (
-		<div className="comment-reactions">
+		<Stack justify="start">
 			{/* Add reaction button */}
-			<div className="reaction-picker">
-				<button type="button" className="button-icon">
-					<span style={{ paddingBottom: '0.2rem', fontSize: '1.25rem' }}>☺</span>
-				</button>
-				<div className="reaction-options">
+			<Dropdown ROLE="menu" label={<span style={{ fontSize: '1.25rem' }}>☺</span>}>
+				<Stack>
 					{Object.keys(REACTIONS).map(reactionType => (
-						<button
+						<Button
 							key={reactionType}
+							ROLE="information"
 							type="button"
-							className="button-icon"
 							onClick={() => onReaction(reactionType as CommentReactionType)}
 						>
 							{REACTIONS[reactionType as CommentReactionType]}
-						</button>
+						</Button>
 					))}
-				</div>
-			</div>
+				</Stack>
+			</Dropdown>
 
 			{/* Active reactions */}
-			{activeReactions.map(reactionType => (
-				<button
-					key={reactionType}
-					type="button"
-					className="button-icon"
-					data-active={comment.reactions
-						.filter(r => r.type === reactionType)
-						.some(r => r.authorId === userId)}
-					onClick={() => onReaction(reactionType as CommentReactionType)}
-				>
-					{REACTIONS[reactionType as CommentReactionType]}{' '}
-					{comment.reactions.filter(r => r.type === reactionType).length}
-				</button>
-			))}
-		</div>
+			{activeReactions.map(reactionType => {
+				const isActive = comment.reactions
+					.filter(r => r.type === reactionType)
+					.some(r => r.authorId === userId)
+				const count = comment.reactions.filter(r => r.type === reactionType).length
+
+				return (
+					<Button
+						key={reactionType}
+						ROLE={isActive ? 'success' : 'destructive'}
+						type="button"
+						onClick={() => onReaction(reactionType as CommentReactionType)}
+					>
+						{REACTIONS[reactionType as CommentReactionType]} {count}
+					</Button>
+				)
+			})}
+		</Stack>
 	)
 }
 

@@ -1,9 +1,8 @@
 'use client'
 
-import { TextArea } from '@rubriclab/ui'
+import { Button, Link, TextArea } from '@rubriclab/ui'
 import { useEffect, useRef, useState } from 'react'
 import { searchUsers } from '~/actions/user'
-import UserPill from './user-pill'
 
 type User = {
 	id: string
@@ -136,26 +135,23 @@ export function MentionInput({ value, onChange, placeholder, rows = 3 }: Mention
 				rows={rows}
 			/>
 
-			{showDropdown && (
+			{/* {showDropdown && (
 				<div
 					ref={dropdownRef}
 					className="mention-dropdown absolute right-0 left-0 mt-1 max-h-48 overflow-y-auto rounded-md border border-gray-200 bg-white shadow-lg"
 				>
 					{mentionUsers.map(user => (
-						<button
-							key={user.id}
-							type="button"
-							className="mention-item flex w-full items-center px-4 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
-							onClick={() => handleSelectUser(user)}
-						>
+						<Button key={user.id} ROLE="information" onClick={() => handleSelectUser(user)}>
 							<span className="mention-pill mr-2 rounded-full bg-blue-100 px-2 py-0.5 text-blue-700 text-sm">
 								@
 							</span>
-							<UserPill {...user} />
-						</button>
+							<Link ROLE="inline" href={`/user${user.id}`}>
+								{user.username}
+							</Link>
+						</Button>
 					))}
 				</div>
-			)}
+			)} */}
 		</>
 	)
 }

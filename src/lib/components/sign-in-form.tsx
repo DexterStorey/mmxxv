@@ -1,8 +1,8 @@
 'use client'
 
+import { Button, Input, Section } from '@rubriclab/ui'
 import { useState } from 'react'
 import { sendMagicLink } from '~/actions/auth'
-import { Button, Input, Section } from '~/ui'
 
 export function SignInForm({ invitedBy }: { invitedBy?: string | undefined }) {
 	const [email, setEmail] = useState('')

@@ -1,8 +1,8 @@
 'use client'
 
 import { useSession } from '@rubriclab/auth'
+import { Nav, NavItem } from '@rubriclab/ui'
 import { useEffect, useState } from 'react'
-import { Nav, NavItem } from '~/ui'
 
 const PROBABILITIES_START_DATE = new Date('2025-01-21T05:00:00.000Z')
 

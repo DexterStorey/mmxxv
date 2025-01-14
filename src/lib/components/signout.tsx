@@ -1,7 +1,7 @@
 'use client'
 
+import { Button } from '@rubriclab/ui'
 import { handleSignOut } from '~/actions/auth'
-import { Button } from '~/ui'
 
 export function SignOut() {
 	return (

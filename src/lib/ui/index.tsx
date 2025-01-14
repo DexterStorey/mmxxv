@@ -16,6 +16,7 @@ import trash from './icons/trash'
 
 import icon from './logos/icon'
 import wordmark from './logos/wordmark'
+import { RubricDesignSystem } from '@rubriclab/ui'
 
 export {
 	Button,

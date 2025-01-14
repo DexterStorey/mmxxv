@@ -1,7 +1,7 @@
 'use client'
 
 import type { User } from '@prisma/client'
-import { Link, Table, TableCell, TableRow } from '~/ui'
+import { Link, Table, TableCell, TableRow } from '@rubriclab/ui'
 
 export function LeaderboardTable({ users }: { users: User[] }) {
 	return (

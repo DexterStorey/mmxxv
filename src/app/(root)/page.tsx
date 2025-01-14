@@ -1,10 +1,10 @@
+// import { db } from '~/db'
+import { Card, Footer, Link, Page, Section } from '@rubriclab/ui'
 import { getSession } from '~/actions/auth'
 import { getMarkets } from '~/actions/market'
 import Invite from '~/components/invite'
 import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
-// import { db } from '~/db'
-import { Card, Footer, Link, Page, Section } from '~/ui'
 
 export default async () => {
 	await getSession()

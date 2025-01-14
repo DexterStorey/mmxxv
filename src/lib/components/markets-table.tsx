@@ -1,11 +1,6 @@
 'use client'
 
 import { MarketCategory } from '@prisma/client'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useState } from 'react'
-import { downvoteMarket, getMarkets, upvoteMarket } from '~/actions/market'
-import { useDebounce } from '~/hooks/use-debounce'
-import type { MarketFromAction } from '~/types/market'
 import {
 	Button,
 	Heading,
@@ -20,7 +15,12 @@ import {
 	TableCell,
 	TableRow,
 	Tag
-} from '~/ui'
+} from '@rubriclab/ui'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useState } from 'react'
+import { downvoteMarket, getMarkets, upvoteMarket } from '~/actions/market'
+import { useDebounce } from '~/hooks/use-debounce'
+import type { MarketFromAction } from '~/types/market'
 import { formatDate } from '~/utils/date'
 
 export function MarketsTable({
