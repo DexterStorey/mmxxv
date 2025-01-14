@@ -1,5 +1,7 @@
 'use client'
 
+import { Heading, Input, Loader, Modal, Text, TextArea } from '@rubriclab/ui'
+import { Button } from '@rubriclab/ui'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { createMarket } from '~/actions/market'
@@ -39,7 +41,6 @@ export function CreateMarketForm({
 		}
 
 		try {
-			// Start progress animation
 			const progressInterval = setInterval(() => {
 				setProgress(prev => {
 					if (prev >= 90) return prev
@@ -75,112 +76,65 @@ export function CreateMarketForm({
 
 	if (!isOpen) {
 		return (
-			<button
-				type="button"
-				className="button button-primary"
+			<Button
+				ROLE="information"
 				onClick={() => setIsOpen(true)}
 				disabled={marketCount >= MAX_MARKETS_PER_USER}
-				title={
-					marketCount >= MAX_MARKETS_PER_USER
-						? 'You have created the maximum number of markets'
-						: undefined
-				}
 			>
 				{buttonText} ({marketCount}/{MAX_MARKETS_PER_USER})
-			</button>
+			</Button>
 		)
 	}
 
 	return (
-		<div className="modal-overlay">
-			<div className="modal">
-				<div className="modal-header">
-					<h2 className="modal-title">{buttonText}</h2>
-					<button
-						type="button"
-						className="modal-close"
-						onClick={() => setIsOpen(false)}
-						disabled={isLoading}
-					>
-						×
-					</button>
-				</div>
-				<form onSubmit={handleSubmit} className="form">
-					{error && <div className="form-error">{error}</div>}
-					{isLoading && loadingSteps.length > 0 && (
-						<div className="form-status">
-							<div className="loading-steps">
-								{loadingSteps.map((step, index) => (
-									<div key={index} className="loading-step">
-										{step}
-									</div>
-								))}
-							</div>
-							<div className="progress-bar">
-								<div className="progress-fill" style={{ width: `${progress}%` }} />
-							</div>
-						</div>
-					)}
-					<div className="form-group">
-						<label htmlFor="market-title" className="form-label">
-							Title
-						</label>
-						<input
-							id="market-title"
-							type="text"
-							className="input"
-							placeholder="e.g., Will AI surpass human intelligence?"
-							value={title}
-							onChange={e => setTitle(e.target.value)}
-							required
-							disabled={isLoading}
-						/>
-					</div>
-					<div className="form-group">
-						<label htmlFor="market-description" className="form-label">
-							Description
-						</label>
-						<textarea
-							id="market-description"
-							className="textarea"
-							placeholder="Provide context and details about your prediction..."
-							value={description}
-							onChange={e => setDescription(e.target.value)}
-							required
-							rows={4}
-							disabled={isLoading}
-						/>
-					</div>
-					<div className="form-group">
-						<label htmlFor="market-resolution" className="form-label">
-							Resolution Criteria
-						</label>
-						<textarea
-							id="market-resolution"
-							className="textarea"
-							placeholder="How will we determine if this prediction came true?"
-							value={resolutionCriteria}
-							onChange={e => setResolutionCriteria(e.target.value)}
-							required
-							rows={4}
-							disabled={isLoading}
-						/>
-					</div>
-					<div className="modal-footer">
-						<button
-							type="button"
-							className="button button-cancel"
-							onClick={() => setIsOpen(false)}
-							disabled={isLoading}
-						>
-							Cancel
-						</button>
-						<button type="submit" className="button button-primary" disabled={isLoading}>
-							{isLoading ? 'Creating...' : buttonText}
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
+		<Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+			<Heading ROLE="section">{buttonText}</Heading>
+			<Button ROLE="destructive" onClick={() => setIsOpen(false)} disabled={isLoading}>
+				Cancel
+			</Button>
+			{error && <Text content={error} />}
+			{isLoading && loadingSteps.length > 0 && (
+				<>
+					{loadingSteps.map((step, index) => (
+						<Text key={index} content={step} />
+					))}
+					<Loader ROLE="progress" progress={progress} />
+				</>
+			)}
+
+			<Input
+				label="Title"
+				placeholder="e.g., Will AI surpass human intelligence?"
+				value={title}
+				onChange={e => setTitle(e.target.value)}
+				required
+				disabled={isLoading}
+			/>
+
+			<TextArea
+				label="Description"
+				placeholder="Provide context and details about your prediction..."
+				value={description}
+				onChange={value => setDescription(value)}
+				required
+				rows={4}
+				disabled={isLoading}
+			/>
+			<TextArea
+				label="Resolution Criteria"
+				placeholder="How will we determine if this prediction came true?"
+				value={resolutionCriteria}
+				onChange={value => setResolutionCriteria(value)}
+				required
+				rows={4}
+				disabled={isLoading}
+			/>
+			<Button ROLE="destructive" onClick={() => setIsOpen(false)} disabled={isLoading}>
+				Cancel
+			</Button>
+			<Button ROLE="success" onClick={handleSubmit} disabled={isLoading}>
+				{isLoading ? 'Creating...' : buttonText}
+			</Button>
+		</Modal>
 	)
 }

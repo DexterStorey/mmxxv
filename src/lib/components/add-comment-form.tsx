@@ -1,6 +1,7 @@
 'use client'
 
 import { useSession } from '@rubriclab/auth'
+import { Button, Section } from '@rubriclab/ui'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { addComment } from '~/actions/market'
@@ -40,7 +41,7 @@ export function AddCommentForm({
 	if (!user) return null
 
 	return (
-		<form onSubmit={handleSubmit} className="form">
+		<Section>
 			<MentionInput
 				value={content}
 				onChange={setContent}
@@ -51,12 +52,9 @@ export function AddCommentForm({
 				}
 				rows={3}
 			/>
-			<div className="form-help">
-				<span className="text-muted">Tip: Use @ to mention users</span>
-			</div>
-			<button type="submit" className="button" disabled={!content.trim()}>
+			<Button ROLE="information" disabled={!content.trim()} onClick={handleSubmit}>
 				{parentId ? 'Reply' : 'Add Comment'}
-			</button>
-		</form>
+			</Button>
+		</Section>
 	)
 }

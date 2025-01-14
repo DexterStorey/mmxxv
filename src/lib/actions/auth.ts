@@ -32,7 +32,7 @@ export async function sendMagicLink({
 	redirectUrl,
 	email,
 	invitedBy
-}: { redirectUrl?: string; email: string; invitedBy?: string }) {
+}: { redirectUrl?: string; email: string; invitedBy?: string | undefined }) {
 	const existingUser = await db.user.findUnique({
 		where: { email }
 	})

@@ -1,15 +1,12 @@
 'use client'
 
+import { Button } from '@rubriclab/ui'
 import { handleSignOut } from '~/actions/auth'
 
 export function SignOut() {
 	return (
-		<button
-			type="button"
-			className="button"
-			onClick={() => handleSignOut({ redirectUrl: '/auth/signin' })}
-		>
+		<Button ROLE="destructive" onClick={() => handleSignOut({ redirectUrl: '/auth/signin' })}>
 			Sign Out
-		</button>
+		</Button>
 	)
 }

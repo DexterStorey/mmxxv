@@ -2,6 +2,7 @@
 
 import type { CommentReactionType } from '@prisma/client'
 import { useSession } from '@rubriclab/auth'
+import { Button, Card, Heading, Link, Section, Stack } from '@rubriclab/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { addCommentReaction, removeCommentReaction } from '~/actions/comment'
 import { deleteComment, getMarketById } from '~/actions/market'
@@ -11,7 +12,6 @@ import { formatDate } from '~/utils/date'
 import { AddCommentForm } from './add-comment-form'
 import CommentReactions from './comment-reactions'
 import { DeleteCommentModal } from './delete-comment-modal'
-import UserPill from './user-pill'
 
 function formatCommentContent(content: string, currentUserId: string | undefined) {
 	const [formattedContent, setFormattedContent] = useState<React.ReactNode[]>([])
@@ -35,7 +35,7 @@ function formatCommentContent(content: string, currentUserId: string | undefined
 							return (
 								<span
 									key={index}
-									className={`mention-tag ${isCurrentUser ? 'mention-tag-self' : 'mention-tag-other'}`}
+									style={{ color: isCurrentUser ? 'var(--highlight)' : 'var(--secondary)' }}
 								>
 									@{displayName}
 								</span>
@@ -43,7 +43,7 @@ function formatCommentContent(content: string, currentUserId: string | undefined
 						} catch (error) {
 							console.error('Error fetching user:', error)
 							return (
-								<span key={index} className="mention-tag mention-tag-other">
+								<span key={index} style={{ color: 'var(--secondary)' }}>
 									@DELETED_USER
 								</span>
 							)
@@ -80,7 +80,7 @@ function CommentThread({
 	const [showDeleteModal, setShowDeleteModal] = useState(false)
 	const [isTemporarilyHighlighted, setIsTemporarilyHighlighted] = useState(false)
 	const hasReplies = comment.replies?.length > 0
-	const commentRef = useRef<HTMLDivElement>(null)
+	// const commentRef = useRef<HTMLDivElement>(null)
 	const isHighlighted = comment.id === highlightedCommentId
 	const isAuthor = user?.id === comment.author.id
 	const canNest = depth < MAX_DEPTH
@@ -145,67 +145,65 @@ function CommentThread({
 	}
 
 	return (
-		<div className="comment-thread" ref={commentRef} data-comment-id={comment.id}>
-			<div className={`comment ${isTemporarilyHighlighted ? 'highlight-flash' : ''}`}>
-				<div className="comment-header">
-					<div className="comment-meta">
-						<UserPill {...comment.author} />
-						<span className="comment-time">{formatDate(comment.createdAt)}</span>
-					</div>
-					{isAuthor && (
-						<button
-							type="button"
-							className="comment-action-button button-danger-subtle"
-							onClick={() => setShowDeleteModal(true)}
-						>
-							Delete
-						</button>
-					)}
-				</div>
-				<div className="comment-content">{formatCommentContent(comment.content, user?.id)}</div>
-				<div className="comment-actions">
-					<div className="comment-actions-left">
-						{canNest ? (
-							<button
-								type="button"
-								className="comment-action-button"
-								onClick={() => setShowReplyForm(!showReplyForm)}
-								disabled={!user}
-							>
-								Reply
-							</button>
-						) : (
-							<span className="text-muted text-sm">Max nesting depth reached</span>
+		<Section data-comment-id={comment.id}>
+			<Card
+				ROLE="information"
+				style={{ opacity: isTemporarilyHighlighted ? 0.7 : 1 }}
+				title={
+					<Stack justify="between">
+						<Stack justify="start">
+							<Link ROLE="inline" href={`/user/${comment.author.id}`}>
+								{comment.author.username}
+							</Link>
+							<span style={{ color: 'var(--secondary)' }}>{formatDate(comment.createdAt)}</span>
+						</Stack>
+						{isAuthor && (
+							<Button ROLE="destructive" onClick={() => setShowDeleteModal(true)}>
+								Delete
+							</Button>
 						)}
-						<CommentReactions comment={comment} userId={user?.id || ''} onReaction={handleReaction} />
-					</div>
-					<div className="comment-actions-right">
+					</Stack>
+				}
+			>
+				<Section>
+					<Section>{formatCommentContent(comment.content, user?.id)}</Section>
+					<Stack justify="between">
+						<Stack justify="start">
+							{canNest ? (
+								<Button
+									ROLE="information"
+									onClick={() => setShowReplyForm(!showReplyForm)}
+									disabled={!user}
+								>
+									Reply
+								</Button>
+							) : (
+								<span style={{ color: 'var(--secondary)' }}>Max nesting depth reached</span>
+							)}
+							<CommentReactions comment={comment} userId={user?.id || ''} onReaction={handleReaction} />
+						</Stack>
 						{hasReplies && (
-							<button
-								type="button"
-								className="comment-action-button show-replies-btn"
-								onClick={() => setShowReplies(!showReplies)}
-							>
+							<Button ROLE="information" onClick={() => setShowReplies(!showReplies)}>
 								{showReplies ? 'Hide Replies' : `Show Replies (${comment.replies.length})`}
-							</button>
+							</Button>
 						)}
-					</div>
-				</div>
-				{showReplyForm && canNest && (
-					<div className="comment-reply-form">
-						<AddCommentForm
-							marketId={comment.marketId}
-							parentId={comment.id}
-							onCommentAdded={() => {
-								setShowReplyForm(false)
-								onReply(comment.id)
-							}}
-						/>
-					</div>
-				)}
-			</div>
+					</Stack>
+					{showReplyForm && canNest && (
+						<Section>
+							<AddCommentForm
+								marketId={comment.marketId}
+								parentId={comment.id}
+								onCommentAdded={() => {
+									setShowReplyForm(false)
+									onReply(comment.id)
+								}}
+							/>
+						</Section>
+					)}
+				</Section>
+			</Card>
 			{hasReplies && showReplies && (
-				<div className={`comment-replies depth-${depth}`}>
+				<Section style={{ marginLeft: `${depth * 20}px` }}>
 					{comment.replies.map(reply => (
 						<CommentThread
 							key={reply.id}
@@ -215,7 +213,7 @@ function CommentThread({
 							depth={depth + 1}
 						/>
 					))}
-				</div>
+				</Section>
 			)}
 			<DeleteCommentModal
 				isOpen={showDeleteModal}
@@ -223,7 +221,7 @@ function CommentThread({
 				onDelete={handleDelete}
 				isDeleting={isDeleting}
 			/>
-		</div>
+		</Section>
 	)
 }
 
@@ -265,7 +263,7 @@ export function MarketComments({
 				if (foundInDirectReplies) {
 					const commentEl = document.querySelector(`[data-comment-id="${comment.id}"]`)
 					if (commentEl) {
-						const showRepliesBtn = commentEl.querySelector('.show-replies-btn') as HTMLButtonElement
+						const showRepliesBtn = commentEl.querySelector('button') as HTMLButtonElement
 						if (showRepliesBtn) {
 							showRepliesBtn.click()
 						}
@@ -278,7 +276,7 @@ export function MarketComments({
 					if (found) {
 						const commentEl = document.querySelector(`[data-comment-id="${comment.id}"]`)
 						if (commentEl) {
-							const showRepliesBtn = commentEl.querySelector('.show-replies-btn') as HTMLButtonElement
+							const showRepliesBtn = commentEl.querySelector('button') as HTMLButtonElement
 							if (showRepliesBtn) {
 								showRepliesBtn.click()
 							}
@@ -296,13 +294,6 @@ export function MarketComments({
 			const highlightedComment = document.querySelector(`[data-comment-id="${highlightedCommentId}"]`)
 			if (highlightedComment) {
 				highlightedComment.scrollIntoView({ behavior: 'smooth', block: 'center' })
-				const commentEl = highlightedComment.querySelector('.comment')
-				if (commentEl) {
-					commentEl.classList.add('highlight-flash')
-					setTimeout(() => {
-						commentEl.classList.remove('highlight-flash')
-					}, 4000)
-				}
 			} else {
 				scrollTimeoutRef.current = setTimeout(() => attemptScroll(attempt + 1), 100)
 			}
@@ -319,19 +310,21 @@ export function MarketComments({
 	}, [highlightedCommentId, comments])
 
 	return (
-		<div className="comments-section">
-			<h2 className="subtitle">Comments ({comments.length})</h2>
-			<AddCommentForm marketId={market.id} onCommentAdded={refreshComments} />
-			<div className="comments-list">
-				{comments.map(comment => (
-					<CommentThread
-						key={comment.id}
-						comment={comment}
-						onReply={refreshComments}
-						highlightedCommentId={highlightedCommentId}
-					/>
-				))}
-			</div>
-		</div>
+		<Section>
+			<Heading ROLE="section">Comments ({comments.length})</Heading>
+			<Section>
+				<AddCommentForm marketId={market.id} onCommentAdded={refreshComments} />
+				<Section>
+					{comments.map(comment => (
+						<CommentThread
+							key={comment.id}
+							comment={comment}
+							onReply={refreshComments}
+							highlightedCommentId={highlightedCommentId}
+						/>
+					))}
+				</Section>
+			</Section>
+		</Section>
 	)
 }

@@ -68,9 +68,17 @@ const updateUsernameSchema = z.object({
 	userId: z.string()
 })
 
-export async function updateUsername(formData: FormData) {
+export async function updateUsername({
+	username: _username,
+	bio: _bio,
+	userId: _userId
+}: { username: string; bio: string; userId: string }) {
 	try {
-		const { username, bio, userId } = updateUsernameSchema.parse(Object.fromEntries(formData))
+		const { username, bio, userId } = updateUsernameSchema.parse({
+			username: _username,
+			bio: _bio,
+			userId: _userId
+		})
 
 		// Get the current user to find their old username
 		const currentUser = await db.user.findUnique({

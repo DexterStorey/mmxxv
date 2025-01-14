@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@rubriclab/ui'
 import { useEffect, useState } from 'react'
 import { MAX_INVITEES } from '~/constants'
 
@@ -14,18 +15,17 @@ export default function InviteClient({ id, invitees }: { id: string; invitees: n
 	}, [id])
 
 	return (
-		<button
-			type="button"
+		<Button
+			ROLE="destructive"
 			onClick={() => {
 				navigator.clipboard.writeText(inviteLink)
 				setIsCopied(true)
 			}}
-			className="button"
 			disabled={isCopied || invitees >= MAX_INVITEES}
 		>
 			{isCopied
 				? 'Copied! Send to a friend.'
 				: `Copy Invite Link (${Math.max(0, MAX_INVITEES - invitees)}/${MAX_INVITEES})`}
-		</button>
+		</Button>
 	)
 }

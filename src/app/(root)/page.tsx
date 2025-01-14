@@ -1,40 +1,39 @@
-import { Stage } from '@prisma/client'
+// import { db } from '~/db'
+import { Card, Footer, Link, Page, Section } from '@rubriclab/ui'
 import { getSession } from '~/actions/auth'
+import { getMarkets } from '~/actions/market'
 import Invite from '~/components/invite'
 import { MarketsTable } from '~/components/markets-table'
 import Nav from '~/components/nav'
-import { db } from '~/db'
 
 export default async () => {
 	await getSession()
 
-	const { stage } = await db.settings.findUniqueOrThrow({ where: { id: '0' } })
+	// const { stage } = await db.settings.findUniqueOrThrow({ where: { id: '0' } })
+
+	const markets = await getMarkets({ limit: 50 })
 
 	return (
-		<>
-			<Nav />
-			<div className="container">
-				<div className="card">
-					<h1 className="title">Welcome to MMXXV</h1>
-					<p className="section-content">A prediction game for 2025.</p>
-					<div className="section">
-						<h2 className="section-title">Current Stage: {stage}</h2>
-						{stage === Stage.ACCOUNT_CREATION && (
-							<>
-								<p className="section-content">Sign up for an account, invite friends.</p>
-								<strong className="meta">Ends on January 20, 2025</strong>
-								<br />
-								<br />
-								<Invite />
-							</>
-						)}
-					</div>
-					<div className="section">
-						<div className="section-title">Recent Markets</div>
-						<MarketsTable limit={10} />
-					</div>
-				</div>
-			</div>
-		</>
+		<Page
+			nav={<Nav />}
+			footer={
+				<Footer>
+					<Link ROLE="inline" href="https://github.com/RubricLab/mmxxv" external>
+						Built with love by Rubric and Friends Sam, Tanner, Ted and Dexter
+					</Link>
+				</Footer>
+			}
+		>
+			<Section>
+				<Card ROLE="brand" title="Welcome to MMXXV">
+					<p>A prediction game for 2025.</p>
+					<Invite />
+				</Card>
+			</Section>
+
+			<Section>
+				<MarketsTable initialMarkets={markets} />
+			</Section>
+		</Page>
 	)
 }

@@ -1,8 +1,19 @@
+import {
+	Card,
+	Heading,
+	Link,
+	Page,
+	Section,
+	Stack,
+	Table,
+	TableCell,
+	TableRow,
+	Text
+} from '@rubriclab/ui'
 import { notFound, redirect } from 'next/navigation'
 import { getSession } from '~/actions/auth'
 import Nav from '~/components/nav'
 import { ProbabilityAssignment } from '~/components/probability-assignment'
-import UserPill from '~/components/user-pill'
 import { db } from '~/db'
 import { formatDate } from '~/utils/date'
 
@@ -11,14 +22,15 @@ const PROBABILITIES_START_DATE = new Date('2025-01-21T05:00:00.000Z')
 
 export default async function MarketProbabilityPage({
 	params
-}: { params: Promise<{ id: string }> }) {
+}: {
+	params: Promise<{ id: string }>
+}) {
 	// Redirect if before the start date
 	if (new Date() < PROBABILITIES_START_DATE) {
 		redirect('/markets')
 	}
 
 	const { id } = await params
-
 	const { user } = await getSession()
 
 	const market = await db.market.findUnique({
@@ -57,62 +69,59 @@ export default async function MarketProbabilityPage({
 		: null
 
 	return (
-		<>
-			<Nav />
-			<div className="container">
-				<div className="card">
-					<div className="card-header">
-						<h1 className="title" style={{ margin: 0, borderBottom: 'none', fontFamily: 'inherit' }}>
-							{market.title}
-						</h1>
-					</div>
-					<div className="section-content">
-						<p>{market.description}</p>
-						<p className="mt-2 text-gray-500 text-sm">
-							Posted by <UserPill {...market.author} /> on {formatDate(market.createdAt)}
-						</p>
-					</div>
-					<div className="section">
-						<h2 className="section-title">Assign Your Probability</h2>
-						<div className="section-content">
+		<Page nav={<Nav />}>
+			<Section>
+				<Card ROLE="information" title={market.title}>
+					<Stack>
+						<Text content={market.description} />
+						<Stack>
+							<Text content="Posted by" />
+							<Link ROLE="inline" href={`/users/${market.author.id}`}>
+								{market.author.username || market.author.email}
+							</Link>
+							<Text content={`on ${formatDate(market.createdAt)}`} />
+						</Stack>
+
+						<Section>
+							<Heading ROLE="section">Assign Your Probability</Heading>
 							<ProbabilityAssignment marketId={market.id} initialProbability={userPrediction} />
-						</div>
-					</div>
-					<div className="section">
-						<h2 className="section-title">Current Probability</h2>
-						<p className="section-content">
-							{averageProbability !== null
-								? `${(averageProbability * 100).toFixed(1)}% (based on ${market.predictions.length} predictions)`
-								: 'No predictions yet'}
-						</p>
-					</div>
-					{market.predictions.length > 0 && (
-						<div className="section">
-							<h2 className="section-title">Individual Predictions</h2>
-							<div className="overflow-x-auto">
-								<table className="table">
-									<thead>
-										<tr>
-											<th>USER</th>
-											<th>PROBABILITY</th>
-										</tr>
-									</thead>
-									<tbody>
-										{market.predictions.map(prediction => (
-											<tr key={prediction.userId}>
-												<td>
-													<UserPill {...prediction.user} />
-												</td>
-												<td>{(prediction.probability * 100).toFixed(1)}%</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
-							</div>
-						</div>
-					)}
-				</div>
-			</div>
-		</>
+						</Section>
+
+						<Section>
+							<Heading ROLE="section">Current Probability</Heading>
+							<Text
+								content={
+									averageProbability !== null
+										? `${(averageProbability * 100).toFixed(1)}% (based on ${market.predictions.length} predictions)`
+										: 'No predictions yet'
+								}
+							/>
+						</Section>
+
+						{market.predictions.length > 0 && (
+							<Section>
+								<Heading ROLE="section">Individual Predictions</Heading>
+								<Table>
+									<TableRow>
+										<TableCell ROLE="header">User</TableCell>
+										<TableCell ROLE="header">Probability</TableCell>
+									</TableRow>
+									{market.predictions.map(prediction => (
+										<TableRow key={prediction.userId}>
+											<TableCell ROLE="data">
+												<Link ROLE="inline" href={`/users/${prediction.user.id}`}>
+													{prediction.user.username || prediction.user.email}
+												</Link>
+											</TableCell>
+											<TableCell ROLE="data">{(prediction.probability * 100).toFixed(1)}%</TableCell>
+										</TableRow>
+									))}
+								</Table>
+							</Section>
+						)}
+					</Stack>
+				</Card>
+			</Section>
+		</Page>
 	)
 }

@@ -1,3 +1,7 @@
+'use client'
+
+import { Button, Heading, Modal, Text } from '@rubriclab/ui'
+
 export function DeleteCommentModal({
 	isOpen,
 	onClose,
@@ -9,34 +13,16 @@ export function DeleteCommentModal({
 	onDelete: () => void
 	isDeleting: boolean
 }) {
-	if (!isOpen) return null
-
 	return (
-		<div className="modal-overlay">
-			<div className="modal">
-				<div className="modal-header">
-					<h2 className="modal-title">Delete Comment</h2>
-					<button type="button" className="modal-close" onClick={onClose}>
-						×
-					</button>
-				</div>
-				<p className="description">
-					Are you sure you want to delete this comment? This action cannot be undone.
-				</p>
-				<div className="modal-footer">
-					<button type="button" className="button" onClick={onClose}>
-						Cancel
-					</button>
-					<button
-						type="button"
-						className="button button-danger"
-						onClick={onDelete}
-						disabled={isDeleting}
-					>
-						{isDeleting ? 'Deleting...' : 'Delete Comment'}
-					</button>
-				</div>
-			</div>
-		</div>
+		<Modal isOpen={isOpen} onClose={onClose}>
+			<Heading ROLE="section">Delete Comment</Heading>
+			<Text content="Are you sure you want to delete this comment? This action cannot be undone." />
+			<Button ROLE="destructive" onClick={onClose} disabled={isDeleting}>
+				Cancel
+			</Button>
+			<Button ROLE="success" onClick={onDelete} disabled={isDeleting}>
+				{isDeleting ? 'Deleting...' : 'Delete Comment'}
+			</Button>
+		</Modal>
 	)
 }

@@ -1,3 +1,4 @@
+import { Card, Page, Section, Text } from '@rubriclab/ui'
 import { redirect } from 'next/navigation'
 import { getSession } from '~/actions/auth'
 import Nav from '~/components/nav'
@@ -37,23 +38,13 @@ export default async function ProbabilityAssignmentPage() {
 	})
 
 	return (
-		<>
-			<Nav />
-			<div className="container">
-				<div className="card">
-					<div className="card-header">
-						<h1 className="title" style={{ margin: 0, borderBottom: 'none', fontFamily: 'inherit' }}>
-							Market Probabilities
-						</h1>
-					</div>
-					<div className="section-content">
-						Current average probabilities for each market based on all user predictions.
-					</div>
-					<div className="overflow-x-auto">
-						<ProbabilityMarketsTable markets={markets} userId={user.id} />
-					</div>
-				</div>
-			</div>
-		</>
+		<Page nav={<Nav />}>
+			<Section>
+				<Card ROLE="information" title="Market Probabilities">
+					<Text content="Current average probabilities for each market based on all user predictions." />
+					<ProbabilityMarketsTable markets={markets} userId={user.id} />
+				</Card>
+			</Section>
+		</Page>
 	)
 }

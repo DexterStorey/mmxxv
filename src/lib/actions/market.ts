@@ -1,10 +1,12 @@
 'use server'
 
+import type { MarketCategory } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { getSession } from '~/actions/auth'
 import { MAX_MARKETS_PER_USER } from '~/constants'
 import { db } from '~/db'
 import { handleNewComment } from '~/services/notifications'
+import type { MarketFromAction } from '~/types/market'
 import { generateMarketCategories } from '~/utils/category-generation'
 import { generateMarketImage } from '~/utils/image-generation'
 
@@ -491,6 +493,85 @@ export async function getMarketById(marketId: string) {
 		...market,
 		comments: rootComments
 	}
+}
+
+export async function getMarkets({
+	search,
+	category,
+	limit = 50
+}: {
+	search?: string | undefined
+	category?: MarketCategory | undefined
+	limit?: number
+}): Promise<MarketFromAction[]> {
+	return await db.market.findMany({
+		where: {
+			AND: [
+				search
+					? {
+							OR: [
+								{ title: { contains: search, mode: 'insensitive' } },
+								{ description: { contains: search, mode: 'insensitive' } }
+							]
+						}
+					: {},
+				category ? { categories: { has: category } } : {}
+			]
+		},
+		take: limit,
+		orderBy: [
+			{
+				upvotes: 'desc'
+			},
+			{
+				downvotes: 'asc'
+			},
+			{
+				updatedAt: 'desc'
+			}
+		],
+		include: {
+			author: {
+				select: {
+					id: true,
+					email: true,
+					username: true
+				}
+			},
+			upvoters: {
+				select: { userId: true }
+			},
+			downvoters: {
+				select: { userId: true }
+			},
+			comments: {
+				orderBy: { createdAt: 'desc' },
+				include: {
+					author: {
+						select: {
+							id: true,
+							email: true,
+							username: true
+						}
+					}
+				}
+			},
+			edits: {
+				orderBy: {
+					createdAt: 'desc'
+				},
+				include: {
+					editor: {
+						select: {
+							id: true,
+							email: true,
+							username: true
+						}
+					}
+				}
+			}
+		}
+	})
 }
 
 export async function deleteMarket(marketId: string) {
