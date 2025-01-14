@@ -24,7 +24,8 @@ export const Layout = createLayout({
 				focus: '#333333',
 				active: '#000000',
 				subtle: '#fafafa',
-				text: '#111111'
+				text: '#111111',
+				contrast: '#ffffff'
 			},
 			surface: {
 				base: '#fafafa',
@@ -36,21 +37,24 @@ export const Layout = createLayout({
 				focus: '#f87171',
 				active: '#dc2626',
 				subtle: '#fee2e2',
-				text: '#ef4444'
+				text: '#ef4444',
+				contrast: '#ffffff'
 			},
 			success: {
 				base: '#22c55e',
 				focus: '#34d399',
 				active: '#16a34a',
 				subtle: '#dcfce7',
-				text: '#22c55e'
+				text: '#22c55e',
+				contrast: '#ffffff'
 			},
 			warning: {
 				base: '#666666',
 				focus: '#999999',
 				active: '#333333',
 				subtle: '#f5f5f5',
-				text: '#666666'
+				text: '#666666',
+				contrast: '#ffffff'
 			}
 		},
 		dark: {
@@ -59,7 +63,8 @@ export const Layout = createLayout({
 				focus: '#e5e5e5',
 				active: '#cccccc',
 				subtle: '#111111',
-				text: '#ffffff'
+				text: '#ffffff',
+				contrast: '#111111'
 			},
 			surface: {
 				base: '#111111',
@@ -71,21 +76,24 @@ export const Layout = createLayout({
 				focus: '#f87171',
 				active: '#dc2626',
 				subtle: '#1a1212',
-				text: '#ef4444'
+				text: '#ef4444',
+				contrast: '#ffffff'
 			},
 			success: {
 				base: '#22c55e',
 				focus: '#34d399',
 				active: '#16a34a',
 				subtle: '#121a14',
-				text: '#22c55e'
+				text: '#22c55e',
+				contrast: '#ffffff'
 			},
 			warning: {
 				base: '#999999',
 				focus: '#cccccc',
 				active: '#666666',
 				subtle: '#222222',
-				text: '#999999'
+				text: '#999999',
+				contrast: '#ffffff'
 			}
 		}
 	},
